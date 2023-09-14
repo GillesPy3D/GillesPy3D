@@ -1,0 +1,7 @@
+recursive-include gillespy2/solvers//c_base/ *
+recursive-include gillespy2/solvers/cpp/build/ SConstruct
+include requirements.txt
+include LICENSE
+include COPYRIGHT
+
+
