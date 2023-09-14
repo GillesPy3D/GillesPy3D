@@ -1,5 +1,4 @@
-recursive-include gillespy2/solvers//c_base/ *
-recursive-include gillespy2/solvers/cpp/build/ SConstruct
+recursive-include libcGillesPy3D/ *
 include requirements.txt
 include LICENSE
 include COPYRIGHT
