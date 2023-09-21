@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -23,7 +23,7 @@ try:
 except ImportError as err:
     mpl_import_err = err
 
-from spatialpy.core.spatialpyerror import VisualizationError
+from gillespy3d.core.error import VisualizationError
 
 common_rgb_values=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f',
                    '#bcbd22','#17becf','#ff0000','#00ff00','#0000ff','#ffff00','#00ffff','#ff00ff',
@@ -65,7 +65,7 @@ def _validate_mplplot_args(args):
         if name in supported_splts_args or name in supported_fig_args:
             kwargs[name] = val
         else:
-            from spatialpy.core import log # pylint: disable=import-outside-toplevel
+            from gillespy3d.core import log # pylint: disable=import-outside-toplevel
             logmsg = f"Un-supported key word argument: {name} is not currently supported"
             log.warning(logmsg)
     return kwargs
@@ -108,7 +108,7 @@ class Visualization():
             if arg_name in supported_args:
                 kwargs[arg_name] = val
             else:
-                from spatialpy.core import log # pylint: disable=import-outside-toplevel
+                from gillespy3d.core import log # pylint: disable=import-outside-toplevel
                 logmsg = f"Un-supported key word argument: {arg_name} is not currently supported"
                 log.warning(logmsg)
         if "s" not in kwargs:

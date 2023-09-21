@@ -1,7 +1,7 @@
 /**
-SpatialPy is a Python 3 package for simulation of
-spatial deterministic/stochastic reaction-diffusion-advection problems
-Copyright (C) 2019 - 2023 SpatialPy developers.
+GillesPy3D is a Python 3 package for simulation of
+spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+Copyright (C) 2023 GillesPy3D developer
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -16,13 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-/* *****************************************************************************************
-SSA-SDPD simulation engine
-Copyright 2018 Brian Drawert (UNCA)
-
-This program is distributed under the terms of the GNU GENERAL PUBLIC LICENSE Version 3.
-See the file LICENSE.txt for details.
-***************************************************************************************** */
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
@@ -39,7 +32,7 @@ See the file LICENSE.txt for details.
 #include "simulate_rdme.hpp"
 #include "pthread_barrier.hpp"
 
-namespace Spatialpy{
+namespace GillesPy3d{
     struct arg {
         ParticleSystem* system;
         unsigned int thread_id;

@@ -1,7 +1,7 @@
 /**
-SpatialPy is a Python 3 package for simulation of
-spatial deterministic/stochastic reaction-diffusion-advection problems
-Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -16,14 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-/* propensities.h */
-
-/* B. Drawert   2019-06-04 */
-/* J. Cullhed   2008-06-18. */
-/* A. Hellander 2010-01-10. */
-/* A. Hellander 2012-06-05 (rev). */
-/* B. Drawert   2012-09-08 */
-
 #ifndef PROPENSITIES__H
 #define PROPENSITIES__H
 
@@ -31,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern std::mt19937_64 rng;
 
-namespace Spatialpy{
+namespace GillesPy3d{
 
     /* Global variable that can be used to pass parameters to the propensity functions. */
     extern double *parameters;

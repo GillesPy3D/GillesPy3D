@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -26,10 +26,10 @@ import numpy
 import plotly.graph_objs as go
 from plotly.offline import init_notebook_mode, iplot
 
-# from spatialpy.core.model import *
-from spatialpy.core.visualization import Visualization
-from spatialpy.core.vtkreader import VTKReader
-from spatialpy.core.spatialpyerror import ResultError
+# from gillespy3d.core.model import *
+from gillespy3d.core.visualization import Visualization
+from gillespy3d.core.vtkreader import VTKReader
+from gillespy3d.core.gillespy3derror import ResultError
 
 try:
     import vtk
@@ -210,7 +210,7 @@ class Result():
         try:
             results_output = state['results_output']
             state['result_dir'] = tempfile.mkdtemp(
-                prefix='spatialpy_result_', dir=os.environ.get('SPATIALPY_TMPDIR'))
+                prefix='gillespy3d_result_', dir=os.environ.get('GILLESPY3D_TMPDIR'))
 
             for filename, contents in results_output.items():
                 with open(os.path.join(state['result_dir'], filename), 'wb') as state_file:
@@ -337,7 +337,7 @@ class Result():
         one or all timepoints. Returns a numpy array containing the species population/concentration values.
 
         :param species: A species in string or dictionary form to retreive information about
-        :type species: str | spatialpy.core.species.Species
+        :type species: str | gillespy3d.core.species.Species
 
         :param timepoints: A time point where the information should be retreived from.
             If 'timepoints' is None (default), a matrix of dimension:

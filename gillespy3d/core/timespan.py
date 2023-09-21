@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -17,7 +17,7 @@ import math
 import numpy as np
 from collections.abc import Iterator
 
-from .spatialpyerror import TimespanError
+from .error import TimespanError
 
 class TimeSpan(Iterator):
     """
@@ -99,7 +99,7 @@ class TimeSpan(Iterator):
         :type timestep_size: int | float
 
         :returns: Timespan for the model.
-        :rtype: spatialpy.TimeSpan
+        :rtype: gillespy3d.TimeSpan
 
         :raises TimespanError: t or num_points are None, <= 0, or invalid type.
         """
@@ -128,7 +128,7 @@ class TimeSpan(Iterator):
         :type timestep_size: int | float
 
         :returns: Timespan for the model.
-        :rtype: spatialpy.TimeSpan
+        :rtype: gillespy3d.TimeSpan
 
         :raises TimespanError: t or increment are None, <= 0, or invalid type.
         """
@@ -175,7 +175,7 @@ class TimeSpan(Iterator):
             isuniform = np.isclose(other_diff, first_diff).all()
 
             if coverage == "build" and not isuniform:
-                raise TimespanError("SpatialPy only supports uniform timespans.")
+                raise TimespanError("GillesPy3D only supports uniform timespans.")
             if first_diff == 0 or np.count_nonzero(other_diff) != len(other_diff):
                 raise TimespanError("Timespan can't contain a single repeating value.")
 

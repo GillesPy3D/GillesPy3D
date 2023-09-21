@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -23,28 +23,28 @@ from collections import OrderedDict
 import numpy
 import scipy
 
-from spatialpy.core.domain import Domain
-from spatialpy.core.species import Species
-from spatialpy.core.initialcondition import (
+from gillespy3d.core.domain import Domain
+from gillespy3d.core.species import Species
+from gillespy3d.core.initialcondition import (
     InitialCondition,
     PlaceInitialCondition,
     ScatterInitialCondition,
     UniformInitialCondition
 )
-from spatialpy.core.parameter import Parameter
-from spatialpy.core.reaction import Reaction
-from spatialpy.core.boundarycondition import BoundaryCondition
-from spatialpy.core.datafunction import DataFunction
-from spatialpy.core.timespan import TimeSpan
-from spatialpy.solvers.build_expression import BuildExpression
-from spatialpy.core.spatialpyerror import ModelError
+from gillespy3d.core.parameter import Parameter
+from gillespy3d.core.reaction import Reaction
+from gillespy3d.core.boundarycondition import BoundaryCondition
+from gillespy3d.core.datafunction import DataFunction
+from gillespy3d.core.timespan import TimeSpan
+from gillespy3d.solvers.build_expression import BuildExpression
+from gillespy3d.core.gillespy3derror import ModelError
 
-def export_StochSS(spatialpy_model, filename=None, return_stochss_model=False):
+def export_StochSS(gillespy3d_model, filename=None, return_stochss_model=False):
     """
-    SpatialPy model to StochSS converter
+    GillesPy3D model to StochSS converter
 
-    :param spatialpy_model: SpatialPy model to be converted to StochSS
-    :type spatialpy_model: spatialpy.core.model.Model
+    :param gillespy3d_model: GillesPy3D model to be converted to StochSS
+    :type gillespy3d_model: gillespy3d.core.model.Model
 
     :param filename: Path to the exported stochss model
     :type filename: str
@@ -56,11 +56,11 @@ def export_StochSS(spatialpy_model, filename=None, return_stochss_model=False):
     :rtype: string
     """
     try:
-        from spatialpy.stochss.stochss_export import export # pylint: disable=import-outside-toplevel
+        from gillespy3d.stochss.stochss_export import export # pylint: disable=import-outside-toplevel
     except ImportError as err:
         raise ImportError('StochSS export conversion not imported successfully') from err
 
-    return export(spatialpy_model, path=filename, return_stochss_model=return_stochss_model)
+    return export(gillespy3d_model, path=filename, return_stochss_model=return_stochss_model)
 
 class Model():
     """
@@ -72,7 +72,7 @@ class Model():
     reserved_names = ['vol', 't']
     special_characters = ['[', ']', '+', '-', '*', '/', '.', '^']
 
-    def __init__(self, name="spatialpy"):
+    def __init__(self, name="gillespy3d"):
         # The name that the model is referenced by (should be a String)
         self.name = name
 
@@ -430,7 +430,7 @@ class Model():
         :param name: Name of the element to be returned.
         :type name: str
 
-        :returns: The specified spatialpy.Model element.
+        :returns: The specified gillespy3d.Model element.
         :rtype: Species, Parameters, Reactions, Domain, Data Function, or TimeSpan
         """
         if name in ("tspan", "timespan"):
@@ -452,13 +452,13 @@ class Model():
         Add a spatial domain to the model
 
         :param domain: The Domain object to be added to the model
-        :type domain: spatialpy.core.domain.Domain
+        :type domain: gillespy3d.core.domain.Domain
 
         :raises ModelError: Invalid Domain object
         """
         if not isinstance(domain, Domain) and type(domain).__name__ != Domain.__name__:
             raise ModelError(
-                "Unexpected parameter for add_domain. Parameter must be of type SpatialPy.Domain."
+                "Unexpected parameter for add_domain. Parameter must be of type GillesPy3D.Domain."
             )
 
         domain.compile_prep(allow_all_types=allow_all_types)
@@ -470,10 +470,10 @@ class Model():
         Adds a species, or list of species to the model.
 
         :param species: The species or list of species to be added to the model object.
-        :type species: spatialpy.core.species.Species | list(spatialpy.core.species.Species
+        :type species: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species
 
         :returns: The species or list of species that were added to the model.
-        :rtype: spatialpy.core.species.Species | list(spatialpy.core.species.Species)
+        :rtype: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
@@ -528,7 +528,7 @@ class Model():
         :type name: str
 
         :returns: The specified species object.
-        :rtype: spatialpy.core.species.Species
+        :rtype: gillespy3d.core.species.Species
 
         :raises ModelError: If the species is not part of the model.
         """
@@ -557,9 +557,9 @@ class Model():
     def sanitized_species_names(self):
         """
         Generate a dictionary mapping user chosen species names to simplified formats which will be used
-        later on by SpatialPySolvers evaluating reaction propensity functions.
+        later on by GillesPy3DSolvers evaluating reaction propensity functions.
 
-        :returns: the dictionary mapping user species names to their internal SpatialPy notation.
+        :returns: the dictionary mapping user species names to their internal GillesPy3D notation.
         :rtype: OrderedDict
         """
         species_name_mapping = OrderedDict([])
@@ -572,11 +572,11 @@ class Model():
         Add an initial condition object to the initialization of the model.
 
         :param init_cond: Initial condition to be added.
-        :type init_cond: spatialpy.core.initialcondition.InitialCondition
+        :type init_cond: gillespy3d.core.initialcondition.InitialCondition
 
         :returns: The initial condition or list of initial conditions that were added to the model.
-        :rtype: spatialpy.core.initialcondition.InitialCondition | \
-                list(spatialpy.core.initialcondition.InitialCondition)
+        :rtype: gillespy3d.core.initialcondition.InitialCondition | \
+                list(gillespy3d.core.initialcondition.InitialCondition)
 
         :raises ModelError: If an invalid initial condition is provided.
         """
@@ -600,7 +600,7 @@ class Model():
         Removes an initial condition object from the model object.
 
         :param init_cond: initial condition object to be removed.
-        :type init_cond: spatialpy.core.InitialCondition
+        :type init_cond: gillespy3d.core.InitialCondition
 
         :raises ModelError: If the initial condition is not part of the model.
         """
@@ -632,10 +632,10 @@ class Model():
         Adds a parameter, or list of parameters to the model.
 
         :param parameters:  The parameter or list of parameters to be added to the model object.
-        :type parameters: spatialpy.core.parameter.Parameter | list(spatialpy.core.parameter.Parameter)
+        :type parameters: gillespy3d.core.parameter.Parameter | list(gillespy3d.core.parameter.Parameter)
 
         :returns: A parameter or list of Parameters that were added to the model.
-        :rtype: spatialpy.core.parameter.Parameter | list(spatialpy.core.parameter.Parameter)
+        :rtype: gillespy3d.core.parameter.Parameter | list(gillespy3d.core.parameter.Parameter)
 
         :raises ModelError: If an invalid parameter is provided or if Parameter.validate fails.
         """
@@ -683,7 +683,7 @@ class Model():
         :type name: str
 
         :returns: The specified parameter object.
-        :rtype: Spatialpy.core.parameter.Parameter
+        :rtype: gillespy3d.core.parameter.Parameter
 
         :raises ModelError: If the parameter is not part of the model.
         """
@@ -703,9 +703,9 @@ class Model():
     def sanitized_parameter_names(self):
         """
         Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
-        later on by SpatialPySolvers evaluating reaction propensity functions.
+        later on by GillesPy3DSolvers evaluating reaction propensity functions.
 
-        :returns: the dictionary mapping user parameter names to their internal SpatialPy notation.
+        :returns: the dictionary mapping user parameter names to their internal GillesPy3D notation.
         :rtype: OrderedDict
         """
         parameter_name_mapping = OrderedDict()
@@ -719,10 +719,10 @@ class Model():
         Adds a reaction, or list of reactions to the model.
 
         :param reactions: The reaction or list of reactions to be added to the model object
-        :type reactions: spatialpy.core.reaction.Reaction | list(spatialpy.core.reaction.Reaction)
+        :type reactions: gillespy3d.core.reaction.Reaction | list(gillespy3d.core.reaction.Reaction)
 
         :returns: The reaction or list of reactions that were added to the model.
-        :rtype: spatialpy.core.reaction.Reaction | list(spatialpy.core.reaction.Reaction)
+        :rtype: gillespy3d.core.reaction.Reaction | list(gillespy3d.core.reaction.Reaction)
 
         :raises ModelError: If an invalid reaction is provided or if Reaction.validate fails.
         """
@@ -774,7 +774,7 @@ class Model():
         :type name: str
 
         :returns: The specified reaction object.
-        :rtype: spatialpy.core.reaction.Reaction
+        :rtype: gillespy3d.core.reaction.Reaction
 
         :raises ModelError: If the reaction is not part of the model.
         """
@@ -805,11 +805,11 @@ class Model():
         Add an boundary condition object to the model.
 
         :param bound_cond: Boundary condition to be added
-        :type bound_cond: spatialpy.core.boundarycondition.BoundaryCondition
+        :type bound_cond: gillespy3d.core.boundarycondition.BoundaryCondition
 
         :returns: The boundary condition or list of boundary conditions that were added to the model.
-        :rtype: spatialpy.core.boundarycondition.BoundaryCondition | \
-                list(spatialpy.core.boundarycondition.BoundaryCondition)
+        :rtype: gillespy3d.core.boundarycondition.BoundaryCondition | \
+                list(gillespy3d.core.boundarycondition.BoundaryCondition)
 
         :raises ModelError: If an invalid boundary conidition is provided.
         """
@@ -829,7 +829,7 @@ class Model():
         Removes an boundary condition object from the model object.
 
         :param bound_cond: boundary condition object to be removed.
-        :type bound_cond: spatialpy.core.BoundaryCondition
+        :type bound_cond: gillespy3d.core.BoundaryCondition
 
         :raises ModelError: If the boundary condition is not part of the model.
         """
@@ -860,14 +860,14 @@ class Model():
         """
         Add a scalar spatial function to the simulation. This is useful if you have a
         spatially varying input to your model. Argument is a instances of subclass of the
-        spatialpy.DataFunction class. It must implement a function 'map(point)' which takes a
+        gillespy3d.DataFunction class. It must implement a function 'map(point)' which takes a
         the spatial positon 'point' as an array, and it returns a float value.
 
         :param data_function: Data function to be added.
-        :type data_function: spatialpy.DataFunction
+        :type data_function: gillespy3d.DataFunction
 
         :returns: DataFunction object(s) added tothe model.
-        :rtype: spatialpy.core.datafunction.DataFunction | list(spatialpy.core.datafunction.DataFunction)
+        :rtype: gillespy3d.core.datafunction.DataFunction | list(gillespy3d.core.datafunction.DataFunction)
 
         :raises ModelError: Invalid DataFunction
         """
@@ -887,7 +887,7 @@ class Model():
         Removes an data function object from the model object.
 
         :param name: data function object to be removed.
-        :type name: spatialpy.core.DataFunction
+        :type name: gillespy3d.core.DataFunction
 
         :raises ModelError: If the data function is not part of the model.
         """
@@ -912,7 +912,7 @@ class Model():
         :type name: str
 
         :returns: The specified data function object.
-        :rtype: spatialpy.core.datafunction.DataFunction
+        :rtype: gillespy3d.core.datafunction.DataFunction
 
         :raises ModelError: If the data function is not part of the model.
         """
@@ -932,9 +932,9 @@ class Model():
     def sanitized_data_function_names(self):
         """
         Generate a dictionary mapping user chosen data function names to simplified formats which will be used
-        later on by SpatialPySolvers evaluating reaction propensity functions.
+        later on by GillesPy3DSolvers evaluating reaction propensity functions.
 
-        :returns: the dictionary mapping user data function names to their internal SpatialPy notation.
+        :returns: the dictionary mapping user data function names to their internal GillesPy3D notation.
         :rtype: OrderedDict
         """
         data_fn_name_mapping = OrderedDict([])
@@ -1045,10 +1045,10 @@ class Model():
         :param profile: Optional flag to print out addtional performance profiling for simulation.
         :type profile: bool
 
-        :returns: A SpatialPy Result object containing simulation data.
-        :rtype: spatialpy.core.result.Result
+        :returns: A GillesPy3D Result object containing simulation data.
+        :rtype: gillespy3d.core.result.Result
         """
-        from spatialpy.solvers.solver import Solver # pylint: disable=import-outside-toplevel
+        from gillespy3d.solvers.solver import Solver # pylint: disable=import-outside-toplevel
 
         sol = Solver(self, debug_level=debug_level)
 

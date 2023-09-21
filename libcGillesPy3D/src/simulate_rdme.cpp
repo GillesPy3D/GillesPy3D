@@ -1,7 +1,7 @@
 /**
-SpatialPy is a Python 3 package for simulation of
-spatial deterministic/stochastic reaction-diffusion-advection problems
-Copyright (C) 2019 - 2023 SpatialPy developers.
+GillesPy3D is a Python 3 package for simulation of
+spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+Copyright (C) 2023 GillesPy3D developer
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /**************************************************************************/
-namespace Spatialpy{
+namespace GillesPy3d{
 
     void initialize_rdme(ParticleSystem *system, size_t *irN, size_t *jcN,int *prN,
                         size_t *irG,size_t *jcG, unsigned int*u0){

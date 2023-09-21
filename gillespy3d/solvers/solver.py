@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -27,7 +27,7 @@ import sys
 
 import numpy
 
-from spatialpy.core.spatialpyerror import ModelError, SimulationError
+from gillespy3d.core.gillespy3derror import ModelError, SimulationError
 
 def _read_from_stdout(stdout ,verbose=True):
     try:
@@ -45,20 +45,20 @@ def _read_from_stdout(stdout ,verbose=True):
 
 class Solver:
     """
-    SpatialPy solver object.
+    GillePy3D solver object.
 
     :param model: Target model of solver simulation.
-    :type model: spatialpy.core.model.Model
+    :type model: gillespy3d.core.model.Model
 
     :param debug_level: Target level of debugging.
     :type debug_level: int
     """
     def __init__(self, model, debug_level=0):
-        from spatialpy.core.model import Model # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.model import Model # pylint: disable=import-outside-toplevel
         if not (isinstance(model, Model) or type(model).__name__ == 'Model'):
-            raise SimulationError("Model must be of type spatialpy.Model.")
+            raise SimulationError("Model must be of type gillespy3d.Model.")
         if not issubclass(self.__class__, Solver):
-            raise SimulationError("Solver classes must be a subclass of spatialpy.Solver.")
+            raise SimulationError("Solver classes must be a subclass of gillespy3d.Solver.")
 
         self.model = model
         self.is_compiled = False
@@ -70,17 +70,17 @@ class Solver:
         self.executable_name = 'ssa_sdpd.exe'
         self.h = None  # basis function width
 
-        self.spatialpy_root = os.path.dirname(
+        self.gillespy3d_root = os.path.dirname(
             os.path.abspath(__file__)) + "/c_base/ssa_sdpd-c-simulation-engine"
-        self.spatialpy_rootdir =  self.spatialpy_root.replace(" ","\\ ")
-        self.spatialpy_rootinc =  self.spatialpy_root.replace(" ","\\\\ ")
-        self.spatialpy_rootparam =  self.spatialpy_root.replace(" ","?")
+        self.gillespy3d_rootdir =  self.gillespy3d_root.replace(" ","\\ ")
+        self.gillespy3d_rootinc =  self.gillespy3d_root.replace(" ","\\\\ ")
+        self.gillespy3d_rootparam =  self.gillespy3d_root.replace(" ","?")
 
         tmpdir = tempfile.gettempdir()
-        self.core_dir = os.path.join(os.path.join(tmpdir, 'spatialpy_core'), getpass.getuser())
+        self.core_dir = os.path.join(os.path.join(tmpdir, 'gillespy3d_core'), getpass.getuser())
 
-        if not os.path.isdir(os.path.join(tmpdir, 'spatialpy_core')):
-            os.mkdir(os.path.join(tmpdir, 'spatialpy_core'))
+        if not os.path.isdir(os.path.join(tmpdir, 'gillespy3d_core')):
+            os.mkdir(os.path.join(tmpdir, 'gillespy3d_core'))
         if not os.path.isdir(self.core_dir):
             os.mkdir(self.core_dir)
 
@@ -456,7 +456,7 @@ class Solver:
 
         # Create a unique directory each time call to compile.
         self.build_dir = tempfile.mkdtemp(
-            prefix='spatialpy_build_', dir=os.environ.get('SPATIALPY_TMPDIR'))
+            prefix='gillespy3d_build_', dir=os.environ.get('GILLESPY3D_TMPDIR'))
         # Write the propensity file
         # Match except word characters \w = ([a-zA-Z0-9_]) and \_ = _ replace with ''
         propfilename = re.sub(r'[^\w\_]', '', self.model_name)
@@ -471,11 +471,11 @@ class Solver:
         self.__create_propensity_file(stoich_matrix, dep_graph, file_name=self.prop_file_name)
 
         # Build the solver
-        makefile = self.spatialpy_rootdir+'/build/SConstruct'
+        makefile = self.gillespy3d_rootdir+'/build/SConstruct'
         make_cmd = [
             sys.executable, "-m", "SCons", f"-C{self.build_dir}", f"-f{makefile}",
-            f'ROOT={self.spatialpy_rootparam}',
-            f'ROOTINC={self.spatialpy_rootinc}',
+            f'ROOT={self.gillespy3d_rootparam}',
+            f'ROOTINC={self.gillespy3d_rootinc}',
             f'COREDIR={self.core_dir}',
             f'MODEL={self.prop_file_name}',
             f'BUILD={self.build_dir}',
@@ -533,12 +533,12 @@ class Solver:
         :param verbose: If true, prints addtional data to console
         :type verbose: bool
 
-        :returns: A SpatialPy Result object containing spatial and time series data from simulation.
-        :rtype: spatialpy.Result.Result 
+        :returns: A GillesPy3D Result object containing spatial and time series data from simulation.
+        :rtype: gillespy3d.Result.Result 
 
         :raises SimulationError: Simulation execution failed.
         """
-        from spatialpy.core.result import Result # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.result import Result # pylint: disable=import-outside-toplevel
         # Check if compiled, call compile() if not.
         if not self.is_compiled:
             self.compile(debug=debug, profile=profile)
@@ -546,7 +546,7 @@ class Solver:
         # Execute the solver
         for run_ndx in range(number_of_trajectories):
             outfile = tempfile.mkdtemp(
-                prefix='spatialpy_result_', dir=os.environ.get('SPATIALPY_TMPDIR'))
+                prefix='gillespy3d_result_', dir=os.environ.get('GILLESPY3D_TMPDIR'))
             result = Result(self.model, outfile)
             if self.debug_level >= 1:
                 print(f"Running simulation. Result dir: {outfile}")

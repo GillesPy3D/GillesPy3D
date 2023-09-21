@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -16,7 +16,7 @@
 
 import numpy
 
-from spatialpy.core.spatialpyerror import VTKReaderIOError
+from gillespy3d.core.error import VTKReaderIOError
 
 def _is_valid_num(numstr):
     try:
@@ -79,10 +79,10 @@ def _populate_arrays(vtkdata, arraydata, col, row, name, datatype):
 
 class VTKReader:
     """
-    VTKReader.py: SpatialPy minimal VTK legacy file reader.
+    VTKReader.py: GillesPy3D minimal VTK legacy file reader.
     Reference: https://vtk.org/wp-content/uploads/2015/04/file-formats.pdf
 
-    :param filename: name of SpatialPy VTK file
+    :param filename: name of GillesPy3D VTK file
     :type filename: str
 
     :param debug: If true, will print debugging information.

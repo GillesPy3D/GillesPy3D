@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy
 
-from spatialpy.core.spatialpyerror import GeometryError
+from gillespy3d.core.gillespy3derror import GeometryError
 
 class CombinatoryGeometry:
     """
@@ -92,7 +92,7 @@ class Geometry:
         :returns: True if the particle is in the geometric shape, else False.
         :rtype: bool
         """
-        raise GeometryError("Subclasses of spatialpy.Geometry must implement the inside() method")
+        raise GeometryError("Subclasses of gillespy3d.Geometry must implement the inside() method")
 
 class GeometryAll(Geometry):
     """

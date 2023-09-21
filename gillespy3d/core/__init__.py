@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spatialpy.__version__ import __version__
+from gillespy3d.__version__ import __version__
 from .boundarycondition import BoundaryCondition
 from .cleanup import (
     cleanup_tempfiles,
@@ -50,7 +50,7 @@ from .model import Model, export_StochSS
 from .parameter import Parameter
 from .reaction import Reaction
 from .result import Result
-from .spatialpyerror import *
+from .gillespy3derror import *
 from .species import Species
 from .timespan import TimeSpan
 from .transformation import (
@@ -65,7 +65,7 @@ from .vtkreader import *
 
 version = __version__
 
-log = logging.getLogger("SpatialPy")
+log = logging.getLogger("GillesPy3D")
 log.setLevel(logging.WARNING)
 log.propagate = False
 

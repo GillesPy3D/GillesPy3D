@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -20,8 +20,8 @@ import xml.etree.ElementTree as ET
 
 import numpy
 
-from spatialpy.core.geometry import Geometry, CombinatoryGeometry
-from spatialpy.core.spatialpyerror import LatticeError
+from gillespy3d.core.geometry import Geometry, CombinatoryGeometry
+from gillespy3d.core.gillespy3derror import LatticeError
 
 class Lattice:
     """
@@ -59,18 +59,18 @@ class Lattice:
         Fill a domain with particles within the lattice restricted by the geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param geometry: Geometry defining the region within the lattice in
             which particles are restricted to.
-        :type geometry: spatialpy.Geometry | spatialpy.CombinatoryGeometry
+        :type geometry: gillespy3d.Geometry | gillespy3d.CombinatoryGeometry
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        raise LatticeError("Subclasses of spatialpy.Lattice must implement the apply() method")
+        raise LatticeError("Subclasses of gillespy3d.Lattice must implement the apply() method")
 
     def validate(self):
         """
@@ -169,24 +169,24 @@ class CartesianLattice(Lattice):
         Fill a domain with particles within the cartesian lattice restricted by the geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param geometry: Geometry defining the region within the lattice in
             which particles are restricted to.
-        :type geometry: spatialpy.Geometry | spatialpy.CombinatoryGeometry
+        :type geometry: gillespy3d.Geometry | gillespy3d.CombinatoryGeometry
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if not (isinstance(geometry, (Geometry, CombinatoryGeometry)) or \
             type(geometry).__name__ in ('Geometry', 'CombinatoryGeometry')):
             raise LatticeError(
-                "geometry must be of type spatialpy.Geometry or spatialpy.CombinatoryGeometry."
+                "geometry must be of type gillespy3d.Geometry or gillespy3d.CombinatoryGeometry."
             )
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
@@ -304,24 +304,24 @@ class SphericalLattice(Lattice):
         Fill a domain with particles within the spherical lattice restricted by the geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param geometry: Geometry defining the region within the lattice in
             which particles are restricted to.
-        :type geometry: spatialpy.Geometry | spatialpy.CombinatoryGeometry
+        :type geometry: gillespy3d.Geometry | gillespy3d.CombinatoryGeometry
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if not (isinstance(geometry, (Geometry, CombinatoryGeometry)) or \
             type(geometry).__name__ in ('Geometry', 'CombinatoryGeometry')):
             raise LatticeError(
-                "geometry must be of type spatialpy.Geometry or spatialpy.CombinatoryGeometry."
+                "geometry must be of type gillespy3d.Geometry or gillespy3d.CombinatoryGeometry."
             )
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
@@ -337,7 +337,7 @@ class SphericalLattice(Lattice):
             approx_rc = int(round((4 * radius ** 2) / ((self.deltas / 2) ** 2)))
 
             if approx_rc == 0:
-                from spatialpy.core import log # pylint: disable=import-outside-toplevel
+                from gillespy3d.core import log # pylint: disable=import-outside-toplevel
                 msg = f"Approximation of particles for the layer at radius {radius} is 0. "
                 msg += "Consider increasing the radius or increasing the radial spacing (deltas)"
                 log.warning(msg)
@@ -445,24 +445,24 @@ class CylindricalLattice(Lattice):
         Fill a domain with particles within the cylindrical lattice restricted by the geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param geometry: Geometry defining the region within the lattice in
             which particles are restricted to.
-        :type geometry: spatialpy.Geometry | spatialpy.CombinatoryGeometry
+        :type geometry: gillespy3d.Geometry | gillespy3d.CombinatoryGeometry
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if not (isinstance(geometry, (Geometry, CombinatoryGeometry)) or \
             type(geometry).__name__ in ('Geometry', 'CombinatoryGeometry')):
             raise LatticeError(
-                "geometry must be of type spatialpy.Geometry or spatialpy.CombinatoryGeometry."
+                "geometry must be of type gillespy3d.Geometry or gillespy3d.CombinatoryGeometry."
             )
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
@@ -481,7 +481,7 @@ class CylindricalLattice(Lattice):
             approx_rc = int(round((2 * radius * self.length) / ((self.deltas / 2) ** 2)))
 
             if approx_rc == 0:
-                from spatialpy.core import log # pylint: disable=import-outside-toplevel
+                from gillespy3d.core import log # pylint: disable=import-outside-toplevel
                 msg = f"Approximation of particles for the layer at radius {radius} is 0. "
                 msg += "Consider increasing the radius or increasing the radial spacing (deltas)"
                 log.warning(msg)
@@ -597,16 +597,16 @@ class XMLMeshLattice(Lattice):
         Fill a domain with particles within the xml mesh lattice un-restricted by a geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
 
@@ -734,16 +734,16 @@ class MeshIOLattice(Lattice):
         Fill a domain with particles within the mesh IO lattice un-restricted by a geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
 
@@ -847,14 +847,14 @@ class StochSSLattice(Lattice):
         Fill a domain with particles within the stochss lattice un-restricted by a geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param transform: Transformation function applied to each particle.
         :type transform: function
         """
-        from spatialpy.core.domain import Domain # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.domain import Domain # pylint: disable=import-outside-toplevel
         if not (isinstance(domain, Domain) or type(domain).__name__ == 'Domain'):
-            raise LatticeError("domain must be of type spatialpy.Domain.")
+            raise LatticeError("domain must be of type gillespy3d.Domain.")
         if transform is not None and not callable(transform):
             raise LatticeError("transform must be a function.")
 

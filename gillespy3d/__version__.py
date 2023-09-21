@@ -16,9 +16,9 @@
 
 # =============================================================================
 # @file    __version__.py
-# @brief   SpatialPy version info
+# @brief   GillesPy3D version info
 # @license Please see the file named LICENSE in the project directory
-# @website https://github.com/StochSS/SpatialPy
+# @website https://github.com/GillesPy3D/GillesPy3D
 # =============================================================================
 
 __version__      = '0.1.0'

@@ -29,6 +29,6 @@ Export('env')
 ann = SConscript(f'{root_dir}/external/ANN/src/SConscript', variant_dir=f'{core_dir}/external/ANN', duplicate=False)
 core = SConscript(f'{root_dir}/src/SConscript', variant_dir=core_dir, duplicate=False)
 
-env.StaticLibrary(f'{core_dir}/lib/spatialpy-core', core)
+env.StaticLibrary(f'{core_dir}/lib/gillespy3d-core', core)
 env.StaticLibrary(f'{core_dir}/lib/ANN', ann)
-env.Program('ssa_sdpd.exe', model, LIBS=['spatialpy-core', 'ANN', 'pthread'])
+env.Program('gillespy3d.exe', model, LIBS=['gillespy3d-core', 'ANN', 'pthread'])

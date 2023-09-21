@@ -1,6 +1,3 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -16,9 +13,9 @@
 import copy
 import numpy
 
-from spatialpy.core.geometry import Geometry, CombinatoryGeometry
-from spatialpy.core.lattice import Lattice
-from spatialpy.core.spatialpyerror import TransformationError
+from gillespy3d.core.geometry import Geometry, CombinatoryGeometry
+from gillespy3d.core.lattice import Lattice
+from gillespy3d.core.error import TransformationError
 
 
 class Transformation:
@@ -28,15 +25,15 @@ class Transformation:
 
     :param geometry: Geometry classed used once the transformation is reversed.
         Transformation.inside wraps Geometry.inside.
-    :type geometry: spatialpy.Geometry
+    :type geometry: gillespy3d.Geometry
 
     :param lattice: Lattice classed used when applying transformations.
         Transformation.apply wraps Lattice.apply.
-    :type lattice: spatialpy.Lattice
+    :type lattice: gillespy3d.Lattice
 
     :param transformation: Transformation to be applied after applying this
         transformation.
-    :type transformation: spatialpy.Transformation
+    :type transformation: gillespy3d.Transformation
 
     :raises TransformationError: if the provided Geometry, Lattice, or
         Transformation are invalid.
@@ -55,11 +52,11 @@ class Transformation:
             particles within the region defined by the lattice and geometry.
 
         :param domain: Domain particles are to be added to.
-        :type domain: spatialpy.Domain
+        :type domain: gillespy3d.Domain
 
         :param geometry: Geometry defining the region within the lattice in
             which particles are restricted to.
-        :type geometry: spatialpy.Geometry | spatialpy.CombinatoryGeometry
+        :type geometry: gillespy3d.Geometry | gillespy3d.CombinatoryGeometry
 
         :param \**kwargs: Additional keyword arguments passed to :py:meth:`Domain.add_point`.
 
@@ -105,7 +102,7 @@ class Transformation:
         :rtype: float[3]
         """
         raise TransformationError(
-            "Subclasses of spatialpy.Transformation must implement the reverse_transform() method."
+            "Subclasses of gillespy3d.Transformation must implement the reverse_transform() method."
         )
 
     def transform(self, point):
@@ -119,7 +116,7 @@ class Transformation:
         :rtype: float[3]
         """
         raise TransformationError(
-            "Subclasses of spatialpy.Transformation must implement the transform() method."
+            "Subclasses of gillespy3d.Transformation must implement the transform() method."
         )
 
     def validate(self):
@@ -130,15 +127,15 @@ class Transformation:
             is_ginstance = isinstance(self.geometry, (Geometry, CombinatoryGeometry))
             is_gtype = type(self.geometry).__name__ in ("Geometry", "CombinatoryGeometry")
             if not (is_ginstance or is_gtype):
-                raise TransformationError("geometry must be of type spatialpy.Geometry.")
+                raise TransformationError("geometry must be of type gillespy3d.Geometry.")
 
         if self.lattice is not None and \
             not (isinstance(self.lattice, Lattice) or type(self.lattice).__name__ == "Lattice"):
-            raise TransformationError("lattice must be of type spatialpy.Lattice.")
+            raise TransformationError("lattice must be of type gillespy3d.Lattice.")
 
         if self.transformation is not None and \
             not (isinstance(self.transformation, Transformation) or type(self.transformation).__name__ == "Transformation"):
-            raise TransformationError("transformation must be of type spatialpy.Transformation.")
+            raise TransformationError("transformation must be of type gillespy3d.Transformation.")
 
 class TranslationTransformation(Transformation):
     """
@@ -152,15 +149,15 @@ class TranslationTransformation(Transformation):
 
     :param geometry: Geometry classed used once the transformation is reversed.
         Transformation.inside wraps Geometry.inside.
-    :type geometry: spatialpy.Geometry
+    :type geometry: gillespy3d.Geometry
 
     :param lattice: Lattice classed used when applying transformations.
         Transformation.apply wraps Lattice.apply.
-    :type lattice: spatialpy.Lattice
+    :type lattice: gillespy3d.Lattice
 
     :param transformation: Transformation to be applied after applying this
         transformation.
-    :type transformation: spatialpy.Transformation
+    :type transformation: gillespy3d.Transformation
 
     :raises TransformationError: if the provided Geometry, Lattice, or
         Transformation are invalid.
@@ -254,15 +251,15 @@ class RotationTransformation(Transformation):
 
     :param geometry: Geometry classed used once the transformation is reversed.
         Transformation.inside wraps Geometry.inside.
-    :type geometry: spatialpy.Geometry
+    :type geometry: gillespy3d.Geometry
 
     :param lattice: Lattice classed used when applying transformations.
         Transformation.apply wraps Lattice.apply.
-    :type lattice: spatialpy.Lattice
+    :type lattice: gillespy3d.Lattice
 
     :param transformation: Transformation to be applied after applying this
         transformation.
-    :type transformation: spatialpy.Transformation
+    :type transformation: gillespy3d.Transformation
 
     :raises TransformationError: if the provided Geometry, Lattice, or
         Transformation are invalid.
@@ -384,15 +381,15 @@ class ReflectionTransformation(Transformation):
 
     :param geometry: Geometry classed used once the transformation is reversed.
         Transformation.inside wraps Geometry.inside.
-    :type geometry: spatialpy.Geometry
+    :type geometry: gillespy3d.Geometry
 
     :param lattice: Lattice classed used when applying transformations.
         Transformation.apply wraps Lattice.apply.
-    :type lattice: spatialpy.Lattice
+    :type lattice: gillespy3d.Lattice
 
     :param transformation: Transformation to be applied after applying this
         transformation.
-    :type transformation: spatialpy.Transformation
+    :type transformation: gillespy3d.Transformation
 
     :raises TransformationError: if the provided Geometry, Lattice, or
         Transformation are invalid.
@@ -489,15 +486,15 @@ class ScalingTransformation(Transformation):
 
     :param geometry: Geometry classed used once the transformation is reversed.
         Transformation.inside wraps Geometry.inside.
-    :type geometry: spatialpy.Geometry
+    :type geometry: gillespy3d.Geometry
 
     :param lattice: Lattice classed used when applying transformations.
         Transformation.apply wraps Lattice.apply.
-    :type lattice: spatialpy.Lattice
+    :type lattice: gillespy3d.Lattice
 
     :param transformation: Transformation to be applied after applying this
         transformation.
-    :type transformation: spatialpy.Transformation
+    :type transformation: gillespy3d.Transformation
 
     :raises TransformationError: if the provided Geometry, Lattice, or
         Transformation are invalid.

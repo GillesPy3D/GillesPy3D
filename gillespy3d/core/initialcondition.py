@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy
 
-from spatialpy.core.spatialpyerror import InitialConditionError
+from gillespy3d.core.gillespy3derror import InitialConditionError
 
 class InitialCondition():
     """
-    Class used to defined initial conditions in SpatialPy.
+    Class used to defined initial conditions in GillesPy3d.
     SubClasses must implement the 'apply(model)' method, which
     direction modifies the model.u0[species, voxel] matrix.
     """
@@ -28,16 +28,16 @@ class InitialCondition():
         Set the initial condition of the species to the count.
 
         :param model: Model contianing the target species.
-        :type model: spatialpy.core.model.Model
+        :type model: gillespy3d.core.model.Model
         """
-        raise InitialConditionError("spatialpy.InitialCondition subclasses must implement apply()")
+        raise InitialConditionError("gillespy3d.InitialCondition subclasses must implement apply()")
 
 class PlaceInitialCondition(InitialCondition):
     """
-    Class used to defined the place initial condition in SpatialPy.
+    Class used to defined the place initial condition in GillesPy3d.
 
     :param species: The species to set the initial condition.
-    :type species: spatialpy.core.species.Species
+    :type species: gillespy3d.core.species.Species
 
     :param count: The initial condition for the target species.
     :type count: int
@@ -59,7 +59,7 @@ class PlaceInitialCondition(InitialCondition):
         Set the initial condition of the species to the count at the location.
 
         :param model: Model contianing the target species.
-        :type model: spatialpy.core.model.Model
+        :type model: gillespy3d.core.model.Model
         """
         if isinstance(self.species, str):
             if self.species not in model.listOfSpecies:
@@ -76,10 +76,10 @@ class PlaceInitialCondition(InitialCondition):
 
 class UniformInitialCondition(InitialCondition):
     """
-    Class used to defined the uniform initial condition in SpatialPy.
+    Class used to defined the uniform initial condition in GillesPy3d.
 
     :param species: The species to set the initial condition.
-    :type species: spatialpy.core.species.Species
+    :type species: gillespy3d.core.species.Species
 
     :param count: The initial condition for the target species.
     :type count: int
@@ -106,7 +106,7 @@ class UniformInitialCondition(InitialCondition):
         Set 'count' of 'species' in over the list of types (all types if None).
 
         :param model: Model contianing the target species.
-        :type model: spatialpy.core.model.Model
+        :type model: gillespy3d.core.model.Model
         """
         if isinstance(self.species, str):
             if self.species not in model.listOfSpecies:
@@ -132,10 +132,10 @@ class UniformInitialCondition(InitialCondition):
 
 class ScatterInitialCondition(InitialCondition):
     """
-    Class used to defined the scatter initial condition in SpatialPy.
+    Class used to defined the scatter initial condition in GillesPy3d.
 
     :param species: The species to set the initial condition.
-    :type species: spatialpy.core.species.Species
+    :type species: gillespy3d.core.species.Species
 
     :param count: The initial condition for the target species.
     :type count: int
@@ -162,7 +162,7 @@ class ScatterInitialCondition(InitialCondition):
         Scatter 'count' of 'species' randomly over the list of types (all types if None).
 
         :param model: Model contianing the target species.
-        :type model: spatialpy.core.model.Model
+        :type model: gillespy3d.core.model.Model
         """
         if isinstance(self.species, str):
             if self.species not in model.listOfSpecies:

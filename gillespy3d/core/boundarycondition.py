@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from spatialpy.core.spatialpyerror import BoundaryConditionError
+from gillespy3d.core.gillespy3derror import BoundaryConditionError
 
 
 class BoundaryCondition():
@@ -65,13 +65,13 @@ class BoundaryCondition():
     :type value: float or float[3]
 
     :param model: Target model of boundary condition
-    :type model: spatialpy.core.model.Model
+    :type model: gillespy3d.core.model.Model
     """
 
     def __init__(self, xmin=None, xmax=None, ymin=None, ymax=None, zmin=None, zmax=None,
                  type_id=None, deterministic=True, target=None, value=None, model=None):
-        from spatialpy.core.model import Model # pylint: disable=import-outside-toplevel
-        from spatialpy.core.species import Species # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.model import Model # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.species import Species # pylint: disable=import-outside-toplevel
         if xmin is not None and not isinstance(xmin, (int, float)):
             raise BoundaryConditionError("X-min must be of type int or float.")
         if xmax is not None and not isinstance(xmax, (int, float)):
@@ -92,7 +92,7 @@ class BoundaryCondition():
             type_id = f"type_{type_id}"
         if target is None or not (isinstance(target, (str, Species)) or
                 type(target).__name__ == 'Species' or property in ('nu', 'rho', 'v')):
-            raise BoundaryConditionError("Target must be of type string or SpatialPy.Species")
+            raise BoundaryConditionError("Target must be of type string or GillesPy3d.Species")
         if not (value is None or isinstance(value, (int, float)) or (isinstance(value, list) and len(value) == 3)):
             raise BoundaryConditionError("Value must be of type float or float[3].")
         try:
@@ -103,7 +103,7 @@ class BoundaryCondition():
         except Exception as err:
             raise BoundaryConditionError("Value must be of type float or float[3].") from err
         if not (model is None or isinstance(model, Model) or type(model).__name__ == 'Model'):
-            raise BoundaryConditionError("Model must be of type SpatialPy.Model.")
+            raise BoundaryConditionError("Model must be of type GillesPy3d.Model.")
 
         self.xmin = xmin
         self.xmax = xmax

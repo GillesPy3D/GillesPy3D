@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -19,9 +19,9 @@ from json.encoder import JSONEncoder
 
 import numpy as np
 
-from spatialpy.core.species import Species
-from spatialpy.core.parameter import Parameter
-from spatialpy.core.spatialpyerror import ReactionError
+from gillespy3d.core.species import Species
+from gillespy3d.core.parameter import Parameter
+from gillespy3d.core.gillespy3derror import ReactionError
 
 class Reaction():
     """
@@ -333,7 +333,7 @@ class Reaction():
         Add a product to this reaction
 
         :param species: Species object to be produced by the reaction
-        :type species: spatialpy.core.species.Species
+        :type species: gillespy3d.core.species.Species
 
         :param stoichiometry: Stoichiometry of this product.
         :type stoichiometry: int
@@ -355,7 +355,7 @@ class Reaction():
         Add a reactant to this reaction
 
         :param species: reactant Species object
-        :type species: spatialpy.core.species.Species
+        :type species: gillespy3d.core.species.Species
 
         :param stoichiometry: Stoichiometry of this participant reactant
         :type stoichiometry: int
@@ -537,7 +537,7 @@ class Reaction():
                     if species is None:
                         raise ReactionError("species in reactants can't be None type.")
                     if not (isinstance(species, (str, Species)) or type(species).__name__ == 'Species'):
-                        raise ReactionError("species in reactants must be of type str or SpatialPy.Species.")
+                        raise ReactionError("species in reactants must be of type str or GillesPy3D.Species.")
                     if species == "":
                         raise ReactionError("species in reactants can't be an empty string.")
 
@@ -561,7 +561,7 @@ class Reaction():
                     if species is None:
                         raise ReactionError("species in products can't be None Type.")
                     if not (isinstance(species, (str, Species)) or type(species).__name__ == 'Species'):
-                        raise ReactionError("species in products must be of type str or SpatialPy.Species.")
+                        raise ReactionError("species in products must be of type str or GillesPy3D.Species.")
                     if species == "":
                         raise ReactionError("species in products can't be an empty string.")
 
@@ -596,7 +596,7 @@ class Reaction():
 
             if marate is not None:
                 if not (isinstance(marate, (str, Parameter)) or type(marate).__name__ == 'Parameter'):
-                    raise ReactionError("rate must be of type str or SpatialPy.Parameter.")
+                    raise ReactionError("rate must be of type str or GillesPy3D.Parameter.")
                 if marate == "":
                     raise ReactionError("rate can't be an empty string.")
 
@@ -665,10 +665,10 @@ class Reaction():
         :param annotation: Annotation note to be added to reaction
         :type annotation: str
         """
-        from spatialpy.core import log
+        from gillespy3d.core import log
         log.warning(
             """
-            Reaction.Annotate has been deprecated.  Future releases of SpatialPy may
+            Reaction.Annotate has been deprecated.  Future releases of GillesPy3D may
             not support this feature.  Use Reaction.set_annotation instead.
             """
         )
@@ -679,13 +679,13 @@ class Reaction():
         """
         Deferred object initialization, called by model.add_reaction() (deprecated).
 
-        :param model: Target SpatialPy Model for annotation.
-        :type model: spatialpy.core.model.Model
+        :param model: Target GillesPy3D Model for annotation.
+        :type model: gillespy3d.core.model.Model
         """
-        from spatialpy.core import log
+        from gillespy3d.core import log
         log.warning(
             """
-            Reaction.initialize has been deprecated.  Future releases of SpatialPy may
+            Reaction.initialize has been deprecated.  Future releases of GillesPy3D may
             not support this feature.  Initialization of reactions is now completed in
             the constructor.
             """

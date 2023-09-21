@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -23,20 +23,20 @@ import numpy
 from plotly.offline import init_notebook_mode, iplot
 from scipy.spatial import KDTree
 
-from spatialpy.core.geometry import (
+from gillespy3d.core.geometry import (
     CombinatoryGeometry, Geometry, GeometryAll
 )
-from spatialpy.core.lattice import (
+from gillespy3d.core.lattice import (
     Lattice, CartesianLattice, SphericalLattice, CylindricalLattice,
     XMLMeshLattice, MeshIOLattice, StochSSLattice
 )
-from spatialpy.core.transformation import Transformation
-from spatialpy.core.visualization import Visualization
-from spatialpy.core.spatialpyerror import DomainError
+from gillespy3d.core.transformation import Transformation
+from gillespy3d.core.visualization import Visualization
+from gillespy3d.core.gillespy3derror import DomainError
 
 class Domain():
     """
-    Domain class for SpatialPy.  A domain defines points and attributes of a regional space for simulation.
+    Domain class for GillesPy3d.  A domain defines points and attributes of a regional space for simulation.
 
     :param numpoints: Total number of spatial domain points
     :type numpoints: int
@@ -151,10 +151,10 @@ class Domain():
         Create an action that can add particles to the domain.
 
         :param lattice: Lattice classed used when applying fill actions.
-        :type lattice: spatialpy.Lattice
+        :type lattice: gillespy3d.Lattice
 
-        :param geometry: Geometry classed used when applying fill actions. Defaults to spatialpy.GeometryAll.
-        :type geometry: spatialpy.Geometry
+        :param geometry: Geometry classed used when applying fill actions. Defaults to gillespy3d.GeometryAll.
+        :type geometry: gillespy3d.Geometry
 
         :param cartesian: Arguments used to create a cartesian lattice. Ignored if lattice is set.
         :type cartesian: dict
@@ -258,8 +258,8 @@ class Domain():
         """
         Create an action that can remove particles from the domain.
 
-        :param geometry: Geometry classed used when applying set actions. Defaults to spatialpy.GeometryAll.
-        :type geometry: spatialpy.Geometry
+        :param geometry: Geometry classed used when applying set actions. Defaults to gillespy3d.GeometryAll.
+        :type geometry: gillespy3d.Geometry
 
         :param enable: Indicates that the action is to be applied by Domain.apply_actions.
         :type enable: bool
@@ -283,8 +283,8 @@ class Domain():
         r"""
         Create an action that can set particle properties for particles in the domain.
 
-        :param geometry: Geometry classed used when applying set actions. Defaults to spatialpy.GeometryAll.
-        :type geometry: spatialpy.Geometry
+        :param geometry: Geometry classed used when applying set actions. Defaults to gillespy3d.GeometryAll.
+        :type geometry: gillespy3d.Geometry
 
         :param enable: Indicates that the action is to be applied by Domain.apply_actions.
         :type enable: bool
@@ -548,8 +548,8 @@ class Domain():
 
         :param \**kwargs: Additional keyword arguments passed to :py:class:`Domain`.
 
-        :returns: Uniform 2D SpatialPy Domain object.
-        :rtype: spatialpy.core.domain.Domain
+        :returns: Uniform 2D GillesPy3d Domain object.
+        :rtype: gillespy3d.core.domain.Domain
         """
         x_list = numpy.linspace(xlim[0], xlim[1], numx)
         y_list = numpy.linspace(ylim[0], ylim[1], numy)
@@ -620,8 +620,8 @@ class Domain():
 
         :param \**kwargs: Additional keyword arguments passed to :py:class:`Domain`.
 
-        :returns: Uniform 3D SpatialPy Domain object.
-        :rtype: spatialpy.core.domain.Domain
+        :returns: Uniform 3D GillesPy3d Domain object.
+        :rtype: gillespy3d.core.domain.Domain
         """
         x_list = numpy.linspace(xlim[0], xlim[1], numx)
         y_list = numpy.linspace(ylim[0], ylim[1], numy)
@@ -664,9 +664,9 @@ class Domain():
         r"""
         Fill a region defined by a cartesian lattice and geometric shape with particles.
 
-        :param geometry_ivar: an instance of a :py:class:`spatialpy.core.geometry.Geometry` subclass. \
+        :param geometry_ivar: an instance of a :py:class:`gillespy3d.core.geometry.Geometry` subclass. \
                    The 'inside()' method of this object will be used to create add the particles.
-        :type geometry_ivar: spatialpy.core.geometry.Geometry
+        :type geometry_ivar: gillespy3d.core.geometry.Geometry
 
         :param deltax: Distance between particles on the x-axis in a cartesian lattice.
         :type deltax: float
@@ -881,8 +881,8 @@ class Domain():
         :param apply_action: If true, apply the action, else, add the action to Domain.actions
         :type apply_action: bool
 
-        :returns: SpatialPy Domain object created from the meshio object
-        :rtype: spatialpy.core.domain.Domain
+        :returns: GillesPy3d Domain object created from the meshio object
+        :rtype: gillespy3d.core.domain.Domain
         """
         lattice = MeshIOLattice(mesh=mesh_obj, subdomain_file=subdomain_file, type_ids=type_ids)
         action = {'type': "fill", 'lattice': lattice, 'enable': enable}
@@ -936,7 +936,7 @@ class Domain():
         if len(self.vertices) == 0:
             raise DomainError("The domain does not contain particles.")
 
-        from spatialpy.core.result import _plotly_iterate # pylint: disable=import-outside-toplevel
+        from gillespy3d.core.result import _plotly_iterate # pylint: disable=import-outside-toplevel
 
         if not use_matplotlib:
             if width in (None, "auto"):
@@ -1079,8 +1079,8 @@ class Domain():
         :param apply_action: If true, apply the action, else, add the action to Domain.actions
         :type apply_action: bool
 
-        :returns: SpatialPy Domain object created from the mesh file.
-        :rtype: spatialpy.core.domain.Domain
+        :returns: GillesPy3d Domain object created from the mesh file.
+        :rtype: gillespy3d.core.domain.Domain
         """
         lattice = MeshIOLattice(filename=filename, subdomain_file=subdomain_file, type_ids=type_ids)
         action = {'type': "fill", 'lattice': lattice, 'enable': enable}
@@ -1108,8 +1108,8 @@ class Domain():
         :param apply_action: If true, apply the action, else, add the action to Domain.actions
         :type apply_action: bool
 
-        :returns: SpatialPy Domain object created from StochSS domain.
-        :rtype: spatialpy.core.domain.Domain
+        :returns: GillesPy3d Domain object created from StochSS domain.
+        :rtype: gillespy3d.core.domain.Domain
         """
         action = {'type': "fill", 'lattice': StochSSLattice(filename), 'enable': enable}
         obj = Domain(0, (0, 0), (0, 0), (0, 0), actions=[action])
@@ -1164,8 +1164,8 @@ class Domain():
         :param apply_action: If true, apply the action, else, add the action to Domain.actions
         :type apply_action: bool
 
-        :returns: SpatialPy Domain object created from xml mesh.
-        :rtype: spatialpy.core.domain.Domain
+        :returns: GillesPy3d Domain object created from xml mesh.
+        :rtype: gillespy3d.core.domain.Domain
         """
         lattice = XMLMeshLattice(filename, subdomain_file=subdomain_file, type_ids=type_ids)
         action = {'type': "fill", 'lattice': lattice, 'enable': enable}
@@ -1184,9 +1184,9 @@ class Domain():
         """
         Add a type definition to the domain. By default, all regions are set to type 0.
 
-        :param geometry_ivar: an instance of a :py:class:`spatialpy.core.geometry.Geometry` subclass. \
+        :param geometry_ivar: an instance of a :py:class:`gillespy3d.core.geometry.Geometry` subclass. \
                    The 'inside()' method of this object will be used to assign properties to points.
-        :type geometry_ivar: spatialpy.core.geometry.Geometry
+        :type geometry_ivar: gillespy3d.core.geometry.Geometry
 
         :param type_id: The identifier for this type.
         :type type_id: str | int

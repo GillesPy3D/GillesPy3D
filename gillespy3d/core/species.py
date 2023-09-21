@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -13,8 +13,8 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from spatialpy.core.parameter import Parameter
-from spatialpy.core.spatialpyerror import SpeciesError
+from gillespy3d.core.parameter import Parameter
+from gillespy3d.core.error import SpeciesError
 
 class Species():
     """
@@ -93,7 +93,7 @@ class Species():
                 raise SpeciesError("diffusion_coefficient can't be None type.")
             if not (isinstance(diffusion_coefficient, (Parameter, str, float, int)) or \
                     type(diffusion_coefficient).__name__ == 'Parameter'):
-                errmsg = "diffusion_coefficient must be of type SpatialPy.Parameter, "
+                errmsg = "diffusion_coefficient must be of type GillesPy3D.Parameter, "
                 errmsg += f"str, int, float not {type(diffusion_coefficient)}"
                 raise SpeciesError(errmsg)
             if isinstance(diffusion_coefficient, (int, float)) and diffusion_coefficient < 0:

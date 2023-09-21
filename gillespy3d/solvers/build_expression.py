@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
-# spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# GillesPy3D is a Python 3 package for simulation of
+# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
+# Copyright (C) 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -54,9 +54,9 @@ class BuildExpression:
 
     class ValidationVisitor(ast.NodeTransformer):
         """
-        A subclass of ast.NodeTransformer used to sanitize spatialpy expresions.
+        A subclass of ast.NodeTransformer used to sanitize GillesPy3D expresions.
 
-        :param namespace: SpactialPy namespace.
+        :param namespace: GillesPy3D namespace.
         :type namespace: dict
 
         :param blacklist: A list of blacklist operators.
@@ -349,7 +349,7 @@ class ExpressionResults:
 
 class ExpressionConverter(ast.NodeVisitor):
     """
-    A subclass of ast.NodeVisitor used to convert spatialpy expresions.
+    A subclass of ast.NodeVisitor used to convert GillesPy3D expresions.
 
     :param tree: An abstract syntax tree.
     :type tree: ast.AST
