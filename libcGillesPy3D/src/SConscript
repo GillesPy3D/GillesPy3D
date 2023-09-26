@@ -1,11 +1,17 @@
-Import('env')
-libgillespy3d_core = env.Object([
-    'count_cores.cpp',
-    'model.cpp',
-    'output.cpp',
-    'particle.cpp',
-    'simulate.cpp',
-    'simulate_rdme.cpp',
-    'simulate_threads.cpp'
+Import("env")
+
+env.Library("cgillespy3d", [
+#     "count_cores.cpp",
+#     "hybrid_template.cpp",
+#     "HybridModel.cpp",
+#     "integrator.cpp",
+#     "model.cpp",
+#     "output.cpp",
+#     "particle.cpp",
+#     "simulate_rdme.cpp",
+#     "simulate_threads.cpp",
+#     "simulate.cpp",
+#     "tau.cpp",
+#     "TauHybridSimulation.cpp",
+#     "TauHybridSolver.cpp",
 ])
-Return('libgillespy3d_core')
