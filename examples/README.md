@@ -9,5 +9,6 @@ The files in this directory are Python [Jupyter Notebook](https://jupyter-notebo
 #### Fluid Dynamics
 * [Gravity](Gravity.ipynb)
 * [Weir](Weir.ipynb)
-
+#### Gene Regulatory Networks
+* [Hes1](Hes1_GRN.ipynb)
 Full documentation for SpatialPy can be found at https://stochss.github.io/SpatialPy/index.html
