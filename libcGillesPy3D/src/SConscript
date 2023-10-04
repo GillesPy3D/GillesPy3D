@@ -1,17 +1,6 @@
 Import("env")
 
 env.Library("cgillespy3d", [
-#     "count_cores.cpp",
-#     "hybrid_template.cpp",
-#     "HybridModel.cpp",
-#     "integrator.cpp",
-#     "model.cpp",
-#     "output.cpp",
-#     "particle.cpp",
-#     "simulate_rdme.cpp",
-#     "simulate_threads.cpp",
-#     "simulate.cpp",
-#     "tau.cpp",
-#     "TauHybridSimulation.cpp",
-#     "TauHybridSolver.cpp",
+    "model.cpp",
+    "solver.cpp",
 ])

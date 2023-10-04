@@ -42,7 +42,7 @@ See the file LICENSE.txt for details.
 #include "particle.hpp"
 #include "particle_system.hpp"
 
-namespace GillesPy3d{
+namespace GillesPy3D{
     
     std::mutex mtx ;
 

@@ -16,14 +16,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#ifndef output_h
-#define output_h
+#ifndef model_h
+#define model_h
 
 #include "particle_system.hpp"
 
 namespace GillesPy3D{
-    void output_csv(ParticleSystem*system, int current_step);
-    void output_vtk__sync_step(ParticleSystem*system, int current_step);
-    void output_vtk__async_step(ParticleSystem *system);
+    void filterDensity(Particle* me, ParticleSystem* system);
+
+    void pairwiseForce(Particle* me, ParticleSystem* system);
+
+    void computeBoundaryVolumeFraction(Particle* me, ParticleSystem* system);
+
+    void applyBoundaryVolumeFraction(Particle* me, ParticleSystem* system);
 }
-#endif // output_h
+
+#endif //model_h

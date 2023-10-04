@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern int debug_flag;
 
-namespace GillesPy3d{
+namespace GillesPy3D{
 
     struct Particle;
     struct ParticleSystem;

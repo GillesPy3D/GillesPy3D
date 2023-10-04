@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "simulate_rdme.hpp"
 #include "pthread_barrier.hpp"
 
-namespace GillesPy3d{
+namespace GillesPy3D{
     struct arg {
         ParticleSystem* system;
         unsigned int thread_id;

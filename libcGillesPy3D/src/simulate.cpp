@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "simulate.hpp"
 #include "simulate_rdme.hpp"
 
-namespace GillesPy3d{
+namespace GillesPy3D{
     void take_step(Particle* me, ParticleSystem* system, unsigned int step, unsigned int substep){
         //particle_t*me2 = (particle_t*)me;
         //printf("take_step(me.id=%i step=%i substep=%i)\n",me2->id, step, substep);

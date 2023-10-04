@@ -9,9 +9,14 @@ env = Environment(
         # "external/Sundials/include",
     ],
     LIBPATH=[
-        "bin"
+        "obj"
     ],
 )
-VariantDir("bin", "src")
-SConscript("bin/SConscript", exports=["env"])
-env.Program("bin/gillespy3d", ["bin/template.cpp", "bin/main.cpp"], LIBS="cgillespy3d")
+# VariantDir("obj", "src", duplicate=False)
+# SConscript("src/SConscript", exports=["env"])
+env.Library("cgillespy3d", [
+    "src/model.cpp",
+    "src/solver.cpp",
+])
+
+# env.Program("bin/gillespy3d", ["bin/template.cpp", "bin/main.cpp"], LIBS="cgillespy3d")

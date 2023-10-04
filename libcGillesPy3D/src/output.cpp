@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "output.hpp"
 #include "particle_system.hpp"
 
-namespace GillesPy3d{
+namespace GillesPy3D{
     void output_csv(ParticleSystem*system, int current_step){
         char filename[256];
         Particle* p;

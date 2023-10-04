@@ -26,7 +26,7 @@ See the file LICENSE.txt for details.
 #ifndef simulate_rdme_h
 #define simulate_rdme_h
 
-namespace GillesPy3d{
+namespace GillesPy3D{
 
 void initialize_rdme(ParticleSystem *system, size_t *irN, size_t *jcN,int *prN,
                      size_t *irG,size_t *jcG, unsigned int*u0);

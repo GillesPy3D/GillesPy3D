@@ -1,34 +1,29 @@
-/**
-# GillesPy3D is a Python 3 package for simulation of
-# spatial/non-spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2023 GillesPy3D developers.
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
-published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU GENERAL PUBLIC LICENSE Version 3 for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-**/
-
-#ifndef model_h
-#define model_h
+#pragma once
 
 #include "particle_system.hpp"
+#include "simulation.hpp"
 
-namespace GillesPy3d{
-    void filterDensity(Particle* me, ParticleSystem* system);
+namespace GillesPy3D
+{
 
-    void pairwiseForce(Particle* me, ParticleSystem* system);
+    class Model
+    {
+    public:
+        Model();
 
-    void computeBoundaryVolumeFraction(Particle* me, ParticleSystem* system);
+        void add_reaction();
+        void add_parameter();
+        void add_species();
+        void add_timespan();
+        void add_initial_condition();
+        void add_data_function();
+        void add_boundary_condition();
+        void add_domain();
 
-    void applyBoundaryVolumeFraction(Particle* me, ParticleSystem* system);
+        ParticleSystem *get_initial_state();
+
+        void run();
+        Simulation *get_simulation_object();
+    };
+
 }
-
-#endif //model_h

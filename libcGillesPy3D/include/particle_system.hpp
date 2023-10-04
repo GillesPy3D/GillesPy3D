@@ -29,12 +29,11 @@ See the file LICENSE.txt for details.
 #include <vector>
 
 #include "ANN/ANN.h" // ANN KD Tree
-#include "NRMConstant_v5.hpp"
 #include "propensities.hpp"
 
 extern int debug_flag ;
 
-namespace GillesPy3d{
+namespace GillesPy3D {
 
     struct Particle;
     struct ParticleSystem;
@@ -68,8 +67,6 @@ namespace GillesPy3d{
         double P0;
         std::vector<Particle> particles;
 
-        // Moved from rdme_t
-        NRMConstant_v5 rdme_event_q;
         const size_t *irN;
         const size_t *jcN;
         const int *prN;

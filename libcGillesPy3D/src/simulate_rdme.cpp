@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 /**************************************************************************/
-namespace GillesPy3d{
+namespace GillesPy3D{
 
     void initialize_rdme(ParticleSystem *system, size_t *irN, size_t *jcN,int *prN,
                         size_t *irG,size_t *jcG, unsigned int*u0){

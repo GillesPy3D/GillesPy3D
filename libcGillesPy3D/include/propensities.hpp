@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 extern std::mt19937_64 rng;
 
-namespace GillesPy3d{
+namespace GillesPy3D{
 
     /* Global variable that can be used to pass parameters to the propensity functions. */
     extern double *parameters;
