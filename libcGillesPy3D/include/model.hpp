@@ -2,6 +2,14 @@
 
 #include "particle_system.hpp"
 #include "simulation.hpp"
+#include "species.hpp"
+#include "parameter.hpp"
+#include "reaction.hpp"
+#include "timespan.hpp"
+#include "initial_condition.hpp"
+#include "data_function.hpp"
+#include "boundary_condition.hpp"
+#include "domain.hpp"
 
 namespace GillesPy3D
 {
@@ -11,17 +19,14 @@ namespace GillesPy3D
     public:
         Model();
 
-        void add_reaction();
-        void add_parameter();
-        void add_species();
-        void add_timespan();
-        void add_initial_condition();
-        void add_data_function();
-        void add_boundary_condition();
-        void add_domain();
-
-        ParticleSystem *get_initial_state();
-
+        void add_reaction(const Reaction &reaction);
+        void add_parameter(const Parameter &parameter);
+        void add_species(const Species &species);
+        void add_timespan(const Timespan &timespan);
+        void add_initial_condition(const InitialCondition &initial_condition);
+        void add_data_function(const DataFunction &data_function);
+        void add_boundary_condition(const BoundaryCondition &boundary_condition);
+        void add_domain(const Domain &domain);
         void run();
         Simulation *get_simulation_object();
     };

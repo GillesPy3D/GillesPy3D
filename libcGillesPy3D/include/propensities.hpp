@@ -27,6 +27,8 @@ namespace GillesPy3D{
 
     /* Global variable that can be used to pass parameters to the propensity functions. */
     extern double *parameters;
+    struct Particle ;
+    struct ParticleSystem ;
 
     unsigned int get_next_output(ParticleSystem* system);
     /* Definition of the propensity function. */
@@ -37,8 +39,6 @@ namespace GillesPy3D{
     typedef double (*ChemRxnFun)(double*, double, double, double*, int);
 
     /* Declaration of allocation and deallocation of propensity list. */
-    struct Particle ;
-    struct ParticleSystem ;
     PropensityFun *ALLOC_propensities(void);
     ChemRxnFun *ALLOC_ChemRxnFun(void);
     void FREE_propensities(PropensityFun* ptr);
