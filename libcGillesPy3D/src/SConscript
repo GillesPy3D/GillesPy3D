@@ -2,5 +2,5 @@ Import("env")
 
 env.Library("cgillespy3d", [
     "model.cpp",
-    "solver.cpp",
 ])
+
