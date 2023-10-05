@@ -2,5 +2,13 @@ Import("env")
 
 env.Library("cgillespy3d", [
     "model.cpp",
+    "reaction.cpp",
+    "parameter.cpp",
+    "species.cpp",
+    "timespan.cpp",
+    "initial_condition.cpp",
+    "data_function.cpp",
+    "boundary_condition.cpp",
+    "domain.cpp",
 ])
 
