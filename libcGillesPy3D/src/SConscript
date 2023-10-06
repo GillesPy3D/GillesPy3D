@@ -10,5 +10,6 @@ env.Library("cgillespy3d", [
     "data_function.cpp",
     "boundary_condition.cpp",
     "domain.cpp",
+    "simulation.cpp",
 ])
 

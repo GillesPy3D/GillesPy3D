@@ -7,6 +7,8 @@ namespace GillesPy3D
 
     class Species
     {
+    public:
+        Species();
     };
 
 }

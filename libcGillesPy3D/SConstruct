@@ -1,7 +1,8 @@
 env = Environment(
     CXX="g++",
     CXXFLAGS=[
-        "-std=c++17",
+        "-std=c++11",
+        "-fPIC",
     ],
     CPPPATH=[
         Dir("include"),

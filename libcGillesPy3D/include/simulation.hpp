@@ -15,11 +15,11 @@ namespace GillesPy3D
         Simulation();
 
         void run_until(double t);
-        std::unique_ptr<double[]> get_species(std::string species_name);
-        std::unique_ptr<double[]> get_property(std::string property_name);
-        std::unique_ptr<double[]> get_position();
+        double *get_species(const std::string &species_name);
+        double *get_property(const std::string &property_name);
+        double *get_position();
 
-        void output_vtk(std::string output_directory);
+        void output_vtk(const std::string &output_directory);
     };
 
 }
