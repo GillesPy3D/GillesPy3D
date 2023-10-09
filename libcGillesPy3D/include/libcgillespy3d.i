@@ -1,4 +1,4 @@
-%module model
+%module libcgillespy3d
 %{
 #include "model.hpp"
 %}
