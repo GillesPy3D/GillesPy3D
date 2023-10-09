@@ -2,5 +2,5 @@
 
 GillesPy3D::Domain::Domain()
 {
-    // TODO
+    
 }

@@ -16,13 +16,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-/* *****************************************************************************
-SSA-SDPD simulation engine
-Copyright 2018 Brian Drawert (UNCA)
-
-This program is distributed under the terms of the GNU General Public License.
-See the file LICENSE.txt for details.
-***************************************************************************** */
 
 #include <stdlib.h>
 #include <stdio.h>

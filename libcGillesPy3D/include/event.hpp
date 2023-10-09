@@ -1,14 +1,14 @@
 #pragma once
 
+#include <string>
+
 namespace GillesPy3D
 {
 
-    class Parameter
+    class Event
     {
     public:
-        Parameter();
-        int test();
-
+        Event();
     };
 
 }
