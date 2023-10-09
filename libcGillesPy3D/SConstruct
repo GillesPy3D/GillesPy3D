@@ -1,3 +1,10 @@
+import distutils.sysconfig
+
+# Make sure python3 dev headers are installed
+# On Ubuntu, python3-dev (might need version-specific, e.g. python3.11-dev, which might require adding new repos)
+# On Fedora, python3-devel (might need version-specific, e.g. python3.11-devel)
+pyinc = distutils.sysconfig.get_python_inc()
+
 env = Environment(
     CXX="g++",
     CXXFLAGS=[
@@ -7,12 +14,24 @@ env = Environment(
     CPPPATH=[
         Dir("include"),
         Dir("external/ANN/include"),
+        pyinc,
     ],
     LIBPATH=[
         Dir("obj"),
     ],
 )
-VariantDir("obj", "src", duplicate=False)
-SConscript("obj/SConscript", exports=["env"])
 
-# env.Program("bin/gillespy3d", ["bin/template.cpp", "bin/main.cpp"], LIBS="cgillespy3d")
+VariantDir("obj", "src", duplicate=False)
+libcgillespy3d = SConscript("obj/SConscript", exports=["env"])
+
+# Build SWIG library
+# TEMPORARY: run shell script manually to build
+#            non-portable, replace later!!!
+swig = env.Command("obj/libcgillespy3d_wrap.cxx", ["include/libcgillespy3d.i", libcgillespy3d], [
+    Mkdir("bin"),
+    "swig -c++ -python -o obj/libcgillespy3d_wrap.cxx -outdir bin $SOURCE",
+])
+env.Clean(swig, ["bin/libcgillespy3d.py"])
+
+py_lib = env.SharedLibrary("bin/_libcgillespy3d.so", [swig], LIBS=["cgillespy3d"], SHLIBPREFIX="")
+

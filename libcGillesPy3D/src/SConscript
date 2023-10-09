@@ -1,6 +1,6 @@
 Import("env")
 
-env.Library("cgillespy3d", [
+libcgillespy3d = env.Library("cgillespy3d", [
     "model.cpp",
     "reaction.cpp",
     "parameter.cpp",
@@ -12,4 +12,6 @@ env.Library("cgillespy3d", [
     "domain.cpp",
     "simulation.cpp",
 ])
+
+Return("libcgillespy3d")
 
