@@ -1,12 +1,12 @@
 
 %include <std_string.i>
 %include "std_vector.i"
-%template(SpeciesVector) std::vector<Species>;
 
 %module libcgillespy3d
 %{
 #include "model.hpp"
 %}
+%template(SpeciesVector) std::vector<GillesPy3D::Species>;
 %include "boundary_condition.hpp"
 %include "data_function.hpp"
 %include "domain.hpp"
