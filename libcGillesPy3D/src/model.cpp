@@ -17,7 +17,7 @@ void GillesPy3D::Model::add_parameter(const GillesPy3D::Parameter &parameter)
     // TODO
 }
 
-void GillesPy3D::Model::add_species(const GillesPy3D::Species species[])
+void GillesPy3D::Model::add_species(const std::vector<GillesPy3D::Species> &species)
 {
     // TODO
 }

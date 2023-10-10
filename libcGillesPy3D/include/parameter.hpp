@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace GillesPy3D
 {
@@ -6,8 +7,8 @@ namespace GillesPy3D
     class Parameter
     {
     public:
-        Parameter();
-        int test();
+        Parameter(const std::string & name="", 
+            const double & expression=0.0);
 
     };
 

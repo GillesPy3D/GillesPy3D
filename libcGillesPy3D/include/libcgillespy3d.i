@@ -1,5 +1,7 @@
 
 %include <std_string.i>
+%include "std_vector.i"
+%template(SpeciesVector) std::vector<Species>;
 
 %module libcgillespy3d
 %{
