@@ -1,3 +1,6 @@
+
+%include <std_string.i>
+
 %module libcgillespy3d
 %{
 #include "model.hpp"

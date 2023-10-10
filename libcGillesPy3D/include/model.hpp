@@ -10,18 +10,23 @@
 #include "data_function.hpp"
 #include "boundary_condition.hpp"
 #include "domain.hpp"
+#include <string>
+#include <vector>
 
 namespace GillesPy3D
 {
 
     class Model
     {
+    private:
+        std::string name;
+        std::vector<Species> listOfSpecies;
     public:
-        Model();
+        Model(const std::string & name="");
 
         void add_reaction(const Reaction &reaction);
         void add_parameter(const Parameter &parameter);
-        void add_species(const Species &species);
+        void add_species(const Species species[]);
         void add_timespan(const Timespan &timespan);
         void add_initial_condition(const InitialCondition &initial_condition);
         void add_data_function(const DataFunction &data_function);

@@ -1,9 +1,11 @@
 #include "model.hpp"
+#include <string>
 
-GillesPy3D::Model::Model()
+GillesPy3D::Model::Model(const std::string & name)
 {
     // TODO
 }
+
 
 void GillesPy3D::Model::add_reaction(const GillesPy3D::Reaction &reaction)
 {
@@ -15,7 +17,7 @@ void GillesPy3D::Model::add_parameter(const GillesPy3D::Parameter &parameter)
     // TODO
 }
 
-void GillesPy3D::Model::add_species(const GillesPy3D::Species &species)
+void GillesPy3D::Model::add_species(const GillesPy3D::Species species[])
 {
     // TODO
 }

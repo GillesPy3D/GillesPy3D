@@ -2,19 +2,13 @@
 #include <string>
 #include <vector>
 
-GillesPy3D::Species::Species(std::string name, double diffusion_coefficient, std::vector<int> restrict_to_type_list):
-    name(name),
-    diffusion_coefficient(diffusion_coefficient)
+GillesPy3D::Species::Species(const std::string &name, 
+            const double diffusion_coefficient, 
+            const std::vector<int> restrict_to, 
+            const int initial_value)
 {
-    restrict_to_type_list = restrict_to_type_list;
+    this->name=name;
+    this->diffusion_coefficient;
+    this->restrict_to_type_list = restrict_to;
+    this->initial_value = initial_value;
 }
-
-GillesPy3D::Species::Species(std::string name, double diffusion_coefficient):
-    name(name),
-    diffusion_coefficient(diffusion_coefficient)
-{}
-
-GillesPy3D::Species::Species(std::string name):
-    name(name),
-    diffusion_coefficient(0.0)
-{}
