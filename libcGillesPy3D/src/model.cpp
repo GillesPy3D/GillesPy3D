@@ -1,48 +1,49 @@
 #include "model.hpp"
 #include <string>
+#include <stdio.h>
 
 GillesPy3D::Model::Model(const std::string & name)
 {
-    // TODO
+    std::cout << "Model(" << name << ")" << std::endl;
 }
 
 
-void GillesPy3D::Model::add_reaction(const GillesPy3D::Reaction &reaction)
+void GillesPy3D::Model::add_reaction(const std::vector<GillesPy3D::Reaction> &reaction)
 {
     // TODO
 }
 
-void GillesPy3D::Model::add_parameter(const GillesPy3D::Parameter &parameter)
+void GillesPy3D::Model::add_parameter(const std::vector<GillesPy3D::Parameter> &parameter)
 {
     // TODO
 }
 
 void GillesPy3D::Model::add_species(const std::vector<GillesPy3D::Species> &species)
 {
-    // TODO
+    std::cout << "multiple species" << std::endl;
 }
 
-void GillesPy3D::Model::add_timespan(const GillesPy3D::Timespan &timespan)
+void GillesPy3D::Model::add_initial_condition(const std::vector<GillesPy3D::InitialCondition> &initial_condition)
 {
     // TODO
 }
 
-void GillesPy3D::Model::add_initial_condition(const GillesPy3D::InitialCondition &initial_condition)
+void GillesPy3D::Model::add_data_function(const std::vector<GillesPy3D::DataFunction> &data_function)
 {
     // TODO
 }
 
-void GillesPy3D::Model::add_data_function(const GillesPy3D::DataFunction &data_function)
-{
-    
-}
-
-void GillesPy3D::Model::add_boundary_condition(const GillesPy3D::BoundaryCondition &boundary_condition)
+void GillesPy3D::Model::add_boundary_condition(const std::vector<GillesPy3D::BoundaryCondition> &boundary_condition)
 {
     // TODO
 }
 
 void GillesPy3D::Model::add_domain(const GillesPy3D::Domain &domain)
+{
+    // TODO
+}
+
+void GillesPy3D::Model::add_timespan(const GillesPy3D::Timespan &timespan)
 {
     // TODO
 }
