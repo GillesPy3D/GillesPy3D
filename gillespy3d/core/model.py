@@ -16,12 +16,6 @@
 
 #This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
 
-import math
-from typing import Set, Type
-from collections import OrderedDict
-
-import numpy
-import scipy
 
 from gillespy3d.core.domain import Domain
 from gillespy3d.core.species import Species
@@ -39,28 +33,8 @@ from gillespy3d.core.timespan import TimeSpan
 from gillespy3d.solvers.build_expression import BuildExpression
 from gillespy3d.core.gillespy3derror import ModelError
 
-def export_StochSS(gillespy3d_model, filename=None, return_stochss_model=False):
-    """
-    GillesPy3D model to StochSS converter
+import libcgillespy3d
 
-    :param gillespy3d_model: GillesPy3D model to be converted to StochSS
-    :type gillespy3d_model: gillespy3d.core.model.Model
-
-    :param filename: Path to the exported stochss model
-    :type filename: str
-
-    :param return_stochss_model: Whether or not to return the model
-    :type return_stochss_model: bool
-
-    :returns: Filename for JSON-formatted .smdl file for use with StochSS platform.
-    :rtype: string
-    """
-    try:
-        from gillespy3d.stochss.stochss_export import export # pylint: disable=import-outside-toplevel
-    except ImportError as err:
-        raise ImportError('StochSS export conversion not imported successfully') from err
-
-    return export(gillespy3d_model, path=filename, return_stochss_model=return_stochss_model)
 
 class Model():
     """
@@ -69,303 +43,18 @@ class Model():
     :param name: Name of the model
     :type name: str
     """
-    reserved_names = ['vol', 't']
-    special_characters = ['[', ']', '+', '-', '*', '/', '.', '^']
 
     def __init__(self, name="gillespy3d"):
-        # The name that the model is referenced by (should be a String)
-        self.name = name
-
-        ######################
-        # Dictionaries with Species, Reactions and Parameter objects.
-        # Species, Reaction, and Parameter names are used as keys.
-        self.listOfParameters = OrderedDict()
-        self.listOfSpecies    = OrderedDict()
-        self.listOfReactions  = OrderedDict()
-
-        # Dictionaries with model element objects.
-        # Model element names are used as keys, and values are
-        # sanitized versions of the names/formulas.
-        # These dictionaries contain sanitized values and are for
-        # Internal use only
-        self._listOfParameters = OrderedDict()
-        self._listOfSpecies = OrderedDict()
-        self._listOfReactions = OrderedDict()
-        
-        ######################
-        # Dict that holds flattended parameters and species for
-        # evaluation of expressions in the scope of the model.
-        self.namespace = OrderedDict([])
-        self.species_map = {}
-
-        ######################
-        self.domain = None
-        self.listOfDiffusionRestrictions = OrderedDict([])
-        self.listOfDataFunctions = OrderedDict([])
-        self.listOfInitialConditions = []
-        self.listOfBoundaryConditions = []
-
-        ######################
-        self.staticDomain = True
-        self.enable_rdme = True
-        self.enable_pde = True
-
-        ######################
-        self.tspan = None
-
-        ######################
-        # Expression utility used by the solver
-        # Should be None until the solver is compiled
-        self.expr = None
-        self.u0 = None
+        self.c = libcgillespy3d.Model(name)
 
     def __str__(self):
-        try:
-            self.__update_diffusion_restrictions()
-        except Exception:
-            pass
-        self._resolve_all_parameters()
-        divider = f"\n{'*'*10}\n"
-
-        def decorate(header):
-            return f"\n{divider}{header}{divider}"
-
-        print_string = f"{self.name}"
-        if len(self.listOfSpecies):
-            print_string += decorate("Species")
-            for _, species in self.listOfSpecies.items():
-                print_string += f"\n{str(species)}"
-        if self.listOfInitialConditions:
-            print_string += decorate("Initial Conditions")
-            for initial_condition in self.listOfInitialConditions:
-                print_string += f"\n{str(initial_condition)}"
-        if len(self.listOfDiffusionRestrictions):
-            print_string += decorate("Diffusion Restrictions")
-            for species, types in self.listOfDiffusionRestrictions.items():
-                print_string += f"\n{species.name} is restricted to: {str(types)}"
-        if len(self.listOfParameters):
-            print_string += decorate("Parameters")
-            for _, parameter in self.listOfParameters.items():
-                print_string += f"\n{str(parameter)}"
-        if len(self.listOfReactions):
-            print_string += decorate("Reactions")
-            for _, reaction in self.listOfReactions.items():
-                print_string += f"\n{str(reaction)}"
-        print(print_string)
-
-        if self.domain is not None:
-            print(decorate("Domain"))
-            print(f"\n{str(self.domain)}")
-
         return ""
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        return self.listOfParameters == other.listOfParameters and \
-            self.listOfSpecies == other.listOfSpecies and \
-            self.listOfReactions == other.listOfReactions and \
-            self.name == other.name
-
-    def __getitem__(self, key):
-        if isinstance(key, str):
-            return self.get_element(key)
-        if hasattr(self.__class__, "__missing__"):
-            return self.__class__.__missing__(self, key)
-        raise KeyError(f"{key} is an invalid key.")
-
-    def __apply_initial_conditions(self):
-        # initalize
-        num_spec = self.get_num_species()
-        num_vox = self.domain.get_num_voxels()
-        self.u0 = numpy.zeros((num_spec, num_vox))
-        # apply initial condition functions
-        for init_cond in self.listOfInitialConditions:
-            init_cond.apply(self)
-
-    def __create_dependency_graph(self):
-        # We cannot safely generate a dependency graph (without attempting to analyze the
-        # propensity string itself) if the model contains custom propensities.
-        mass_action_model = True
-        for reaction in self.listOfReactions.values():
-            if not reaction.massaction:
-                raw_graph = numpy.ones((self.get_num_reactions(),
-                    self.get_num_reactions() + self.get_num_species()))
-                mass_action_model = False
-
-        if mass_action_model:
-            raw_graph = numpy.zeros((self.get_num_reactions(),
-                self.get_num_reactions() + self.get_num_species()))
-            species_map = self.species_map
-
-            involved_species = []
-            reactants = []
-            for reaction in self.listOfReactions.values():
-                temp = []
-                temp2 = []
-                for species in reaction.reactants:
-                    temp.append(species_map[species])
-                    temp2.append(species_map[species])
-                for species in reaction.products:
-                    temp.append(species_map[species])
-                involved_species.append(temp)
-                reactants.append(temp2)
-
-            species_to_reactions = []
-            for species in self.listOfSpecies.values():
-                temp = []
-                for j, x in enumerate(reactants):
-                    if species_map[species] in x:
-                        temp.append(j)
-                species_to_reactions.append(temp)
-
-            reaction_to_reaction = []
-            for reaction in self.listOfReactions.values():
-                temp = []
-                for species in reaction.reactants:
-                    if species_to_reactions[species_map[species]] not in temp:
-                        temp = temp + species_to_reactions[species_map[species]]
-
-                for species in reaction.products:
-                    if species_to_reactions[species_map[species]] not in temp:
-                        temp = temp + species_to_reactions[species_map[species]]
-
-                temp = list(set(temp))
-                reaction_to_reaction.append(temp)
-
-            # Populate raw_graph
-            for j, spec in enumerate(species_to_reactions):
-                for species in spec:
-                    raw_graph[species, j] = 1
-
-            for i, reac in enumerate(reaction_to_reaction):
-                for reaction in reac:
-                    raw_graph[reaction, self.get_num_species() + i] = 1
-        try:
-            dep_graph = scipy.sparse.csc_matrix(raw_graph)
-        except Exception:
-            dep_graph = raw_graph
-
-        return dep_graph
-
-    def __create_stoichiometric_matrix(self):
-        if self.get_num_reactions() > 0:
-            raw_matrix = numpy.zeros((self.get_num_species(), self.get_num_reactions()))
-            for i, reaction in enumerate(self.listOfReactions.values()):
-                reactants = reaction.reactants
-                products  = reaction.products
-
-                for species in reactants:
-                    raw_matrix[self.species_map[species], i] -= reactants[species]
-                for species in products:
-                    raw_matrix[self.species_map[species], i] += products[species]
-
-            matrix = scipy.sparse.csc_matrix(raw_matrix)
-        else:
-            matrix = numpy.zeros((self.get_num_species(), self.get_num_reactions()))
-
-        return matrix
-
-    def __get_expression_utility(self):
-        base_namespace = {
-            **{name: name for name in math.__dict__},
-            **self.sanitized_species_names(),
-            **self.sanitized_parameter_names(),
-            **self.sanitized_data_function_names(),
-            **{name: name for name in self.reserved_names}
-        }
-        self.expr = BuildExpression(namespace=base_namespace, blacklist=["="], sanitize=True)
-
-    def __update_diffusion_restrictions(self):
-        for species in self.listOfSpecies.values():
-            if isinstance(species.restrict_to, list):
-                self.listOfDiffusionRestrictions[species] = species.restrict_to
-            elif isinstance(species.restrict_to, str):
-                self.listOfDiffusionRestrictions[species] = [species.restrict_to]
-
-    def _ipython_display_(self, use_matplotlib=False):
-        if self.domain is None:
-            print(self)
-        else:
-            self.domain.plot_types(width="auto", height="auto", use_matplotlib=use_matplotlib)
-
-    def _problem_with_name(self, name):
-        names = Model.reserved_names
-        if name in Model.reserved_names:
-            raise ModelError(
-                f'Name "{name}" is unavailable. It is reserved for internal GillesPy use. Reserved Names: ({names}).'
-            )
-        if name in self.listOfSpecies:
-            raise ModelError(f'Name "{name}" is unavailable. A species with that name exists.')
-        if name in self.listOfParameters:
-            raise ModelError(f'Name "{name}" is unavailable. A parameter with that name exists.')
-        if name in self.listOfReactions:
-            raise ModelError(f'Name "{name}" is unavailable. A reaction with that name exists.')
-        if name.isdigit():
-            raise ModelError(f'Name "{name}" is unavailable. Names must not be numeric strings.')
-        for special_character in Model.special_characters:
-            if special_character in name:
-                chars = Model.special_characters
-                raise ModelError(
-                    f'Name "{name}" is unavailable. Names must not contain special characters: {chars}.'
-                )
-
-    def _resolve_parameter(self, parameter):
-        try:
-            parameter.validate()
-            self.update_namespace()
-            parameter._evaluate(self.namespace) # pylint: disable=protected-access
-        except ModelError as err:
-            raise ModelError(
-                f"Could not add/resolve parameter: {parameter.name}, Reason given: {err}"
-            ) from err
-
-    def _resolve_all_parameters(self):
-        for _, parameter in self.listOfParameters.items():
-            self._resolve_parameter(parameter)
-
-    def _resolve_reaction(self, reaction):
-        try:
-            reaction.validate()
-
-            # If the rate parameter exists in the reaction, confirm that it is a part of the model
-            if reaction.marate is not None:
-                name = reaction.marate if isinstance(reaction.marate, str) else reaction.marate.name
-                if isinstance(reaction.marate, str) and not reaction.marate.replace(".", "", 1).isdigit():
-                    reaction.marate = self.get_parameter(name)
-
-            # Confirm that all species in reactants are part of the model
-            for species in list(reaction.reactants.keys()):
-                stoichiometry = reaction.reactants[species]
-                name = species if isinstance(species, str) else species.name
-                stoich_spec = self.get_species(name)
-                if stoich_spec not in reaction.reactants:
-                    reaction.reactants[stoich_spec] = stoichiometry
-                    del reaction.reactants[species]
-
-            # Confirm that all species in products are part of the model
-            for species in list(reaction.products.keys()):
-                stoichiometry = reaction.products[species]
-                name = species if isinstance(species, str) else species.name
-                stoich_spec = self.get_species(name)
-                if stoich_spec not in reaction.products:
-                    reaction.products[stoich_spec] = stoichiometry
-                    del reaction.products[species]
-        except ModelError as err:
-            raise ModelError(f"Could not add/resolve reaction: {reaction.name}, Reason given: {err}") from err
-
-    def _resolve_all_reactions(self):
-        for _, reaction in self.listOfReactions.items():
-            self._resolve_reaction(reaction)
-
-    def update_namespace(self):
-        """
-        Create a dict with flattened parameter and species objects.
-        """
-        self.namespace = OrderedDict([])
-        for param in self.listOfParameters:
-            self.namespace[param] = self.listOfParameters[param].value
+        return False; #TODO
 
     def add(self, components):
         """
@@ -423,29 +112,6 @@ class Model():
             raise ModelError(f"Unsupported component: {type(components)} is not a valid component.")
         return components
 
-    def get_element(self, name):
-        """
-        Get a model element specified by name.
-
-        :param name: Name of the element to be returned.
-        :type name: str
-
-        :returns: The specified gillespy3d.Model element.
-        :rtype: Species, Parameters, Reactions, Domain, Data Function, or TimeSpan
-        """
-        if name in ("tspan", "timespan"):
-            return self.tspan
-        if name == "domain":
-            return self.domain
-        if name in self.listOfSpecies:
-            return self.get_species(name)
-        if name in self.listOfParameters:
-            return self.get_parameter(name)
-        if name in self.listOfReactions:
-            return self.get_reaction(name)
-        if name in self.listOfDataFunctions:
-            return self.get_data_function(name)
-        raise ModelError(f"{self.name} does not contain an element named {name}.")
 
     def add_domain(self, domain, allow_all_types=False):
         """
@@ -461,8 +127,7 @@ class Model():
                 "Unexpected parameter for add_domain. Parameter must be of type GillesPy3D.Domain."
             )
 
-        domain.compile_prep(allow_all_types=allow_all_types)
-        self.domain = domain
+        self.c.add_domain(domain)
         return domain
 
     def add_species(self, species):
@@ -479,93 +144,14 @@ class Model():
         """
         if isinstance(species, list):
             for spec in species:
-                self.add_species(spec)
+                self.c.add_species(spec)
         elif isinstance(species, Species) or type(species).__name__ == "Species":
-            try:
-                species.validate()
-                self._problem_with_name(species.name)
-                self.species_map[species] = self.get_num_species()
-                self.listOfSpecies[species.name] = species
-                self._listOfSpecies[species.name] = f'S{len(self._listOfSpecies)}'
-            except ModelError as err:
-                errmsg = f"Could not add species: {species.name}, Reason given: {err}"
-                raise ModelError(errmsg) from err
+            self.c.add_species(spec)
         else:
             errmsg = f"species must be of type Species or list of Species not {type(species)}"
             raise ModelError(errmsg)
         return species
 
-    def delete_species(self, name):
-        """
-        Removes a species object by name.
-
-        :param name: Name of the species object to be removed
-        :type name: str
-
-        :raises ModelError: If species is not part of the model.
-        """
-        try:
-            self.listOfSpecies.pop(name)
-            if name in self._listOfSpecies:
-                self._listOfSpecies.pop(name)
-        except KeyError as err:
-            raise ModelError(
-                f"{self.name} does not contain a species named {name}."
-            ) from err
-
-    def delete_all_species(self):
-        """
-        Removes all species from the model object.
-        """
-        self.listOfSpecies.clear()
-        self._listOfSpecies.clear()
-
-    def get_species(self, name):
-        """
-        Returns a species object by name.
-
-        :param name: Name of the species object to be returned.
-        :type name: str
-
-        :returns: The specified species object.
-        :rtype: gillespy3d.core.species.Species
-
-        :raises ModelError: If the species is not part of the model.
-        """
-        if name not in self.listOfSpecies:
-            raise ModelError(f"Species {name} could not be found in the model.")
-        return self.listOfSpecies[name]
-
-    def get_all_species(self):
-        """
-        Returns a dictionary of all species in the model using names as keys.
-
-        :returns: A dict of all species in the model, in the form: {name : species object}.
-        :rtype: OrderedDict
-        """
-        return self.listOfSpecies
-
-    def get_num_species(self):
-        """
-        Returns total number of different species contained in the model.
-
-        :returns: Number of different species in the model.
-        :rtype: int
-        """
-        return len(self.listOfSpecies)
-
-    def sanitized_species_names(self):
-        """
-        Generate a dictionary mapping user chosen species names to simplified formats which will be used
-        later on by GillesPy3DSolvers evaluating reaction propensity functions.
-
-        :returns: the dictionary mapping user species names to their internal GillesPy3D notation.
-        :rtype: OrderedDict
-        """
-        species_name_mapping = OrderedDict([])
-        for i, name in enumerate(self.listOfSpecies.keys()):
-            species_name_mapping[name] = f'x[{i}]'
-        return species_name_mapping
 
     def add_initial_condition(self, init_cond):
         """
@@ -587,45 +173,14 @@ class Model():
         ]
         if isinstance(init_cond, list):
             for initial_condition in init_cond:
-                self.add_initial_condition(initial_condition)
+                self.c.add_initial_condition(initial_condition)
         elif isinstance(init_cond, InitialCondition) or type(init_cond).__name__ in names:
-            self.listOfInitialConditions.append(init_cond)
+            self.c.add_initial_condition(init_cond)
         else:
             errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {type(init_cond)}"
             raise ModelError(errmsg)
         return init_cond
 
-    def delete_initial_condition(self, init_cond):
-        """
-        Removes an initial condition object from the model object.
-
-        :param init_cond: initial condition object to be removed.
-        :type init_cond: gillespy3d.core.InitialCondition
-
-        :raises ModelError: If the initial condition is not part of the model.
-        """
-        try:
-            index = self.listOfInitialConditions.index(init_cond)
-            self.listOfInitialConditions.pop(index)
-        except ValueError as err:
-            raise ModelError(
-                f"{self.name} does not contain this initial condition."
-            ) from err
-
-    def delete_all_initial_conditions(self):
-        """
-        Removes all initial conditions from the model object.
-        """
-        self.listOfInitialConditions.clear()
-
-    def get_all_initial_conditions(self):
-        """
-        Returns a list of all initial conditions in the model.
-
-        :returns: A list of all initial conditions in the model.
-        :rtype: list
-        """
-        return self.listOfInitialConditions
 
     def add_parameter(self, parameters):
         """
@@ -641,78 +196,14 @@ class Model():
         """
         if isinstance(parameters, list):
             for param in parameters:
-                self.add_parameter(param)
+                self.c.add_parameter(param)
         elif isinstance(parameters, Parameter) or type(parameters).__name__ == 'Parameter':
-            self._problem_with_name(parameters.name)
-            self._resolve_parameter(parameters)
-            self.listOfParameters[parameters.name] = parameters
-            self._listOfParameters[parameters.name] = f'P{len(self._listOfParameters)}'
+            self.c.add_parameter(parameters)
         else:
             errmsg = f"parameters must be of type Parameter or list of Parameter not {type(parameters)}"
             raise ModelError(errmsg)
         return parameters
 
-    def delete_parameter(self, name):
-        """
-        Removes a parameter object by name.
-
-        :param name: Name of the parameter object to be removed.
-        :type name: str
-        """
-        try:
-            self.listOfParameters.pop(name)
-            if name in self._listOfParameters:
-                self._listOfParameters.pop(name)
-        except KeyError as err:
-            raise ModelError(
-                f"{self.name} does not contain a parameter named {name}"
-            ) from err
-
-    def delete_all_parameters(self):
-        """
-        Removes all parameters from model object.
-        """
-        self.listOfParameters.clear()
-        self._listOfParameters.clear()
-
-    def get_parameter(self, name):
-        """
-        Returns a parameter object by name.
-
-        :param name: Name of the parameter object to be returned
-        :type name: str
-
-        :returns: The specified parameter object.
-        :rtype: gillespy3d.core.parameter.Parameter
-
-        :raises ModelError: If the parameter is not part of the model.
-        """
-        if name not in self.listOfParameters:
-            raise ModelError(f"Parameter {name} could not be found in the model.")
-        return self.listOfParameters[name]
-
-    def get_all_parameters(self):
-        """
-        Return a dictionary of all model parameters, indexed by name.
-
-        :returns: A dict of all parameters in the model, in the form: {name : parameter object}
-        :rtype: OrderedDict
-        """
-        return self.listOfParameters
-
-    def sanitized_parameter_names(self):
-        """
-        Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
-        later on by GillesPy3DSolvers evaluating reaction propensity functions.
-
-        :returns: the dictionary mapping user parameter names to their internal GillesPy3D notation.
-        :rtype: OrderedDict
-        """
-        parameter_name_mapping = OrderedDict()
-        for i, name in enumerate(self.listOfParameters.keys()):
-            if name not in parameter_name_mapping:
-                parameter_name_mapping[name] = f'P{i}'
-        return parameter_name_mapping
 
     def add_reaction(self, reactions):
         """
@@ -728,77 +219,13 @@ class Model():
         """
         if isinstance(reactions, list):
             for reaction in reactions:
-                self.add_reaction(reaction)
+                self.c.add_reaction(reaction)
         elif isinstance(reactions, Reaction) or type(reactions).__name__ == "Reaction":
-            self._problem_with_name(reactions.name)
-            self._resolve_reaction(reactions)
-            self.listOfReactions[reactions.name] = reactions
-            # Build Sanitized reaction as well
-            sanitized_reaction = reactions._create_sanitized_reaction(
-                len(self.listOfReactions), self._listOfSpecies, self._listOfParameters
-            )
-            self._listOfReactions[reactions.name] = sanitized_reaction
+            self.c.add_reaction(reactions)
         else:
             errmsg = f"reactions must be of type Reaction or list of Reaction not {type(reactions)}"
             raise ModelError(errmsg)
         return reactions
-
-    def delete_reaction(self, name):
-        """
-        Removes a reaction object by name.
-
-        :param name: Name of the reaction object to be removed.
-        :type name: str
-        """
-        try:
-            self.listOfReactions.pop(name)
-            if name in self._listOfReactions:
-                self._listOfReactions.pop(name)
-        except KeyError as err:
-            raise ModelError(
-                f"{self.name} does not contain a reaction named {name}"
-            ) from err
-
-    def delete_all_reactions(self):
-        """
-        Removes all reactions from the model object.
-        """
-        self.listOfReactions.clear()
-        self._listOfReactions.clear()
-
-    def get_reaction(self, name):
-        """
-        Returns a reaction object by name.
-
-        :param name: Name of the reaction object to be returned
-        :type name: str
-
-        :returns: The specified reaction object.
-        :rtype: gillespy3d.core.reaction.Reaction
-
-        :raises ModelError: If the reaction is not part of the model.
-        """
-        if name not in self.listOfReactions:
-            raise ModelError(f"Reaction {name} could not be found in the model.")
-        return self.listOfReactions[name]
-
-    def get_all_reactions(self):
-        """
-        Returns a dictionary of all model reactions using names as keys.
-
-        :returns: A dict of all reaction in the model, in the form: {name : reaction object}.
-        :rtype: OrderedDict
-        """
-        return self.listOfReactions
-
-    def get_num_reactions(self):
-        """
-        Returns the number of reactions in this model.
-
-        :returns: The total number of different reactions in the model.
-        :rtype: int
-        """
-        return len(self.listOfReactions)
 
     def add_boundary_condition(self, bound_cond):
         """
@@ -815,46 +242,13 @@ class Model():
         """
         if isinstance(bound_cond, list):
             for boundary_condition in bound_cond:
-                self.add_boundary_condition(boundary_condition)
+                self.c.add_boundary_condition(boundary_condition)
         elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ in "BoundaryCondition":
-            bound_cond.model = self
-            self.listOfBoundaryConditions.append(bound_cond)
+            self.c.add_boundary_condition(bound_cond)
         else:
             errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {type(bound_cond)}"
             raise ModelError(errmsg)
         return bound_cond
-
-    def delete_boundary_condition(self, bound_cond):
-        """
-        Removes an boundary condition object from the model object.
-
-        :param bound_cond: boundary condition object to be removed.
-        :type bound_cond: gillespy3d.core.BoundaryCondition
-
-        :raises ModelError: If the boundary condition is not part of the model.
-        """
-        try:
-            index = self.listOfBoundaryConditions.index(bound_cond)
-            self.listOfBoundaryConditions.pop(index)
-        except ValueError as err:
-            raise ModelError(
-                f"{self.name} does not contain this boundary condition."
-            ) from err
-
-    def delete_all_boundary_conditions(self):
-        """
-        Removes all boundary conditions from the model object.
-        """
-        self.listOfBoundaryConditions.clear()
-
-    def get_all_boundary_conditions(self):
-        """
-        Returns a list of all boundary conditions in the model.
-
-        :returns: A list of all boundary conditions in the model.
-        :rtype: list
-        """
-        return self.listOfBoundaryConditions
 
     def add_data_function(self, data_function):
         """
@@ -873,94 +267,18 @@ class Model():
         """
         if isinstance(data_function, list):
             for data_fn in data_function:
-                self.add_data_function(data_fn)
+                self.c.add_data_function(data_fn)
         elif isinstance(data_function, DataFunction) or type(data_function).__name__ == 'DataFunction':
-            self._problem_with_name(data_function.name)
-            self.listOfDataFunctions[data_function.name] = data_function
+            self.c.add_data_function(data_function)
         else:
             errmsg = f"data_function must be of type DataFunction or list of DataFunction not {type(data_function)}"
             raise ModelError(errmsg)
         return data_function
 
-    def delete_data_function(self, name):
-        """
-        Removes an data function object from the model object.
-
-        :param name: data function object to be removed.
-        :type name: gillespy3d.core.DataFunction
-
-        :raises ModelError: If the data function is not part of the model.
-        """
-        try:
-            self.listOfDataFunctions.pop(name)
-        except ValueError as err:
-            raise ModelError(
-                f"{self.name} does not contain a data function named {name}."
-            ) from err
-
-    def delete_all_data_functions(self):
-        """
-        Removes all data functions from the model object.
-        """
-        self.listOfDataFunctions.clear()
-
-    def get_data_function(self, name):
-        """
-        Returns a data function object by name.
-
-        :param name: Name of the data function object to be returned
-        :type name: str
-
-        :returns: The specified data function object.
-        :rtype: gillespy3d.core.datafunction.DataFunction
-
-        :raises ModelError: If the data function is not part of the model.
-        """
-        if name not in self.listOfDataFunctions:
-            raise ModelError(f"Data function {name} could not be found in the model.")
-        return self.listOfDataFunctions[name]
-
-    def get_all_data_functions(self):
-        """
-        Returns a dict of all data functions in the model.
-
-        :returns: A dict of all data functions in the model.
-        :rtype: OrderedDict
-        """
-        return self.listOfDataFunctions
-
-    def sanitized_data_function_names(self):
-        """
-        Generate a dictionary mapping user chosen data function names to simplified formats which will be used
-        later on by GillesPy3DSolvers evaluating reaction propensity functions.
-
-        :returns: the dictionary mapping user data function names to their internal GillesPy3D notation.
-        :rtype: OrderedDict
-        """
-        data_fn_name_mapping = OrderedDict([])
-        for i, name in enumerate(self.listOfDataFunctions.keys()):
-            data_fn_name_mapping[name] = f'data_fn[{i}]'
-        return data_fn_name_mapping
-
-    def set_timesteps(self, output_interval, num_steps, timestep_size=None):
-        """
-        Set the simlation time span parameters.
-
-        :param output_interval: size of each output timestep in seconds
-        :type output_interval:  float
-
-        :param num_steps: total number of steps to take. Note: the number of output times will be num_steps+1 \
-        as the first output will be at time zero.
-        :type num_steps: int
-
-        :param timestep_size: Size of each timestep in seconds
-        :type timestep_size: float
-        """
-        self.tspan = TimeSpan.arange(
-            output_interval, t=num_steps * output_interval, timestep_size=timestep_size
-        )
-
     def timespan(self, time_span, timestep_size=None):
+        self.add_timespan(time_span, timestep_size)
+
+    def add_timespan(self, time_span, timestep_size=None):
         """
         Set the time span of simulation. The SSA-SDPD engine does not support
         non-uniform timespans.
@@ -972,54 +290,11 @@ class Model():
         :type timestep_size: float
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            self.tspan = time_span
-            if timestep_size is not None:
-                self.tspan.timestep_size = timestep_size
-                self.tspan.validate(coverage="all")
+            self.add_timespan(time_span)
         else:
-            self.tspan = TimeSpan(time_span, timestep_size=timestep_size)
+            self.add_timespan(TimeSpan(time_span, timestep_size))
 
-    def compile_prep(self, allow_all_types=False):
-        """
-        Make sure all paramters are evaluated to scalars, update the models diffusion restrictions,
-        create the models expression utility, and generate the domain list of type ids in preperation
-        of compiling the simulation files.
-
-        :returns: The stoichiometric and dependency_graph
-        :rtype: tuple
-
-        :raises ModelError: Timestep size exceeds output frequency or Model is missing a domain
-        """
-        try:
-            self.tspan.validate(coverage="all")
-        except ModelError as err:
-            raise ModelError(f"Failed to validate timespan. Reason given: {err}") from err
-
-        if self.domain is None:
-            raise ModelError("The model's domain is not set.  Use 'add_domain()'.")
-        self.domain.compile_prep(allow_all_types=allow_all_types)
-        
-        self.__update_diffusion_restrictions()
-        self.__apply_initial_conditions()
-        self._resolve_all_parameters()
-        self._resolve_all_reactions()
-
-        sanitized_params = self.sanitized_parameter_names()
-        for species in self.listOfSpecies.values():
-            diff_coeff = species.diffusion_coefficient
-            if isinstance(diff_coeff, str):
-                if diff_coeff not in sanitized_params:
-                    raise ModelError(f"Parameterm {diff_coeff} doesn't exist.")
-                species.diffusion_coefficient = sanitized_params[diff_coeff]
-
-        self.__get_expression_utility()
-        stoich_matrix = self.__create_stoichiometric_matrix()
-        dep_graph = self.__create_dependency_graph()
-
-        return stoich_matrix, dep_graph
-
-    def run(self, number_of_trajectories=1, seed=None, timeout=None,
-            number_of_threads=None, debug_level=0, debug=False, profile=False):
+    def run(self, number_of_trajectories=1, seed=None):
         """
         Simulate the model. Returns a result object containing simulation results.
 
@@ -1029,28 +304,10 @@ class Model():
         :param seed: The random seed given to the solver.
         :type seed: int
 
-        :param timeout: Number of seconds for simulation to run.  Simulation will be
-                        killed upon reaching timeout.
-        :type timeout: int
-
-        :param number_of_threads: The number threads the solver will use.
-        :type number_of_threads: int
-
-        :param debug_level: Level of output from the solver: 0, 1, or 2. Default: 0.
-        :type debug_level: int
-
-        :param debug: Optional flag to print out additional debug info during simulation.
-        :type debug: bool
-
-        :param profile: Optional flag to print out addtional performance profiling for simulation.
-        :type profile: bool
-
         :returns: A GillesPy3D Result object containing simulation data.
         :rtype: gillespy3d.core.result.Result
         """
-        from gillespy3d.solvers.solver import Solver # pylint: disable=import-outside-toplevel
 
-        sol = Solver(self, debug_level=debug_level)
 
-        return sol.run(number_of_trajectories=number_of_trajectories, seed=seed, timeout=timeout,
-                       number_of_threads=number_of_threads, debug=debug, profile=profile)
+        return Result(self.c.run(number_of_trajectories,seed)
+              
