@@ -290,9 +290,9 @@ class Model():
         :type timestep_size: float
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            self.add_timespan(time_span)
+            self.c.add_timespan(time_span)
         else:
-            self.add_timespan(TimeSpan(time_span, timestep_size))
+            self.c.add_timespan(TimeSpan(time_span, timestep_size))
 
     def run(self, number_of_trajectories=1, seed=None):
         """
