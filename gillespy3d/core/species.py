@@ -16,7 +16,10 @@
 from gillespy3d.core.parameter import Parameter
 from gillespy3d.core.error import SpeciesError
 
-class Species():
+import libcgillespy3d
+
+
+class Species(libcgillespy3d.Species):
     """
     Model of a biochemical species. Must be assigned a diffusion coefficent.
 
@@ -46,6 +49,7 @@ class Species():
                 self.restrict_to.append(f"type_{type_id}")
 
         self.validate()
+        super().__init__(name)
 
     def __str__(self):
         print_string = f"{self.name}: {str(self.diffusion_coefficient)}"

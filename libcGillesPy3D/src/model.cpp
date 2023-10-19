@@ -18,6 +18,11 @@ void GillesPy3D::Model::add_parameter(const std::vector<GillesPy3D::Parameter> &
     // TODO
 }
 
+void GillesPy3D::Model::add_species(GillesPy3D::Species &species)
+{
+    std::cout << "single species" << std::endl;
+}
+
 void GillesPy3D::Model::add_species(const std::vector<GillesPy3D::Species> &species)
 {
     std::cout << "multiple species" << std::endl;

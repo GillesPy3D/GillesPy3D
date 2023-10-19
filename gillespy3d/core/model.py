@@ -36,7 +36,7 @@ from gillespy3d.core.error import ModelError
 import libcgillespy3d
 
 
-class Model():
+class Model(libcgillespy3d.Model):
     """
     Representation of a spatial biochemical model.
 
@@ -45,7 +45,7 @@ class Model():
     """
 
     def __init__(self, name="gillespy3d"):
-        self.c = libcgillespy3d.Model(name)
+        super().__init__(name)
 
     def __str__(self):
         return ""
@@ -127,7 +127,7 @@ class Model():
                 "Unexpected parameter for add_domain. Parameter must be of type GillesPy3D.Domain."
             )
 
-        self.c.add_domain(domain)
+        super().add_domain(domain)
         return domain
 
     def add_species(self, species):
@@ -142,14 +142,11 @@ class Model():
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
-        if isinstance(species, list):
-            for spec in species:
-                self.c.add_species(spec)
-        elif isinstance(species, Species) or type(species).__name__ == "Species":
-            self.c.add_species(spec)
-        else:
+        try:
+            super().add_species(species)
+        except TypeError as e:
             errmsg = f"species must be of type Species or list of Species not {type(species)}"
-            raise ModelError(errmsg)
+            raise ModelError(errmsg) from e
         return species
 
 
@@ -173,9 +170,9 @@ class Model():
         ]
         if isinstance(init_cond, list):
             for initial_condition in init_cond:
-                self.c.add_initial_condition(initial_condition)
+                super().add_initial_condition(initial_condition)
         elif isinstance(init_cond, InitialCondition) or type(init_cond).__name__ in names:
-            self.c.add_initial_condition(init_cond)
+            super().add_initial_condition(init_cond)
         else:
             errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {type(init_cond)}"
             raise ModelError(errmsg)
@@ -196,9 +193,9 @@ class Model():
         """
         if isinstance(parameters, list):
             for param in parameters:
-                self.c.add_parameter(param)
+                super().add_parameter(param)
         elif isinstance(parameters, Parameter) or type(parameters).__name__ == 'Parameter':
-            self.c.add_parameter(parameters)
+            super().add_parameter(parameters)
         else:
             errmsg = f"parameters must be of type Parameter or list of Parameter not {type(parameters)}"
             raise ModelError(errmsg)
@@ -219,9 +216,9 @@ class Model():
         """
         if isinstance(reactions, list):
             for reaction in reactions:
-                self.c.add_reaction(reaction)
+                super().add_reaction(reaction)
         elif isinstance(reactions, Reaction) or type(reactions).__name__ == "Reaction":
-            self.c.add_reaction(reactions)
+            super().add_reaction(reactions)
         else:
             errmsg = f"reactions must be of type Reaction or list of Reaction not {type(reactions)}"
             raise ModelError(errmsg)
@@ -242,9 +239,9 @@ class Model():
         """
         if isinstance(bound_cond, list):
             for boundary_condition in bound_cond:
-                self.c.add_boundary_condition(boundary_condition)
+                super().add_boundary_condition(boundary_condition)
         elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ in "BoundaryCondition":
-            self.c.add_boundary_condition(bound_cond)
+            super().add_boundary_condition(bound_cond)
         else:
             errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {type(bound_cond)}"
             raise ModelError(errmsg)
@@ -267,9 +264,9 @@ class Model():
         """
         if isinstance(data_function, list):
             for data_fn in data_function:
-                self.c.add_data_function(data_fn)
+                super().add_data_function(data_fn)
         elif isinstance(data_function, DataFunction) or type(data_function).__name__ == 'DataFunction':
-            self.c.add_data_function(data_function)
+            super().add_data_function(data_function)
         else:
             errmsg = f"data_function must be of type DataFunction or list of DataFunction not {type(data_function)}"
             raise ModelError(errmsg)
@@ -290,9 +287,9 @@ class Model():
         :type timestep_size: float
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            self.add_timespan(time_span)
+            super().add_timespan(time_span)
         else:
-            self.add_timespan(TimeSpan(time_span, timestep_size))
+            super().add_timespan(TimeSpan(time_span, timestep_size))
 
     def run(self, number_of_trajectories=1, seed=None):
         """
@@ -309,5 +306,5 @@ class Model():
         """
 
 
-        return Result(self.c.run(number_of_trajectories,seed)
+        return Result(super().run(number_of_trajectories,seed))
               
