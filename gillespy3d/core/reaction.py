@@ -21,7 +21,7 @@ import numpy as np
 
 from gillespy3d.core.species import Species
 from gillespy3d.core.parameter import Parameter
-from gillespy3d.core.gillespy3derror import ReactionError
+from gillespy3d.core.error import ReactionError
 
 class Reaction():
     """

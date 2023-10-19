@@ -21,7 +21,7 @@ import xml.etree.ElementTree as ET
 import numpy
 
 from gillespy3d.core.geometry import Geometry, CombinatoryGeometry
-from gillespy3d.core.gillespy3derror import LatticeError
+from gillespy3d.core.error import LatticeError
 
 class Lattice:
     """

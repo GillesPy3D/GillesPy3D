@@ -33,6 +33,7 @@ namespace GillesPy3D
 
         void add_reaction(const std::vector<Reaction> &reaction);
         void add_parameter(const std::vector<Parameter> &parameter);
+        void add_species(Species &species);
         void add_species(const std::vector<Species> &species);
         void add_initial_condition(const std::vector<InitialCondition> &initial_condition);
         void add_data_function(const std::vector<DataFunction> &data_function);

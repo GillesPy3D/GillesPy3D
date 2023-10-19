@@ -46,11 +46,11 @@ from .lattice import (
     MeshIOLattice,
     StochSSLattice
 )
-from .model import Model, export_StochSS
+from .model import Model
 from .parameter import Parameter
 from .reaction import Reaction
 from .result import Result
-from .gillespy3derror import *
+from .error import *
 from .species import Species
 from .timespan import TimeSpan
 from .transformation import (
