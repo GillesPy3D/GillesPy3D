@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy
 
-from gillespy3d.core.gillespy3derror import GeometryError
+from gillespy3d.core.error import GeometryError
 
 class CombinatoryGeometry:
     """

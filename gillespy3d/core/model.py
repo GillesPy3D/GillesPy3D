@@ -31,7 +31,7 @@ from gillespy3d.core.boundarycondition import BoundaryCondition
 from gillespy3d.core.datafunction import DataFunction
 from gillespy3d.core.timespan import TimeSpan
 from gillespy3d.solvers.build_expression import BuildExpression
-from gillespy3d.core.gillespy3derror import ModelError
+from gillespy3d.core.error import ModelError
 
 import libcgillespy3d
 

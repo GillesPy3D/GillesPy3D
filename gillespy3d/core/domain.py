@@ -32,7 +32,7 @@ from gillespy3d.core.lattice import (
 )
 from gillespy3d.core.transformation import Transformation
 from gillespy3d.core.visualization import Visualization
-from gillespy3d.core.gillespy3derror import DomainError
+from gillespy3d.core.error import DomainError
 
 class Domain():
     """

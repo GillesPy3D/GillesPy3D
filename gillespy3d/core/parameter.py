@@ -13,7 +13,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-from gillespy3d.core.gillespy3derror import ParameterError
+from gillespy3d.core.error import ParameterError
 
 class Parameter():
     """

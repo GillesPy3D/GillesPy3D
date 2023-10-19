@@ -27,7 +27,7 @@ import sys
 
 import numpy
 
-from gillespy3d.core.gillespy3derror import ModelError, SimulationError
+from gillespy3d.core.error import ModelError, SimulationError
 
 def _read_from_stdout(stdout ,verbose=True):
     try:

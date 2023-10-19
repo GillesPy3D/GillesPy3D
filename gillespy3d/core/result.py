@@ -29,7 +29,7 @@ from plotly.offline import init_notebook_mode, iplot
 # from gillespy3d.core.model import *
 from gillespy3d.core.visualization import Visualization
 from gillespy3d.core.vtkreader import VTKReader
-from gillespy3d.core.gillespy3derror import ResultError
+from gillespy3d.core.error import ResultError
 
 try:
     import vtk
