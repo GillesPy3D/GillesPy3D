@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from spatialpy.__version__ import __version__
+from gillespy3d.__version__ import __version__
 from .boundarycondition import BoundaryCondition
 from .cleanup import (
     cleanup_tempfiles,

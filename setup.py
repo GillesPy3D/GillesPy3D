@@ -1,6 +1,6 @@
-# SpatialPy is a Python 3 package for simulation of
+# GillesPy3D is a Python 3 package for simulation of
 # spatial deterministic/stochastic reaction-diffusion-advection problems
-# Copyright (C) 2019 - 2023 SpatialPy developers.
+# Copyright (C) 2019 - 2023 GillesPy3D developers.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU GENERAL PUBLIC LICENSE Version 3 as
@@ -17,9 +17,9 @@
 #!/usr/bin/env python3
 # =============================================================================
 # @file    setup.py
-# @brief   SpatialPy setup file
+# @brief   GillesPy3D setup file
 # @license Please see the file named LICENSE in the project directory
-# @website https://github.com/StochSS/SpatialPy
+# @website https://github.com/StochSS/GillesPy3D
 #
 # Note: how to do a PyPI release
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,7 +57,7 @@ with open(path.join(SETUP_DIR, 'README.md'), 'r', errors = 'ignore') as f:
 # we're using setup() in the first place.  This code avoids eval, for security.
 
 version = {}
-with open(path.join(SETUP_DIR, 'spatialpy/__version__.py')) as f:
+with open(path.join(SETUP_DIR, 'gillespy3d/__version__.py')) as f:
     text = f.read().rstrip().splitlines()
     vars = [line for line in text if line.startswith('__') and '=' in line]
     for v in vars:
@@ -83,8 +83,8 @@ setup(name                 = version['__title__'].lower(),
       long_description_content_type = "text/markdown",
       keywords             = "biochemical simulation, Gillespie algorithm, stochastic simulation, biology, spatial simulation, RDME",
       project_urls         = {
-          "Tracker": "https://github.com/StochSS/SpatialPy/issues",
-          "Source" : "https://github.com/StochSS/SpatialPy",
+          "Tracker": "https://github.com/GillesPy3D/issues",
+          "Source" : "https://github.com/GillesPy3D",
       },
       packages             = find_packages('.'),
       include_package_data = True,
