@@ -29,7 +29,7 @@ libcgillespy3d = SConscript("obj/SConscript", exports=["env"])
 #            non-portable, replace later!!!
 swig = env.Command("obj/libcgillespy3d_wrap.cxx", ["include/libcgillespy3d.i", libcgillespy3d], [
     Mkdir("bin"),
-    "swig -c++ -python -builtin -features autodoc -o obj/libcgillespy3d_wrap.cxx -outdir bin $SOURCE",
+    "swig -c++ -python -features autodoc -o obj/libcgillespy3d_wrap.cxx -outdir bin $SOURCE",
 ])
 env.Clean(swig, ["bin/libcgillespy3d.py"])
 
