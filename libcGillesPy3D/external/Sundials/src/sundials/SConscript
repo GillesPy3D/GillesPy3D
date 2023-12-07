@@ -1,0 +1,17 @@
+Import("env")
+
+env.Append(CPPPATH=[
+    Dir("."),
+])
+
+sundials = env.Object([
+    "sundials_math.c",
+    "sundials_iterative.c",
+    "sundials_matrix.c",
+    "sundials_linearsolver.c",
+    "sundials_nonlinearsolver.c",
+    "sundials_nvector.c",
+    "sundials_nvector_senswrapper.c",
+])
+
+Return("sundials")

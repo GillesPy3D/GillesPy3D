@@ -1,0 +1,16 @@
+Import("env")
+
+env.Append(CPPPATH=[
+    Dir("."),
+])
+
+sundials_cvode = env.Object([
+    "cvode.c",
+    "cvode_spils.c",
+    "cvode_nls.c",
+    "cvode_io.c",
+    "cvode_proj.c",
+    "cvode_ls.c",
+])
+
+Return("sundials_cvode")

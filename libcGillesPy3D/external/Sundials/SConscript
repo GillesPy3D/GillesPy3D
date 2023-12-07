@@ -14,9 +14,26 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Import('env')
+Import("env")
 
-env.StaticLibrary('gpystd', [
-    'model.cpp',
-    'arg_parser.cpp',
+env.Append(
+    CPPPATH=[
+        Dir("."),
+        Dir("src/sundials"),
+    ]
+)
+
+cvode = SConscript("src/cvode/SConscript", exports=["env"])
+sundials = SConscript("src/sundials/SConscript", exports=["env"])
+nvector = SConscript("src/nvector/SConscript", exports=["env"])
+sunmatrix = SConscript("src/sunmatrix/SConscript", exports=["env"])
+sunnonlinsol = SConscript("src/sunnonlinsol/SConscript", exports=["env"])
+
+sundials = env.StaticLibrary("sundials", [
+    cvode,
+    sundials,
+    nvector,
+    sunmatrix,
 ])
+
+Return("sundials")

@@ -1,0 +1,7 @@
+Import("env")
+
+nvector = env.Object([
+    "serial/nvector_serial.c",
+])
+
+Return("nvector")

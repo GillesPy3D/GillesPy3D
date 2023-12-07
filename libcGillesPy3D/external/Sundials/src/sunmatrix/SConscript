@@ -1,0 +1,8 @@
+Import("env")
+
+sunmatrix = env.Object([
+    "band/sunmatrix_band.c",
+    "dense/sunmatrix_dense.c",
+])
+
+Return("sunmatrix")

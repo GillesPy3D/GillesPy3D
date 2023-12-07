@@ -14,15 +14,24 @@ env = Environment(
     CPPPATH=[
         Dir("include"),
         Dir("external/ANN/include"),
+        Dir("external/Sundials/include"),
+        Dir("external/Sundials/src"),
+        Dir("external/Sundials/cmake-build/default/include"),
+        Dir("external/Sundials/src/sundials"),
         pyinc,
     ],
     LIBPATH=[
         Dir("obj"),
+        Dir("obj/external/Sundials"),
     ],
 )
 
 VariantDir("obj", "src", duplicate=False)
+VariantDir("obj/external", "external", duplicate=False)
 libcgillespy3d = SConscript("obj/SConscript", exports=["env"])
+sundials = SConscript([
+    "obj/external/Sundials/SConscript",
+], exports=["env"])
 
 # Build SWIG library
 # TEMPORARY: run shell script manually to build
@@ -33,5 +42,5 @@ swig = env.Command("obj/libcgillespy3d_wrap.cxx", ["include/libcgillespy3d.i", l
 ])
 env.Clean(swig, ["bin/libcgillespy3d.py"])
 
-py_lib = env.SharedLibrary("bin/_libcgillespy3d.so", [swig], LIBS=["cgillespy3d"], SHLIBPREFIX="")
+py_lib = env.SharedLibrary("bin/_libcgillespy3d.so", [swig], LIBS=["cgillespy3d", sundials], SHLIBPREFIX="")
 
