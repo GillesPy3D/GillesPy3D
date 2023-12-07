@@ -18,12 +18,10 @@
 
 #include "integrator.h"
 
-using namespace Gillespy::TauHybrid;
+static bool validate(GillesPy3D::Integrator *integrator, int retcode);
 
-static bool validate(Integrator *integrator, int retcode);
-
-IntegratorData::IntegratorData(
-    HybridSimulation *simulation,
+GillesPy3D::IntegratorData::IntegratorData(
+    GillesPy3D::Simulation *simulation,
     int num_species,
     int num_reactions)
     : simulation(simulation),
@@ -31,20 +29,20 @@ IntegratorData::IntegratorData(
       species_state(&simulation->species_state),
       reaction_state(&simulation->reaction_state) {}
 
-IntegratorData::IntegratorData(HybridSimulation *simulation)
+GillesPy3D::IntegratorData::IntegratorData(GillesPy3D::Simulation *simulation)
     : IntegratorData(
         simulation,
         simulation->model->number_species,
         simulation->model->number_reactions) {}
 
 
-Integrator::Integrator(HybridSimulation *simulation, Model<double> &model, URNGenerator urn, double reltol, double abstol)
+GillesPy3D::Integrator::Integrator(GillesPy3D::Simulation *simulation, GillesPy3D::Model &model, URNGenerator urn, double reltol, double abstol)
     : t(0.0f),
       data(simulation),
       urn(urn),
       model(model),
-      num_reactions(simulation->model->number_reactions),
-      num_species(simulation->model->number_species)
+      num_reactions(model.number_reactions),
+      num_species(model.number_species)
 {
     y0 = init_model_vector(model, urn);
     reset_model_vector();
@@ -70,7 +68,7 @@ Integrator::Integrator(HybridSimulation *simulation, Model<double> &model, URNGe
     validate(this, CVodeSetLinearSolver(cvode_mem, solver, NULL));
 }
 
-double Integrator::save_state()
+double GillesPy3D::Integrator::save_state()
 {
     int max_offset = num_reactions + num_species;
     for (int mem_i = 0; mem_i < max_offset; ++mem_i)
@@ -82,7 +80,7 @@ double Integrator::save_state()
     return t;
 }
 
-double Integrator::restore_state()
+double GillesPy3D::Integrator::restore_state()
 {
     int max_offset = num_reactions + num_species;
     for (int mem_i = 0; mem_i < max_offset; ++mem_i)
@@ -98,12 +96,12 @@ double Integrator::restore_state()
     return t;
 }
 
-void Integrator::refresh_state()
+void GillesPy3D::Integrator::refresh_state()
 {
     validate(this, CVodeReInit(cvode_mem, t, y));
 }
 
-void Integrator::reinitialize()
+void GillesPy3D::Integrator::reinitialize()
 {
     int max_offset = num_reactions + num_species;
     for (int mem_i = 0; mem_i < max_offset; ++mem_i)
@@ -115,7 +113,7 @@ void Integrator::reinitialize()
     validate(this, CVodeReInit(cvode_mem, t, y));
 }
 
-Integrator::~Integrator()
+GillesPy3D::Integrator::~Integrator()
 {
     N_VDestroy_Serial(y);
     CVodeFree(&cvode_mem);
@@ -123,22 +121,22 @@ Integrator::~Integrator()
     delete[] m_roots;
 }
 
-IntegrationResults Integrator::integrate_constant(double *t)
+GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate_constant(double *t)
 {
     // this function assumes no deterministic species or 
     realtype *Y = N_VGetArrayPointer(y);
-    HybridSimulation *sim = data.simulation;
-    std::vector<HybridSpecies> *species = data.species_state;
-    std::vector<HybridReaction> *reactions = data.reaction_state;
+    GillesPy3D::Simulation *sim = data.simulation;
+    std::vector<GillesPy3D::Species> *species = data.species_state;
+    std::vector<GillesPy3D::Reaction> *reactions = data.reaction_state;
     std::vector<double> &propensities = data.propensities;
     unsigned int num_species = sim->model->number_species;
     unsigned int num_reactions = sim->model->number_reactions;
     realtype propensity;
     for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
     {
-        HybridReaction rxn = (*reactions)[rxn_i];
+        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
         switch (rxn.mode) {
-        case SimulationState::DISCRETE:
+        case GillesPy3D::SimulationState::DISCRETE:
             // Process stochastic reaction state by updating the root offset for each reaction.
             propensity = rxn.ssa_propensity(Y);
             propensities[rxn_i] = propensity;
@@ -164,7 +162,7 @@ IntegrationResults Integrator::integrate_constant(double *t)
     };
 }
 
-IntegrationResults Integrator::integrate(double *t)
+GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate(double *t)
 {
     int retcode = CVode(cvode_mem, *t, y, &this->t, CV_NORMAL);
     if (!validate(this, retcode ))
@@ -181,7 +179,7 @@ IntegrationResults Integrator::integrate(double *t)
 }
 
 
-void Integrator::reset_model_vector()
+void GillesPy3D::Integrator::reset_model_vector()
 {
     int rxn_offset_boundary = model.number_reactions + model.number_species;
 
@@ -198,7 +196,7 @@ void Integrator::reset_model_vector()
     }
 }
 
-IntegrationResults Integrator::integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules)
+GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules)
 {
 
     IntegrationResults results;
@@ -245,10 +243,10 @@ IntegrationResults Integrator::integrate(double *t, std::set<int> &event_roots, 
     return results;
 }
 
-void Integrator::use_events(const std::vector<Event> &events)
+void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events)
 {
     data.active_triggers.clear();
-    for (auto &event : events)
+    for (const GillesPy3D::Event &event : events)
     {
         data.active_triggers.emplace_back([event](double t, const double *state) -> double {
             return event.trigger(t, state) ? 1.0 : -1.0;
@@ -256,7 +254,7 @@ void Integrator::use_events(const std::vector<Event> &events)
     }
 }
 
-void Integrator::use_reactions(const std::vector<HybridReaction> &reactions)
+void GillesPy3D::Integrator::use_reactions(const std::vector<GillesPy3D::Reaction> &reactions)
 {
     data.active_reaction_ids.clear();
     for (auto &reaction : reactions)
@@ -271,31 +269,31 @@ void Integrator::use_reactions(const std::vector<HybridReaction> &reactions)
     }
 }
 
-void Integrator::use_events(const std::vector<Event> &events, const std::vector<HybridReaction> &reactions)
+void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events, const std::vector<GillesPy3D::Reaction> &reactions)
 {
     use_events(events);
     use_reactions(reactions);
 }
 
-bool Integrator::enable_root_finder()
+bool GillesPy3D::Integrator::enable_root_finder()
 {
     unsigned long long root_fn_size = data.active_triggers.size() + data.active_reaction_ids.size();
     return validate(this, CVodeRootInit(cvode_mem, (int) root_fn_size, rootfn));
 }
 
-bool Integrator::disable_root_finder()
+bool GillesPy3D::Integrator::disable_root_finder()
 {
     data.active_triggers.clear();
     data.active_reaction_ids.clear();
     return validate(this, CVodeRootInit(cvode_mem, 0, NULL));
 }
 
-void Integrator::set_error_handler(CVErrHandlerFn error_handler)
+void GillesPy3D::Integrator::set_error_handler(CVErrHandlerFn error_handler)
 {
     validate(this, CVodeSetErrHandlerFn(cvode_mem, error_handler, nullptr));
 }
 
-bool Integrator::configure(SolverConfiguration config)
+bool GillesPy3D::Integrator::configure(GillesPy3D::IntegratorConfiguration config)
 {
     return (
         validate(this, CVodeSStolerances(cvode_mem, config.rel_tol, config.abs_tol))
@@ -303,7 +301,7 @@ bool Integrator::configure(SolverConfiguration config)
     );
 }
 
-URNGenerator::URNGenerator(unsigned long long seed)
+GillesPy3D::URNGenerator::URNGenerator(unsigned long long seed)
     : uniform(0, 1),
       rng(seed)
 {
@@ -314,7 +312,7 @@ URNGenerator::URNGenerator(unsigned long long seed)
 /* Generate a new random floating-point number on the range [0,1).
  * Uses a uniform distribution to generate.
  */
-double URNGenerator::next()
+double GillesPy3D::URNGenerator::next()
 {
     return uniform(rng);
 }
@@ -323,7 +321,7 @@ double URNGenerator::next()
 /* Initialize a SUNDials N_Vector based on information provided in the model.
  * 
  */
-N_Vector Gillespy::TauHybrid::init_model_vector(Gillespy::Model<double> &model, URNGenerator urn)
+N_Vector GillesPy3D::init_model_vector(GillesPy3D::Model &model, GillesPy3D::URNGenerator urn)
 {
     int rxn_offset_boundary = model.number_reactions + model.number_species;
 
@@ -350,7 +348,7 @@ N_Vector Gillespy::TauHybrid::init_model_vector(Gillespy::Model<double> &model, 
  * Integrator function for ODE linear solver.
  * This gets passed directly to the Sundials ODE solver once initialized.
  */
-int Gillespy::TauHybrid::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
+int GillesPy3D::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
 {
     // Get y(t) vector and f(t, y) vector
     realtype *Y = N_VGetArrayPointer(y);
@@ -358,10 +356,10 @@ int Gillespy::TauHybrid::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_d
     realtype propensity;
 
     // Extract simulation data
-    IntegratorData *data = static_cast<IntegratorData*>(user_data);
-    HybridSimulation *sim = data->simulation;
-    std::vector<HybridSpecies> *species = data->species_state;
-    std::vector<HybridReaction> *reactions = data->reaction_state;
+    GillesPy3D::IntegratorData *data = static_cast<IntegratorData*>(user_data);
+    GillesPy3D::Simulation *sim = data->simulation;
+    std::vector<GillesPy3D::Species> *species = data->species_state;
+    std::vector<GillesPy3D::Reaction> *reactions = data->reaction_state;
     std::vector<double> &propensities = data->propensities;
     unsigned int num_species = sim->model->number_species;
     unsigned int num_reactions = sim->model->number_reactions;
@@ -390,7 +388,7 @@ int Gillespy::TauHybrid::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_d
     // These updates get written directly to the integrator's concentration state
     for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
     {
-        HybridReaction rxn = (*reactions)[rxn_i];
+        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
 
         switch (rxn.mode) {
         case SimulationState::DISCRETE:
@@ -410,9 +408,9 @@ int Gillespy::TauHybrid::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_d
     return 0;
 };
 
-int Gillespy::TauHybrid::rootfn(realtype t, N_Vector y, realtype *gout, void *user_data)
+int GillesPy3D::rootfn(realtype t, N_Vector y, realtype *gout, void *user_data)
 {
-    IntegratorData &data = *static_cast<IntegratorData*>(user_data);
+    GillesPy3D::IntegratorData &data = *static_cast<GillesPy3D::IntegratorData*>(user_data);
     unsigned long long num_triggers = data.active_triggers.size();
     unsigned long long num_reactions = data.active_reaction_ids.size();
     realtype *y_t = N_VGetArrayPointer(y);
@@ -435,23 +433,23 @@ int Gillespy::TauHybrid::rootfn(realtype t, N_Vector y, realtype *gout, void *us
 }
 
 
-static bool validate(Integrator *integrator, int retcode)
+static bool validate(GillesPy3D::Integrator *integrator, int retcode)
 {
     switch (retcode)
     {
     case CV_MEM_NULL:
-        integrator->status = IntegrationStatus::NULL_POINTER;
+        integrator->status = GillesPy3D::IntegrationStatus::NULL_POINTER;
         return false;
     case CV_NO_MALLOC:
-        integrator->status = IntegrationStatus::BAD_MEMORY;
+        integrator->status = GillesPy3D::IntegrationStatus::BAD_MEMORY;
         return false;
     case CV_TOO_CLOSE:
     case CV_TOO_MUCH_WORK:
-        integrator->status = IntegrationStatus::BAD_STEP_SIZE;
+        integrator->status = GillesPy3D::IntegrationStatus::BAD_STEP_SIZE;
         return false;
     case CV_SUCCESS:
     default:
-        integrator->status = IntegrationStatus::OK;
+        integrator->status = GillesPy3D::IntegrationStatus::OK;
         return true;
     }
 }

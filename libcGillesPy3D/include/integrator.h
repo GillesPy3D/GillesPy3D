@@ -18,19 +18,21 @@
 
 #pragma once
 
-#include "HybridModel.h"
-#include "cvode.h"
-#include "sunlinsol_spgmr.h"
-#include "sundials_types.h"
-#include "nvector_serial.h"
+#include "model.hpp"
+#include "reaction.hpp"
+#include "event.hpp"
+#include "simulation.hpp"
+#include "cvode/cvode.h"
+#include "sunlinsol/sunlinsol_spgmr.h"
+#include "sundials/sundials_types.h"
+#include "nvector/nvector_serial.h"
 #include <vector>
 #include <random>
+#include <functional>
+#include <set>
 
-namespace Gillespy
+namespace GillesPy3D
 {
-    namespace TauHybrid
-    {
-
     /* IntegratorStatus: represents the runtime state of the integrator.
      * OK indicates that no errors have occurred.
      */
@@ -46,11 +48,29 @@ namespace Gillespy
         BAD_STEP_SIZE
     };
 
+    /// @name SolverConfiguration
+    /// @brief Container struct for integrator-specific configuration.
+    /// TODO: should this be moved to the Simulation object? maybe create a Solver class(es)? or at least somewhere more visible?
+    struct IntegratorConfiguration
+    {
+        double rel_tol;
+        double abs_tol;
+        double max_step;
+    };
+
+    /// @brief indicator for the "type" of step being taken for a particular species
+    enum SimulationState : unsigned int
+    {
+        CONTINUOUS = 0,
+        DISCRETE = 1,
+        DYNAMIC = 2
+    };
+
     struct IntegratorData
     {
-        HybridSimulation *simulation;
-        std::vector<HybridSpecies> *species_state;
-        std::vector<HybridReaction> *reaction_state;
+        Simulation *simulation;
+        std::vector<Species> *species_state;
+        std::vector<Reaction> *reaction_state;
         std::vector<Event> *events = nullptr;
         std::vector<std::function<double(double, const double*)>> active_triggers;
         // Container representing the rootfinder-enabled reactions.
@@ -60,8 +80,8 @@ namespace Gillespy
         std::vector<unsigned int> active_reaction_ids;
         std::vector<double> propensities;
 
-        IntegratorData(HybridSimulation *simulation);
-        IntegratorData(HybridSimulation *simulation, int num_species, int num_reactions);
+        IntegratorData(Simulation *simulation);
+        IntegratorData(Simulation *simulation, int num_species, int num_reactions);
         IntegratorData(IntegratorData &prev_data);
     };
 
@@ -103,7 +123,7 @@ namespace Gillespy
         int num_reactions;
         int *m_roots = nullptr;
         URNGenerator urn;
-        Model<double> &model;
+        Model &model;
     public:
         // status: check for errors before using the results.
         IntegrationStatus status;
@@ -152,13 +172,13 @@ namespace Gillespy
         ///
         /// @param events List of event objects to make available to the root-finder.
         /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_events(const std::vector<Event> &events, const std::vector<HybridReaction> &reactions);
+        void use_events(const std::vector<Event> &events, const std::vector<Reaction> &reactions);
 
         /// @brief Make reactions available to root-finder during integration.
         /// The root-finder itself is not activated until enable_root_finder() is called.
         ///
         /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_reactions(const std::vector<HybridReaction> &reactions);
+        void use_reactions(const std::vector<Reaction> &reactions);
 
         /// @brief Installs a CVODE root-finder onto the integrator.
         /// Any events or reactions provided by previous calls to use_events() or use_reactions()
@@ -172,7 +192,7 @@ namespace Gillespy
 
         /// @brief Configures CVODE to use the user-supplied configuration data.
         /// If all configurations were applied successfully, returns true. Otherwise, returns false.
-        bool configure(SolverConfiguration config);
+        bool configure(IntegratorConfiguration config);
 
         void set_error_handler(CVErrHandlerFn error_handler);
 
@@ -200,15 +220,13 @@ namespace Gillespy
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(HybridSimulation *simulation, Model<double> &model, URNGenerator urn, double reltol, double abstol);
+        Integrator(Simulation *simulation, Model &model, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
         void reset_model_vector();
     };
 
-    N_Vector init_model_vector(Model<double> &model, URNGenerator urn);
+    N_Vector init_model_vector(Model &model, URNGenerator urn);
 
     int rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
     int rootfn(realtype t, N_Vector y, realtype *gout, void *user_data);
-
-    }
 }

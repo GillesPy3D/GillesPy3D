@@ -12,6 +12,7 @@ libcgillespy3d = env.Library("cgillespy3d", [
     "domain.cpp",
     "simulation.cpp",
     "error.cpp",
+    # "integrator.cpp",
 ])
 
 Return("libcgillespy3d")
