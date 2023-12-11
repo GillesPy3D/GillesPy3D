@@ -36,7 +36,7 @@ GillesPy3D::IntegratorData::IntegratorData(GillesPy3D::Simulation *simulation)
         simulation->model->number_reactions) {}
 
 
-GillesPy3D::Integrator::Integrator(GillesPy3D::Simulation *simulation, GillesPy3D::Model &model, URNGenerator urn, double reltol, double abstol)
+GillesPy3D::Integrator::Integrator(const SUNContext &context, GillesPy3D::Simulation *simulation, GillesPy3D::Model &model, URNGenerator urn, double reltol, double abstol)
     : t(0.0f),
       data(simulation),
       urn(urn),
@@ -59,7 +59,7 @@ GillesPy3D::Integrator::Integrator(GillesPy3D::Simulation *simulation, GillesPy3
         data.propensities[rxn_i] = 0;
     }
 
-    cvode_mem = CVodeCreate(CV_BDF);
+    cvode_mem = CVodeCreate(CV_BDF, context);
     validate(this, CVodeInit(cvode_mem, rhs, t, y));
     validate(this, CVodeSStolerances(cvode_mem, reltol, abstol));
 
@@ -315,6 +315,17 @@ GillesPy3D::URNGenerator::URNGenerator(unsigned long long seed)
 double GillesPy3D::URNGenerator::next()
 {
     return uniform(rng);
+}
+
+
+GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem = nullptr)
+{
+    SUNContext_Create(mpi_mem, &m_sundials_context);
+}
+
+GillesPy3D::IntegratorContext::~IntegratorContext()
+{
+    SUNContext_Free(&m_sundials_context);
 }
 
 

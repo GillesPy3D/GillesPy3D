@@ -25,6 +25,7 @@
 #include "cvode/cvode.h"
 #include "sunlinsol/sunlinsol_spgmr.h"
 #include "sundials/sundials_types.h"
+#include "sundials/sundials_context.h"
 #include "nvector/nvector_serial.h"
 #include <vector>
 #include <random>
@@ -220,9 +221,23 @@ namespace GillesPy3D
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(Simulation *simulation, Model &model, URNGenerator urn, double reltol, double abstol);
+        Integrator(const SUNContext &context, Simulation *simulation, Model &model, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
         void reset_model_vector();
+    };
+
+    class IntegratorContext
+    {
+    public:
+        explicit IntegratorContext(void *mpi_mem = nullptr);
+        ~IntegratorContext();
+        IntegratorContext(IntegratorContext&) = delete;
+        IntegratorContext(IntegratorContext&&) = default;
+        IntegratorContext &operator=(const IntegratorContext &context) = delete;
+        IntegratorContext &operator=(IntegratorContext &&context) = default;
+
+    private:
+        SUNContext m_sundials_context;
     };
 
     N_Vector init_model_vector(Model &model, URNGenerator urn);
