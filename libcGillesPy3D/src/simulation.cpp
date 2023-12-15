@@ -8,6 +8,13 @@ GillesPy3D::Simulation::Simulation()
 void GillesPy3D::Simulation::run_until(double t)
 {
     // TODO
+    // while current_time < t
+        // foreach particle
+            // find neighbors (1st step, all steps if non-static)
+            // find max tau
+        // foreach particle
+            // integrate forward by tau
+
 }
 
 double *GillesPy3D::Simulation::get_species(const std::string &species_name)

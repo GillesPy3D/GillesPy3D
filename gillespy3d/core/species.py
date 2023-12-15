@@ -33,7 +33,7 @@ class Species(libcgillespy3d.Species):
     This effectively restricts the movement of 'species' to the types specified in 'listOfTypes'.
     :type restrict_to: int, str, list of ints or list of strs
     """
-    def __init__(self, name=None, diffusion_coefficient=None, restrict_to=None):
+    def __init__(self, name=None, diffusion_coefficient=None, restrict_to=None, initial_value=None):
         if not (restrict_to is None or isinstance(restrict_to, (str, int, list))):
             raise SpeciesError("Restrict_to must be an int, str or list of ints or strs.")
         if restrict_to is not None and isinstance(restrict_to, (int, str)):
@@ -48,7 +48,7 @@ class Species(libcgillespy3d.Species):
             for type_id in restrict_to:
                 self.restrict_to.append(f"type_{type_id}")
 
-        self.validate()
+        #self.validate()
         super().__init__(name)
 
     def __str__(self):

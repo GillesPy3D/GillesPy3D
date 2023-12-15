@@ -16,6 +16,15 @@
 namespace GillesPy3D
 {
 
+
+   enum SimulationState : unsigned int
+    {
+        CONTINUOUS = 0,
+        DISCRETE = 1,
+        DYNAMIC = 2
+    };
+
+
     class Model
     {
     private:
@@ -31,14 +40,12 @@ namespace GillesPy3D
     public:
         Model(const std::string & name="");
 
-        void add_reaction(const std::vector<Reaction> &reaction);
-        void add_parameter(const std::vector<Parameter> &parameter);
+        void add_reaction(const Reaction &reaction);
+        void add_parameter(const Parameter &parameter);
         void add_species(Species &species);
-        void add_species(const std::vector<Species> &species);
-        void add_initial_condition(const std::vector<InitialCondition> &initial_condition);
-        void add_data_function(const std::vector<DataFunction> &data_function);
-        void add_boundary_condition(const std::vector<BoundaryCondition> &boundary_condition);
-
+        void add_initial_condition(const InitialCondition &initial_condition);
+        void add_data_function(const DataFunction &data_function);
+        void add_boundary_condition(const BoundaryCondition &boundary_condition);
         void add_domain(const Domain &domain);          // can't add more than one domain
         void add_timespan(const Timespan &timespan);    // can't add more than one timespan
 

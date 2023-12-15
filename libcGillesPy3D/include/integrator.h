@@ -103,17 +103,6 @@ namespace GillesPy3D
         int retcode;
     };
 
-    struct URNGenerator
-    {
-    private:
-        std::uniform_real_distribution<double> uniform;
-        std::mt19937_64 rng;
-        unsigned long long seed;
-    public:
-        double next();
-        URNGenerator() = delete;
-        explicit URNGenerator(unsigned long long seed);
-    };
 
     class Integrator
     {
@@ -123,8 +112,7 @@ namespace GillesPy3D
         int num_species;
         int num_reactions;
         int *m_roots = nullptr;
-        URNGenerator urn;
-        Model &model;
+        //Model &model;
     public:
         // status: check for errors before using the results.
         IntegrationStatus status;

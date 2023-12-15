@@ -23,7 +23,9 @@ from gillespy3d.core.species import Species
 from gillespy3d.core.parameter import Parameter
 from gillespy3d.core.error import ReactionError
 
-class Reaction():
+import libcgillespy3d
+
+class Reaction(libcgillespy3d.Reaction):
     """
     Models a biochemical reaction. A reaction conatains dictionaries of species
     (reactants and products) and a parameters. The reaction's propensity functions
@@ -138,7 +140,8 @@ class Reaction():
             for type_id in restrict_to:
                 self.restrict_to.append(f"type_{type_id}")
 
-        self.validate(coverage="initialized")
+        #self.validate(coverage="initialized")
+        super().__init__(name)
 
     def __str__(self):
         print_string = self.name

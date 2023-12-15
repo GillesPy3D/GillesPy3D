@@ -38,6 +38,7 @@ namespace GillesPy3D{
                     double zl=0, int type=0, double nu=0.01, double mass=1, double c=0,
                     double rho=1, int solidTag=0);
         ParticleSystem *sys;
+        std::vector<NeighborNode> neighbors;
         unsigned int id;
         int type;
         double old_x[3];
@@ -57,22 +58,23 @@ namespace GillesPy3D{
         double Frho;
         double Fbp[3];
         // Data Function
-        double * data_fn;
-        //std::shared_ptr<double[]> data_fn;
+        //double * data_fn; //TODO
         // chem_rxn_system
-        unsigned int*xx; // populaion of discrete/stochastic species
-        double *C; // concentration of chem species
-        double *Q; // flux of chem species
-        // below here for simulation
-        std::vector<NeighborNode> neighbors;
+        std::vector<GillesPy3D::SpeciesState> species_state;
+        std::vector<GillesPy3D::ReactionState> reaction_state;
+        N_Vector Y_state;  // Integrator State
+        N_Vector Y_save;   // Saved Integrator State
+        realtype current_time;
 
-        // Moved from rdme_voxel_t
-        double srrate;
-        double* rrate;
-        double sdrate;
-        double* Ddiag;
-        //EventNode*heap_index;
-        std::size_t particle_index;
+        //double *C; // concentration of chem species // ARE THESE USED STILL??
+        //double *Q; // flux of chem species
+        // below here for simulation
+
+        double save_integrator_state();
+        double restore_integrator_state();
+        void integrate_forward(double tau_step_size); // "run" function
+        double calculate_max_tau_step_size();
+
 
         void check_particle_nan();
 

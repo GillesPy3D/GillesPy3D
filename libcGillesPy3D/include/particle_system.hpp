@@ -35,6 +35,20 @@ extern int debug_flag ;
 
 namespace GillesPy3D {
 
+
+    struct URNGenerator
+    {
+    private:
+        std::uniform_real_distribution<double> uniform;
+        std::mt19937_64 rng;
+        unsigned long long seed;
+    public:
+        double next();
+        URNGenerator() = delete;
+        explicit URNGenerator(unsigned long long seed);
+    };
+
+
     struct Particle;
     struct ParticleSystem;
     struct NeighborNode;
@@ -66,34 +80,13 @@ namespace GillesPy3D {
         double rho0;
         double P0;
         std::vector<Particle> particles;
+        double* parameter_state;  // current state of the rxn system parameters
+        URNGenerator urn;
 
-        const size_t *irN;
-        const size_t *jcN;
-        const int *prN;
-        const size_t *irG;
-        const size_t *jcG;
-        int initialized;
-        long int total_reactions;
-        long int total_diffusion;
 
-        char boundary_conditions[3];
         bool static_domain;
         size_t num_types;
 
-        ChemRxnFun* chem_rxn_rhs_functions;
-        size_t num_chem_species;
-        size_t num_chem_rxns;
-
-        PropensityFun* stoch_rxn_propensity_functions;
-        size_t num_stoch_species;
-        size_t num_stoch_rxns;
-        size_t num_data_fn;
-
-        const char * const* species_names;
-
-        const double *subdomain_diffusion_matrix;
-        //int *stochic_matrix;
-        int *stoichiometric_matrix;
         double* gravity;
 
         void add_particle(Particle *me);
@@ -103,13 +96,6 @@ namespace GillesPy3D {
         bool kdTree_initialized;
     };
 
-/**
-system_t* create_system(size_t num_types, size_t num_chem_species, size_t num_chem_rxns,
-                         size_t num_stoch_species, size_t num_stoch_rxns,size_t num_data_fn);
-particle_t* create_particle(int id);
-**/
-
-//bond_t* create_bond(particle p1, particle p2, double k, double rest_distance);
 
 }
 
