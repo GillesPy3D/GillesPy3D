@@ -1,8 +1,12 @@
 #include "simulation.hpp"
+#include <iostream>
 
-GillesPy3D::Simulation::Simulation()
+GillesPy3D::Simulation::Simulation(GillesPy3D::ModelContext &context)
+    : context(context)
 {
-    // TODO
+    double test_state[2] = {1.23, 4.56};
+    double test_parameters[1] = {2.5};
+    std::cout << "testing propensity sum: " << context.reactions().get_propensity_sum(test_state, test_parameters) << std::endl;
 }
 
 void GillesPy3D::Simulation::run_until(double t)
