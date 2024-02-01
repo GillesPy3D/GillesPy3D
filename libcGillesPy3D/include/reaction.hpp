@@ -1,6 +1,7 @@
 #pragma once
 
 #include <sundials/sundials_types.h>
+#include <string>
 
 namespace GillesPy3D
 {
@@ -8,9 +9,11 @@ namespace GillesPy3D
     class Reaction
     {
     public:
-        Reaction(const std::string &name);
-        ssa_propensity(realtype *species_state, double *parameter_state) 
-        ode_propensity(realtype *species_state, double *parameter_state) 
+        explicit Reaction(const std::string &name);
+        const std::string &get_name() const;
+
+    private:
+        const std::string name;
     };
 
 }

@@ -2,6 +2,7 @@ Import("env")
 
 libcgillespy3d = env.Library("cgillespy3d", [
     "model.cpp",
+    "model_context.cpp",
     "reaction.cpp",
     "parameter.cpp",
     "species.cpp",
