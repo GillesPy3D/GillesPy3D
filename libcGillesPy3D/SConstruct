@@ -12,6 +12,11 @@ env = Environment(
         "-std=c++17",
         "-fPIC",
     ],
+    TOOLS=[
+        "default",
+        "swig",
+    ],
+    SWIGOUTDIR=Dir("bin"),
     CPPPATH=[
         Dir("include"),
         Dir("external/ANN/include"),
@@ -28,21 +33,29 @@ env = Environment(
     ENV=os.environ,
 )
 
-VariantDir("obj", "src", duplicate=False)
+env.Execute(Mkdir("bin"))
+
+# Send dependency build files to obj/ subfolders
+# From this point on, refer to all source files as being relative to the build directory
+# SCons will automagically map your build-relative file to the real path
+VariantDir("obj/src", "src", duplicate=False)
 VariantDir("obj/external", "external", duplicate=False)
-libcgillespy3d = SConscript("obj/SConscript", exports=["env"])
-sundials = SConscript([
-    "obj/external/Sundials/SConscript",
-], exports=["env"])
+VariantDir("obj/include", "include", duplicate=False)
 
-# Build SWIG library
-# TEMPORARY: run shell script manually to build
-#            non-portable, replace later!!!
-swig = env.Command("obj/libcgillespy3d_wrap.cxx", ["include/libcgillespy3d.i", libcgillespy3d], [
-    Mkdir("bin"),
-    "swig -c++ -python -features autodoc -o obj/libcgillespy3d_wrap.cxx -outdir bin $SOURCE",
-])
-env.Clean(swig, ["bin/libcgillespy3d.py"])
+libcgillespy3d = SConscript("obj/src/SConscript", exports=["env"])
+sundials = SConscript("obj/external/Sundials/SConscript", exports=["env"])
 
-py_lib = env.SharedLibrary("bin/_libcgillespy3d.so", [swig], LIBS=["cgillespy3d", sundials], SHLIBPREFIX="")
-
+py_lib = env.SharedLibrary("bin/_libcgillespy3d",
+    [
+        "obj/include/libcgillespy3d.i",
+    ],
+    LIBS=[libcgillespy3d, sundials],
+    SHLIBPREFIX="",
+    SWIGFLAGS=[
+        "-c++",
+        "-python",
+        "-features",
+        "autodoc",
+    ]
+)
+env.Clean(py_lib, Dir("bin/__pycache__"))
