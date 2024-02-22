@@ -7,7 +7,6 @@ import os
 pyinc = distutils.sysconfig.get_python_inc()
 
 env = Environment(
-    CXX="g++",
     CXXFLAGS=[
         "-std=c++17",
         "-fPIC",
