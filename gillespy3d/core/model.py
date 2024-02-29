@@ -142,11 +142,17 @@ class Model(libcgillespy3d.Model):
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
-        try:
-            super().add_species(species)
-        except TypeError as e:
-            errmsg = f"species must be of type Species or list of Species not {type(species)}"
-            raise ModelError(errmsg) from e
+
+        if isinstance(species, list):
+            for spec in species:
+               self.add_species(spec)
+        else:
+            try:
+                super().add_species(species)
+            except TypeError as e:
+                print(f"ERROR: {e}")
+                errmsg = f"species must be of type Species or list of Species not {type(species)}"
+                raise ModelError(errmsg) from e
         return species
 
 
