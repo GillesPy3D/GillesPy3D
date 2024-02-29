@@ -1,6 +1,7 @@
 import distutils.sysconfig
 import os
 
+
 # Make sure python3 dev headers are installed
 # On Ubuntu, python3-dev (might need version-specific, e.g. python3.11-dev, which might require adding new repos)
 # On Fedora, python3-devel (might need version-specific, e.g. python3.11-devel)
@@ -50,6 +51,7 @@ py_lib = env.SharedLibrary("bin/_libcgillespy3d",
     ],
     LIBS=[libcgillespy3d, sundials],
     SHLIBPREFIX="",
+    SHLIBSUFFIX=(".so" if os.name not in ['nt'] else ".pyd"),
     SWIGFLAGS=[
         "-c++",
         "-python",
