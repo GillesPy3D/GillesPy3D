@@ -293,9 +293,10 @@ class Model(libcgillespy3d.Model):
         :type timestep_size: float
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            super().add_timespan(time_span)
+            super().add_timespan(time_span.num_timesteps,time_span.timestep_size,time_span.output_freq)
         else:
-            super().add_timespan(TimeSpan(time_span, timestep_size))
+            tspan = TimeSpan(time_span, timestep_size)
+            super().add_timespan(tspan.num_timesteps,tspan.timestep_size,tspan.output_freq)
 
     def run(self, number_of_trajectories=1, seed=None):
         """

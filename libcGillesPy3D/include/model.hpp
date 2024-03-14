@@ -9,6 +9,7 @@
 #include "data_function.hpp"
 #include "boundary_condition.hpp"
 #include "domain.hpp"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,7 @@ namespace GillesPy3D
         std::vector<DataFunction> listOfDataFunctions;
         std::vector<BoundaryCondition> listOfBoundaryConditions;
         Domain domain;
-        Timespan timespan;
+        std::unique_ptr<Timespan> timespan = nullptr;
     public:
         Model(const std::string & name="");
 
@@ -47,7 +48,7 @@ namespace GillesPy3D
         void add_data_function(const DataFunction &data_function);
         void add_boundary_condition(const BoundaryCondition &boundary_condition);
         void add_domain(const Domain &domain);          // can't add more than one domain
-        void add_timespan(const Timespan &timespan);    // can't add more than one timespan
+        void add_timespan(int num_timesteps, double timestep_size, double output_freq);
 
         void run();  // Run needs to either take a path parameter to output VTK files, or return a result object
 

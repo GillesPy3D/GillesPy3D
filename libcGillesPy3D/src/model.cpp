@@ -1,4 +1,5 @@
 #include "model.hpp"
+#include <memory>
 #include <string>
 #include <stdio.h>
 
@@ -57,9 +58,10 @@ void GillesPy3D::Model::add_domain(const GillesPy3D::Domain &domain)
     // TODO
 }
 
-void GillesPy3D::Model::add_timespan(const GillesPy3D::Timespan &timespan)
+void GillesPy3D::Model::add_timespan(int num_timesteps, double timestep_size, double output_freq)
 {
-    // TODO
+    timespan = std::make_unique<GillesPy3D::Timespan>(num_timesteps,timestep_size,output_freq);
+
 }
 
 void GillesPy3D::Model::run()

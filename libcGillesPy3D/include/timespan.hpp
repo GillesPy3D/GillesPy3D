@@ -6,7 +6,10 @@ namespace GillesPy3D
     class Timespan
     {
     public:
-        Timespan();
+        int num_timesteps;
+        double timestep_size;
+        double output_freq;
+        Timespan(int num_timesteps, double timestep_size, double output_freq);
     };
 
 }
