@@ -19,43 +19,35 @@ const std::vector<GillesPy3D::Reaction> &GillesPy3D::Model::get_reactions() cons
     return listOfReactions;
 }
 
-//void GillesPy3D::Model::add_parameter(const std::vector<GillesPy3D::Parameter> &parameter)
-//{
-//    // TODO
-//}
 void GillesPy3D::Model::add_parameter(const GillesPy3D::Parameter &parameter)
 {
-    // TODO
+    listOfParameters.emplace_back(parameter);
 }
 
 void GillesPy3D::Model::add_species(GillesPy3D::Species &species)
 {
-    std::cout << "single species" << std::endl;
+    listOfSpecies.emplace_back(species);
 }
 
-/*void GillesPy3D::Model::add_species(const std::vector<GillesPy3D::Species> &species)
-{
-    std::cout << "multiple species" << std::endl;
-}*/
 
 void GillesPy3D::Model::add_initial_condition(const GillesPy3D::InitialCondition &initial_condition)
 {
-    // TODO
+    listOfInitialConditions.emplace_back(initial_condition);
 }
 
 void GillesPy3D::Model::add_data_function(const GillesPy3D::DataFunction &data_function)
 {
-    // TODO
+    listOfDataFunctions.emplace_back(data_function);
 }
 
 void GillesPy3D::Model::add_boundary_condition(const GillesPy3D::BoundaryCondition &boundary_condition)
 {
-    // TODO
+    listOfBoundaryConditions.emplace_back(boundary_condition);
 }
 
-void GillesPy3D::Model::add_domain(const GillesPy3D::Domain &domain)
+void GillesPy3D::Model::add_domain(const GillesPy3D::Domain &dom)
 {
-    // TODO
+    domain = dom;
 }
 
 void GillesPy3D::Model::add_timespan(int num_timesteps, double timestep_size, double output_freq)
