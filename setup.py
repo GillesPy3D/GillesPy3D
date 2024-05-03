@@ -36,6 +36,9 @@ from setuptools.command.develop import develop
 from setuptools.command.install import install
 from setuptools.command.bdist_egg import bdist_egg
 from setuptools.command.easy_install import easy_install
+from setuptools import Extension
+from setuptools.command.build_py import build_py
+from setuptools.command.build_ext import build_ext
 import os
 from os import path
 
@@ -65,6 +68,28 @@ with open(path.join(SETUP_DIR, 'gillespy3d/__version__.py')) as f:
         version[setting[0].strip()] = setting[1].strip().replace("'", '')
 
 
+# Configure and compile C extension
+libcgillespy3d = Extension(
+    name="libcgillespy3d._libcgillespy3d",
+    language="c++",
+    sources=[
+        "libcGillesPy3D/obj/include/libcgillespy3d_wrap.cpp",
+    ],
+    include_dirs=[
+        "libcGillesPy3D/include",
+        "libcGillesPy3D/external/ANN/include",
+        "libcGillesPy3D/external/Sundials/include",
+        "libcGillesPy3D/external/Sundials/cmake-build/default/include",
+    ],
+    library_dirs=[
+        "libcGillesPy3D/lib",
+    ],
+    libraries=[
+        "cgillespy3d",
+    ],
+)
+
+
 # Finally, define our namesake.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -86,10 +111,12 @@ setup(name                 = version['__title__'].lower(),
           "Tracker": "https://github.com/GillesPy3D/GillesPy3D/issues",
           "Source" : "https://github.com/GillesPy3D/GillesPy3D",
       },
-      packages             = find_packages('.'),
+      packages             = find_packages('.') + ['libcgillespy3d'],
+      package_dir={'libcgillespy3d': 'libcGillesPy3D/lib'},
       include_package_data = True,
       install_requires     = reqs,
 
+      ext_modules=[libcgillespy3d],
       classifiers      = [
           'Development Status :: 5 - Production/Stable',
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
