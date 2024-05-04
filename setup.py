@@ -112,7 +112,7 @@ setup(name                 = version['__title__'].lower(),
           "Source" : "https://github.com/GillesPy3D/GillesPy3D",
       },
       packages             = find_packages('.') + ['libcgillespy3d'],
-      package_dir={'libcgillespy3d': 'libcGillesPy3D/lib'},
+      package_dir={'libcgillespy3d': 'libcGillesPy3D/lib/libcgillespy3d'},
       include_package_data = True,
       install_requires     = reqs,
 

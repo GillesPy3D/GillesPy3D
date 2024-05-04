@@ -16,7 +16,7 @@ env = Environment(
         "default",
         "swig",
     ],
-    SWIGOUTDIR=Dir("lib"),
+    SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
         Dir("external/ANN/include"),
