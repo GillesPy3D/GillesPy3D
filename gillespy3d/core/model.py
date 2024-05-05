@@ -33,7 +33,7 @@ from gillespy3d.core.timespan import TimeSpan
 from gillespy3d.solvers.build_expression import BuildExpression
 from gillespy3d.core.error import ModelError
 
-import libcgillespy3d
+from libcgillespy3d import libcgillespy3d
 
 
 class Model(libcgillespy3d.Model):
