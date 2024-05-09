@@ -1,21 +1,21 @@
-import distutils.sysconfig
+import sysconfig
 import os
 
 
 # Make sure python3 dev headers are installed
 # On Ubuntu, python3-dev (might need version-specific, e.g. python3.11-dev, which might require adding new repos)
 # On Fedora, python3-devel (might need version-specific, e.g. python3.11-devel)
-pyinc = distutils.sysconfig.get_python_inc()
+
+cmd_opts = Variables(None, ARGUMENTS)
+cmd_opts.Add(PathVariable("PYTHONINC", help="Path to Python development header include directory", default=sysconfig.get_path("include")))
+cmd_opts.Add("CC")
+cmd_opts.Add("CFLAGS")
+cmd_opts.Add("CXX")
+cmd_opts.Add("CXXFLAGS")
+cmd_opts.Add("LD")
 
 env = Environment(
-    CXXFLAGS=[
-        "-std=c++17",
-        "-fPIC",
-    ],
-    TOOLS=[
-        "default",
-        "swig",
-    ],
+    variables=cmd_opts,
     SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
@@ -24,14 +24,20 @@ env = Environment(
         Dir("external/Sundials/src"),
         Dir("external/Sundials/cmake-build/default/include"),
         Dir("external/Sundials/src/sundials"),
-        pyinc,
+        Dir("${PYTHONINC}"),
     ],
     LIBPATH=[
         Dir("obj"),
         Dir("obj/external/Sundials"),
     ],
-    ENV=os.environ,
 )
+
+env.Append(TOOLS=["swig"])
+env.MergeFlags({
+    "CXXFLAGS": [
+        "-std=c++17",
+    ],
+})
 
 # Send dependency build files to obj/ subfolders
 # From this point on, refer to all source files as being relative to the build directory
