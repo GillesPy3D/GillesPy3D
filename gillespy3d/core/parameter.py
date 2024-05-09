@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from gillespy3d.core.error import ParameterError
 
-import libcgillespy3d
+from libcgillespy3d import libcgillespy3d
 
 class Parameter(libcgillespy3d.Parameter):
     """

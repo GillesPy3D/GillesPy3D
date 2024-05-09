@@ -1,22 +1,22 @@
-import distutils.sysconfig
+import sysconfig
 import os
 
 
 # Make sure python3 dev headers are installed
 # On Ubuntu, python3-dev (might need version-specific, e.g. python3.11-dev, which might require adding new repos)
 # On Fedora, python3-devel (might need version-specific, e.g. python3.11-devel)
-pyinc = distutils.sysconfig.get_python_inc()
+
+cmd_opts = Variables(None, ARGUMENTS)
+cmd_opts.Add(PathVariable("PYTHONINC", help="Path to Python development header include directory", default=sysconfig.get_path("include")))
+cmd_opts.Add("CC")
+cmd_opts.Add("CFLAGS")
+cmd_opts.Add("CXX")
+cmd_opts.Add("CXXFLAGS")
+cmd_opts.Add("LD")
 
 env = Environment(
-    CXXFLAGS=[
-        "-std=c++17",
-        "-fPIC",
-    ],
-    TOOLS=[
-        "default",
-        "swig",
-    ],
-    SWIGOUTDIR=Dir("bin"),
+    variables=cmd_opts,
+    SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
         Dir("external/ANN/include"),
@@ -24,16 +24,20 @@ env = Environment(
         Dir("external/Sundials/src"),
         Dir("external/Sundials/cmake-build/default/include"),
         Dir("external/Sundials/src/sundials"),
-        pyinc,
+        Dir("${PYTHONINC}"),
     ],
     LIBPATH=[
         Dir("obj"),
         Dir("obj/external/Sundials"),
     ],
-    ENV=os.environ,
 )
 
-env.Execute(Mkdir("bin"))
+env.Append(TOOLS=["swig"])
+env.MergeFlags({
+    "CXXFLAGS": [
+        "-std=c++17",
+    ],
+})
 
 # Send dependency build files to obj/ subfolders
 # From this point on, refer to all source files as being relative to the build directory
@@ -42,21 +46,17 @@ VariantDir("obj/src", "src", duplicate=False)
 VariantDir("obj/external", "external", duplicate=False)
 VariantDir("obj/include", "include", duplicate=False)
 
-libcgillespy3d = SConscript("obj/src/SConscript", exports=["env"])
+cgillespy3d = SConscript("obj/src/SConscript", exports=["env"])
 sundials = SConscript("obj/external/Sundials/SConscript", exports=["env"])
 
-py_lib = env.SharedLibrary("bin/_libcgillespy3d",
-    [
-        "obj/include/libcgillespy3d.i",
-    ],
-    LIBS=[libcgillespy3d, sundials],
-    SHLIBPREFIX="",
-    SHLIBSUFFIX=(".so" if os.name not in ['nt'] else ".pyd"),
+libcgillespy3d = env.StaticLibrary(
+    "lib/cgillespy3d",
+    ["obj/include/libcgillespy3d.i", *cgillespy3d, *sundials],
     SWIGFLAGS=[
         "-c++",
         "-python",
         "-features",
         "autodoc",
-    ]
+    ],
+    SWIGCXXFILESUFFIX="_wrap.cpp",
 )
-env.Clean(py_lib, Dir("bin/__pycache__"))

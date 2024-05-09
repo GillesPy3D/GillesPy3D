@@ -16,7 +16,7 @@
 from gillespy3d.core.parameter import Parameter
 from gillespy3d.core.error import SpeciesError
 
-import libcgillespy3d
+from libcgillespy3d import libcgillespy3d
 
 
 class Species(libcgillespy3d.Species):

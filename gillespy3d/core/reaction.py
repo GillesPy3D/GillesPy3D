@@ -23,7 +23,7 @@ from gillespy3d.core.species import Species
 from gillespy3d.core.parameter import Parameter
 from gillespy3d.core.error import ReactionError
 
-import libcgillespy3d
+from libcgillespy3d import libcgillespy3d
 
 class Reaction(libcgillespy3d.Reaction):
     """

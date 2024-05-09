@@ -29,11 +29,11 @@ nvector = SConscript("src/nvector/SConscript", exports=["env"])
 sunmatrix = SConscript("src/sunmatrix/SConscript", exports=["env"])
 sunnonlinsol = SConscript("src/sunnonlinsol/SConscript", exports=["env"])
 
-sundials = env.StaticLibrary("sundials", [
+sundials = [
     cvode,
     sundials,
     nvector,
     sunmatrix,
-])
+]
 
 Return("sundials")
