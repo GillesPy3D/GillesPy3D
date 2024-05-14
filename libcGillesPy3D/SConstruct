@@ -16,6 +16,7 @@ cmd_opts.Add("LD")
 
 env = Environment(
     variables=cmd_opts,
+    tools=["default", "swig"],
     SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
@@ -32,7 +33,6 @@ env = Environment(
     ],
 )
 
-env.Append(TOOLS=["swig"])
 env.MergeFlags({
     "CXXFLAGS": [
         "-std=c++17",
