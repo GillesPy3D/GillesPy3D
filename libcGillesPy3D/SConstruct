@@ -16,7 +16,8 @@ cmd_opts.Add("LD")
 
 env = Environment(
     variables=cmd_opts,
-    tools=["default", "swig"],
+    tools=["default", "toolchains", "swig"],
+    TOOLCHAIN_CXX_STANDARD=17,
     SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
@@ -32,12 +33,6 @@ env = Environment(
         Dir("obj/external/Sundials"),
     ],
 )
-
-env.MergeFlags({
-    "CXXFLAGS": [
-        "-std=c++17",
-    ],
-})
 
 # Send dependency build files to obj/ subfolders
 # From this point on, refer to all source files as being relative to the build directory
