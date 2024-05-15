@@ -1,6 +1,6 @@
 Import("env")
 
-nvector = env.Object([
+nvector = env.SharedObject([
     "serial/nvector_serial.c",
 ])
 

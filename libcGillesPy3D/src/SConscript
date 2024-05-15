@@ -1,6 +1,6 @@
 Import("env")
 
-libcgillespy3d = env.Object([
+libcgillespy3d = env.SharedObject([
     "model.cpp",
     "model_context.cpp",
     "reaction.cpp",

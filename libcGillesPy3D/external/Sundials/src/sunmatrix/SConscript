@@ -1,6 +1,6 @@
 Import("env")
 
-sunmatrix = env.Object([
+sunmatrix = env.SharedObject([
     "band/sunmatrix_band.c",
     "dense/sunmatrix_dense.c",
 ])

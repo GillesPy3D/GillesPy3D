@@ -4,7 +4,7 @@ env.Append(CPPPATH=[
     Dir("."),
 ])
 
-sundials = env.Object([
+sundials = env.SharedObject([
     "sundials_math.c",
     "sundials_iterative.c",
     "sundials_matrix.c",
