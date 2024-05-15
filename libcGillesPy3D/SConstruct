@@ -8,15 +8,13 @@ import os
 
 cmd_opts = Variables(None, ARGUMENTS)
 cmd_opts.Add(PathVariable("PYTHONINC", help="Path to Python development header include directory", default=sysconfig.get_path("include")))
-cmd_opts.Add("CC")
-cmd_opts.Add("CFLAGS")
-cmd_opts.Add("CXX")
-cmd_opts.Add("CXXFLAGS")
-cmd_opts.Add("LD")
+
+toolchains = Tool("toolchains")
+toolchains.options(cmd_opts)
 
 env = Environment(
     variables=cmd_opts,
-    tools=["default", "toolchains", "swig"],
+    tools=["default", toolchains, "swig"],
     TOOLCHAIN_CXX_STANDARD=17,
     SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
