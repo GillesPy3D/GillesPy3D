@@ -79,7 +79,7 @@ libcgillespy3d = Extension(
         "libcGillesPy3D/include",
         "libcGillesPy3D/external/ANN/include",
         "libcGillesPy3D/external/Sundials/include",
-        "libcGillesPy3D/external/Sundials/cmake-build/default/include",
+        "libcGillesPy3D/site_scons/site_tools/toolchains/default/include",
     ],
     library_dirs=[
         "libcGillesPy3D/lib",
