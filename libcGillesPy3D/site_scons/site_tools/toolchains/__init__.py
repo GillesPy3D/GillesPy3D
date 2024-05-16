@@ -1,4 +1,5 @@
 from . import default, msvc
+import os
 
 def options(opts):
     opts.Add("CC")
@@ -13,5 +14,7 @@ def exists(env):
 def generate(env):
     if msvc.exists(env):
         msvc.generate(env)
+        env.Append(TOOLCHAINDIR=os.path.dirname(msvc.__file__))
     else:
         default.generate(env)
+        env.Append(TOOLCHAINDIR=os.path.dirname(default.__file__))

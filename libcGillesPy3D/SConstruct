@@ -22,7 +22,7 @@ env = Environment(
         Dir("external/ANN/include"),
         Dir("external/Sundials/include"),
         Dir("external/Sundials/src"),
-        Dir("external/Sundials/cmake-build/default/include"),
+        Dir("${TOOLCHAINDIR}/include"),
         Dir("external/Sundials/src/sundials"),
         Dir("${PYTHONINC}"),
     ],
