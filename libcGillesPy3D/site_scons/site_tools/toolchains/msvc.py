@@ -6,4 +6,4 @@ def exists(env):
 
 def generate(env):
     if "TOOLCHAIN_CXX_STANDARD" in env:
-        env.Append(CXXFLAGS=CLVar("-std=c++17"))
+        env.Append(CXXFLAGS=CLVar("/std:c++17"))
