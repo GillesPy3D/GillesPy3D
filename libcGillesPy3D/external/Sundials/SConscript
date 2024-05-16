@@ -20,7 +20,10 @@ env.Append(
     CPPPATH=[
         Dir("."),
         Dir("src/sundials"),
-    ]
+    ],
+    CPPDEFINES=[
+        "SUNDIALS_STATIC_DEFINE",
+    ],
 )
 
 cvode = SConscript("src/cvode/SConscript", exports=["env"])
