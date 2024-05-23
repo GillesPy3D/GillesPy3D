@@ -87,6 +87,7 @@ libcgillespy3d = Extension(
     libraries=[
         "cgillespy3d",
     ],
+    extra_compile_args=['-std=c++17'],
 )
 
 
