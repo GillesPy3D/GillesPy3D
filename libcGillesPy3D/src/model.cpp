@@ -58,5 +58,9 @@ void GillesPy3D::Model::add_timespan(int num_timesteps, double timestep_size, do
 
 void GillesPy3D::Model::run()
 {
-    // TODO
+    sim = Simulation(this);
+    while(t < this.t_end){
+       sim.run_until(next_t);
+       // save to result
+    }
 }

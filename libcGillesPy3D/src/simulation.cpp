@@ -1,12 +1,31 @@
 #include "simulation.hpp"
 #include <iostream>
 
+
+GillesPy3D::Simulation::Simulation(GillesPy3D::Model &model){
+    context = GillesPy3D::ModelContext(model);
+
+    // TODO
+    // to turn a Model into a Simulation, we need to compile the 
+    // propensity functions
+    // 1. compile a c lib, dll.load it
+    // 2. JIT (for python)
+    // 3. if model is all mass-action 
+
+}
+
+
 GillesPy3D::Simulation::Simulation(GillesPy3D::ModelContext &context)
     : context(context)
 {
     double test_state[2] = {1.23, 4.56};
     double test_parameters[1] = {2.5};
     std::cout << "testing propensity sum: " << context.reactions().get_propensity_sum(test_state, test_parameters) << std::endl;
+}
+
+
+void GillesPy3D::Simulation::reset(){
+    // set t=0, re-set initial conditions
 }
 
 void GillesPy3D::Simulation::run_until(double t)
