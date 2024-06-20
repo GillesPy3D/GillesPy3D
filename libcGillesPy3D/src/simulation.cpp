@@ -5,12 +5,15 @@
 GillesPy3D::Simulation::Simulation(GillesPy3D::Model &model){
     context = GillesPy3D::ModelContext(model);
 
+
     // TODO
     // to turn a Model into a Simulation, we need to compile the 
     // propensity functions
     // 1. compile a c lib, dll.load it
     // 2. JIT (for python)
-    // 3. if model is all mass-action 
+    // 3. if model is all mass-action
+    // TODO - update:  Move this constructor to python, use numba JIT
+    // as the default for the first implementation
 
 }
 

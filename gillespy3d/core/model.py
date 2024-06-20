@@ -58,13 +58,16 @@ class Model(libcgillespy3d.Model):
 
     def add(self, components):
         """
-        Adds a component, or list of components to the model. If a list is provided, Species
-        and Parameters are added before other components.  Lists may contain any combination
-        of accepted types other than lists and do not need to be in any particular order.
+        Adds a component, or list of components to the model. If a list is provided,
+        Species and Parameters are added before other components.  Lists may contain
+        any combination of accepted types other than lists and do not need to be in
+        any particular order.
 
-        :param components: The component or list of components to be added the the model.
+        :param components: The component or list of components to be added to the
+                           model.
         :type components: Species, Parameters, Reactions, Domain, Data Function, \
-                          Initial Conditions, Boundary Conditions, and TimeSpan or list
+                          Initial Conditions, Boundary Conditions, and TimeSpan or
+                          list
 
         :returns: The components that were added to the model.
         :rtype: Species, Parameters, Reactions, Domain, Data Function, \
@@ -81,9 +84,11 @@ class Model(libcgillespy3d.Model):
             params = []
             others = []
             for component in components:
-                if isinstance(component, Species) or type(component).__name__ in Species.__name__:
+                if isinstance(component, Species) or \
+                   type(component).__name__ in Species.__name__:
                     self.add_species(component)
-                elif isinstance(component, Parameter) or type(component).__name__ in Parameter.__name__:
+                elif isinstance(component, Parameter) or \
+                     type(component).__name__ in Parameter.__name__:
                     params.append(component)
                 else:
                     others.append(component)
