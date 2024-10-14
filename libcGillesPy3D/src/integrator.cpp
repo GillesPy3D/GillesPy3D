@@ -17,6 +17,7 @@
  */
 
 #include "integrator.hpp"
+#include "model.hpp"
 
 static bool validate(GillesPy3D::Integrator *integrator, int retcode);
 
@@ -40,7 +41,7 @@ GillesPy3D::Integrator::Integrator(
       data(species_state, reaction_state),
       urn(urn)
 {
-    y0 = init_model_vector(model, urn);
+    y0 = init_model_vector(context);
     reset_model_vector();
     y = N_VClone_Serial(y0);
     y_save = N_VClone_Serial(y0);
@@ -59,7 +60,7 @@ GillesPy3D::Integrator::Integrator(
     validate(this, CVodeInit(cvode_mem, rhs, t, y));
     validate(this, CVodeSStolerances(cvode_mem, reltol, abstol));
 
-    solver = SUNLinSol_SPGMR(y, 0, 0);
+    solver = SUNLinSol_SPGMR(y, 0, 0, context);
     validate(this, CVodeSetUserData(cvode_mem, &data));
     validate(this, CVodeSetLinearSolver(cvode_mem, solver, NULL));
 }
@@ -121,29 +122,13 @@ GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate_constant(double
 {
     // this function assumes no deterministic species or 
     realtype *Y = N_VGetArrayPointer(y);
-    GillesPy3D::Simulation *sim = data.simulation;
-    std::vector<GillesPy3D::Species> *species = data.species_state;
-    std::vector<GillesPy3D::Reaction> *reactions = data.reaction_state;
+    const GillesPy3D::SpeciesState &species = data.species();
+    const GillesPy3D::ReactionState &reactions = data.reactions();
     std::vector<double> &propensities = data.propensities;
-    unsigned int num_species = sim->model->number_species;
-    unsigned int num_reactions = sim->model->number_reactions;
+    unsigned int num_species = species.size();
+    unsigned int num_reactions = reactions.size();
     realtype propensity;
-    for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
-    {
-        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
-        switch (rxn.mode) {
-        case GillesPy3D::SimulationState::DISCRETE:
-            // Process stochastic reaction state by updating the root offset for each reaction.
-            propensity = rxn.ssa_propensity(Y);
-            propensities[rxn_i] = propensity;
-            break;
-
-        case SimulationState::CONTINUOUS:
-            break;
-        default:
-            break;
-        }
-    }
+    reactions.ssa_propensity(Y, propensities.data());
 
     double tau = *t - this->t;
     for (int rxn_i = 0; rxn_i < num_reactions; ++rxn_i){
@@ -257,7 +242,7 @@ void GillesPy3D::Integrator::use_reactions()
     auto &reactions = data.reactions();
     for (std::size_t rxn_id = 0; rxn_id < reactions.size(); ++rxn_id)
     {
-        if (reactions.mode(rxn_id) == SimulationState::DISCRETE)
+        if (reactions.mode(rxn_id) == GillesPy3D::SimulationState::DISCRETE)
         {
             // Reaction root-finder should only be used on discrete-valued reactions.
             // The required IDs are placed into a reference vector and are mapped back out
@@ -265,12 +250,6 @@ void GillesPy3D::Integrator::use_reactions()
             data.active_reaction_ids.push_back(rxn_id);
         }
     }
-}
-
-void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events)
-{
-    use_events(events);
-    use_reactions();
 }
 
 bool GillesPy3D::Integrator::enable_root_finder()
@@ -316,7 +295,7 @@ double GillesPy3D::URNGenerator::next()
 }
 
 
-GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem = nullptr)
+GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem)
 {
     SUNContext_Create(mpi_mem, &m_sundials_context);
 }
@@ -330,7 +309,7 @@ GillesPy3D::IntegratorContext::~IntegratorContext()
 /* Initialize a SUNDials N_Vector based on information provided in the model.
  * 
  */
-N_Vector GillesPy3D::Integrator::init_model_vector()
+N_Vector GillesPy3D::Integrator::init_model_vector(const SUNContext &context)
 {
     int rxn_offset_boundary = num_species + num_reactions;
 
@@ -341,7 +320,7 @@ N_Vector GillesPy3D::Integrator::init_model_vector()
     // [ --- concentrations --- | --- rxn_offsets --- ]
     // concentrations: bounded by [0, num_species)
     // rxn_offsets:    bounded by [num_species, num_species + num_reactions)
-    N_Vector y0 = N_VNew_Serial(rxn_offset_boundary);
+    N_Vector y0 = N_VNew_Serial(rxn_offset_boundary, context);
 
     // The first half of the integration vector is used for integrating species concentrations.
     // [ --- concentrations --- | ...

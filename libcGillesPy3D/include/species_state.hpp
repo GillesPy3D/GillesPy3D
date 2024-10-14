@@ -3,6 +3,7 @@
 #include "parameter_state.hpp"
 #include "sundials/sundials_types.h"
 #include <vector>
+#include <functional>
 
 namespace GillesPy3D
 {

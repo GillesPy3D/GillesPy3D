@@ -61,14 +61,6 @@ namespace GillesPy3D
         double max_step;
     };
 
-    /// @brief indicator for the "type" of step being taken for a particular species
-    enum SimulationState : unsigned int
-    {
-        CONTINUOUS = 0,
-        DISCRETE = 1,
-        DYNAMIC = 2
-    };
-
     class IntegratorData
     {
     public:
@@ -108,7 +100,6 @@ namespace GillesPy3D
         realtype *reactions;
         int retcode;
     };
-
 
     class Integrator
     {
@@ -215,7 +206,7 @@ namespace GillesPy3D
 
         Integrator(const SUNContext &context, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
-        N_Vector init_model_vector();
+        N_Vector init_model_vector(const SUNContext &context);
         void reset_model_vector();
     };
 
