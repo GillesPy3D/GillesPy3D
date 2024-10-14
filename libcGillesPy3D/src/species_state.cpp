@@ -1,5 +1,22 @@
 #include "species_state.hpp"
 
+double GillesPy3D::DifferentialEquation::evaluate(double t, double *ode_state, double *parameters) const
+{
+    double sum = 0.0;
+
+    for (auto &rate_rule : rate_rules)
+    {
+        sum += rate_rule(t, ode_state, parameters);
+    }
+
+    for (auto &formula : formulas)
+    {
+        sum += formula(ode_state);
+    }
+
+    return sum;
+}
+
 GillesPy3D::SpeciesState::SpeciesState(
     const std::vector<sunrealtype> &initial_populations,
     const GillesPy3D::ParameterState &parameters)
@@ -16,7 +33,7 @@ void GillesPy3D::SpeciesState::integrate(sunrealtype t, sunrealtype *y, sunrealt
 {
     for (std::size_t spec_i = 0; spec_i < size(); ++spec_i)
     {
-        dydt[spec_i] = m_diff_equations.at(spec_i).evaluate(t, y);
+        dydt[spec_i] = m_diff_equations.at(spec_i).evaluate(t, y, m_parameters.data());
     }
 }
 

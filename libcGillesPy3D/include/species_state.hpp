@@ -17,10 +17,10 @@ namespace GillesPy3D
     struct DifferentialEquation
     {
     public:
-        std::vector<std::function<double(double *)>> formulas;
-        std::vector<std::function<double(double, double *, double *, const double *)>> rate_rules;
+        std::vector<std::function<double(double*)>> formulas;
+        std::vector<std::function<double(double, double*, double*)>> rate_rules;
 
-        double evaluate(double t, double *ode_state) const;
+        double evaluate(double t, double *ode_state, double *parameters) const;
     };
 
     class SpeciesState
