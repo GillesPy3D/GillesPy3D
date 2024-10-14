@@ -69,11 +69,9 @@ namespace GillesPy3D
         DYNAMIC = 2
     };
 
-    struct IntegratorData
+    class IntegratorData
     {
-        Simulation *simulation;
-        SpeciesState &species_state;
-        ReactionState &reaction_state;
+    public:
         std::vector<Event> *events = nullptr;
         std::vector<std::function<double(double, const double*)>> active_triggers;
         // Container representing the rootfinder-enabled reactions.
@@ -83,9 +81,15 @@ namespace GillesPy3D
         std::vector<unsigned int> active_reaction_ids;
         std::vector<double> propensities;
 
-        IntegratorData(Simulation *simulation);
-        IntegratorData(Simulation *simulation, int num_species, int num_reactions);
+        IntegratorData(const SpeciesState &species_state, const ReactionState &reaction_state);
         IntegratorData(IntegratorData &prev_data);
+
+        const SpeciesState &species() { return m_species_state; }
+        const ReactionState &reactions() { return m_reaction_state; }
+
+    private:
+        const SpeciesState &m_species_state;
+        const ReactionState &m_reaction_state;
     };
 
     /* :IntegrationResults:
@@ -114,7 +118,7 @@ namespace GillesPy3D
         int num_species;
         int num_reactions;
         int *m_roots = nullptr;
-        //Model &model;
+        URNGenerator urn;
     public:
         // status: check for errors before using the results.
         IntegrationStatus status;
@@ -209,8 +213,9 @@ namespace GillesPy3D
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(const SUNContext &context, Simulation *simulation, Model &model, URNGenerator urn, double reltol, double abstol);
+        Integrator(const SUNContext &context, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
+        N_Vector init_model_vector();
         void reset_model_vector();
     };
 
@@ -227,8 +232,6 @@ namespace GillesPy3D
     private:
         SUNContext m_sundials_context;
     };
-
-    N_Vector init_model_vector(Model &model, URNGenerator urn);
 
     int rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
     int rootfn(realtype t, N_Vector y, realtype *gout, void *user_data);

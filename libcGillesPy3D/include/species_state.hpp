@@ -25,11 +25,14 @@ namespace GillesPy3D
     class SpeciesState
     {
     public:
-        explicit SpeciesState(const ParameterState &parameters);
-        std::size_t size();
-        void integrate(sunrealtype t, sunrealtype *y, sunrealtype *dydt);
+        SpeciesState(const std::vector<sunrealtype> &initial_populations, const ParameterState &parameters);
+
+        std::size_t size() const;
+        void integrate(sunrealtype t, sunrealtype *y, sunrealtype *dydt) const;
+        void initialize(sunrealtype *out) const;
 
     private:
+        const std::vector<sunrealtype> &m_initial_populations;
         const ParameterState &m_parameters;
         const std::vector<sunrealtype> m_state;
         const std::vector<DifferentialEquation> m_diff_equations;
