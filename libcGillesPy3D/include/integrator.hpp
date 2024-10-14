@@ -19,13 +19,15 @@
 #pragma once
 
 #include "model.hpp"
-#include "reaction.hpp"
+#include "reaction_state.hpp"
+#include "species_state.hpp"
 #include "event.hpp"
 #include "simulation.hpp"
 #include "cvode/cvode.h"
 #include "sunlinsol/sunlinsol_spgmr.h"
 #include "sundials/sundials_types.h"
 #include "sundials/sundials_context.h"
+#include "sundials/sundials_nvector.h"
 #include "nvector/nvector_serial.h"
 #include <vector>
 #include <random>
@@ -70,8 +72,8 @@ namespace GillesPy3D
     struct IntegratorData
     {
         Simulation *simulation;
-        std::vector<Species> *species_state;
-        std::vector<Reaction> *reaction_state;
+        SpeciesState &species_state;
+        ReactionState &reaction_state;
         std::vector<Event> *events = nullptr;
         std::vector<std::function<double(double, const double*)>> active_triggers;
         // Container representing the rootfinder-enabled reactions.

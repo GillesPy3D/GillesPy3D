@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "integrator.h"
+#include "integrator.hpp"
 
 static bool validate(GillesPy3D::Integrator *integrator, int retcode);
 
@@ -369,52 +369,15 @@ int GillesPy3D::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
     // Extract simulation data
     GillesPy3D::IntegratorData *data = static_cast<IntegratorData*>(user_data);
     GillesPy3D::Simulation *sim = data->simulation;
-    std::vector<GillesPy3D::Species> *species = data->species_state;
-    std::vector<GillesPy3D::Reaction> *reactions = data->reaction_state;
+    GillesPy3D::SpeciesState &species = data->species_state;
+    GillesPy3D::ReactionState &reactions = data->reaction_state;
     std::vector<double> &propensities = data->propensities;
-    unsigned int num_species = sim->model->number_species;
-    unsigned int num_reactions = sim->model->number_reactions;
 
     // Differentiate different regions of the input/output vectors.
     // First half is for concentrations, second half is for reaction offsets.
-    realtype *dydt_offsets = &dydt[num_species];
-
-    // Deterministic reactions generally are "evaluated" by generating dy/dt functions
-    //   for each of their dependent species.
-    // To handle these, we will go ahead and evaluate each species' differential equations.
-    unsigned int spec_i;
-    for (spec_i = 0; spec_i < num_species; ++spec_i)
-    {
-        if ((*species)[spec_i].boundary_condition) {
-            // The effective dy/dt of a boundary condition is 0.
-            dydt[spec_i] = 0.0;
-        }
-        else
-        {
-            dydt[spec_i] = (*species)[spec_i].diff_equation.evaluate(t, Y);
-        }
-    }
-
-    // Process deterministic propensity state
-    // These updates get written directly to the integrator's concentration state
-    for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
-    {
-        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
-
-        switch (rxn.mode) {
-        case SimulationState::DISCRETE:
-            // Process stochastic reaction state by updating the root offset for each reaction.
-            propensity = rxn.ssa_propensity(Y);
-            dydt_offsets[rxn_i] = propensity;
-            propensities[rxn_i] = propensity;
-            break;
-
-        case SimulationState::CONTINUOUS:
-        default:
-            dydt_offsets[rxn_i] = 0;
-            break;
-        }
-    }
+    realtype *dydt_offsets = &dydt[species.size()];
+    species.integrate(t, Y, dydt);
+    reactions.ssa_propensity(Y, dydt_offsets);
 
     return 0;
 };
