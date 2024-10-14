@@ -167,9 +167,7 @@ namespace GillesPy3D
 
         /// @brief Make reactions available to root-finder during integration.
         /// The root-finder itself is not activated until enable_root_finder() is called.
-        ///
-        /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_reactions(const std::vector<Reaction> &reactions);
+        void use_reactions();
 
         /// @brief Installs a CVODE root-finder onto the integrator.
         /// Any events or reactions provided by previous calls to use_events() or use_reactions()

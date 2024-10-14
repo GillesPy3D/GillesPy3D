@@ -254,25 +254,27 @@ void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &ev
     }
 }
 
-void GillesPy3D::Integrator::use_reactions(const std::vector<GillesPy3D::Reaction> &reactions)
+void GillesPy3D::Integrator::use_reactions()
 {
     data.active_reaction_ids.clear();
-    for (auto &reaction : reactions)
+
+    auto &reactions = data.reaction_state;
+    for (std::size_t rxn_id = 0; rxn_id < reactions.size(); ++rxn_id)
     {
-        if (reaction.mode == SimulationState::DISCRETE)
+        if (reactions.mode(rxn_id) == SimulationState::DISCRETE)
         {
             // Reaction root-finder should only be used on discrete-valued reactions.
             // The required IDs are placed into a reference vector and are mapped back out
             // when the caller of integrate() retrieves them.
-            data.active_reaction_ids.push_back(reaction.get_base_reaction()->id);
+            data.active_reaction_ids.push_back(rxn_id);
         }
     }
 }
 
-void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events, const std::vector<GillesPy3D::Reaction> &reactions)
+void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events)
 {
     use_events(events);
-    use_reactions(reactions);
+    use_reactions();
 }
 
 bool GillesPy3D::Integrator::enable_root_finder()

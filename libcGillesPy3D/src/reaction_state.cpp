@@ -8,6 +8,11 @@ std::size_t GillesPy3D::ReactionState::size()
     return m_propensity_impl.size();
 }
 
+GillesPy3D::SimulationState GillesPy3D::ReactionState::mode(std::size_t reaction_id)
+{
+    return m_reaction_state.at(reaction_id);
+}
+
 void GillesPy3D::ReactionState::ssa_propensity(sunrealtype *y, sunrealtype *propensities)
 {
     for (unsigned int rxn_i = 0; rxn_i < size(); ++rxn_i)

@@ -12,11 +12,10 @@ namespace GillesPy3D
     class ReactionState
     {
     public:
-        SimulationState mode;
-
         explicit ReactionState(const ParameterState &parameters);
         std::size_t size();
         void ssa_propensity(sunrealtype *y, sunrealtype *propensities);
+        SimulationState mode(std::size_t reaction_id);
 
     private:
         const ParameterState &m_parameters;
