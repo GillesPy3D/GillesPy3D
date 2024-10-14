@@ -13,6 +13,7 @@ namespace GillesPy3D
     class Simulation
     {
     public:
+        explicit Simulation(Model &model);
         explicit Simulation(ModelContext &context);
 
         void run_until(double t);
@@ -21,6 +22,7 @@ namespace GillesPy3D
         double *get_position();
 
         void output_vtk(const std::string &output_directory);
+        void reset();
 
     private:
         ModelContext &context;
