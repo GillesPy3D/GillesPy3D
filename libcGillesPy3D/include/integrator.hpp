@@ -21,7 +21,7 @@
 #include "model.hpp"
 #include "reaction_state.hpp"
 #include "species_state.hpp"
-#include "event.hpp"
+#include "event_state.hpp"
 #include "simulation.hpp"
 #include "cvode/cvode.h"
 #include "sunlinsol/sunlinsol_spgmr.h"
@@ -64,8 +64,8 @@ namespace GillesPy3D
     class IntegratorData
     {
     public:
-        std::vector<Event> *events = nullptr;
-        std::vector<std::function<double(double, const double*)>> active_triggers;
+        std::vector<EventStatus> *events = nullptr;
+        std::vector<std::function<double(double, const double*, const double*)>> active_triggers;
         // Container representing the rootfinder-enabled reactions.
         // Each integer at index i represents the reaction id corresponding to rootfinder element i.
         // In `rootfn`, this means that gout[i] is the "output" of reaction active_reaction_ids[i].
@@ -73,13 +73,14 @@ namespace GillesPy3D
         std::vector<unsigned int> active_reaction_ids;
         std::vector<double> propensities;
 
-        IntegratorData(const SpeciesState &species_state, const ReactionState &reaction_state);
-        IntegratorData(IntegratorData &prev_data);
+        IntegratorData(const ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state);
 
+        const ParameterState &parameters() { return m_parameter_state; }
         const SpeciesState &species() { return m_species_state; }
         const ReactionState &reactions() { return m_reaction_state; }
 
     private:
+        const ParameterState &m_parameter_state;
         const SpeciesState &m_species_state;
         const ReactionState &m_reaction_state;
     };
@@ -151,14 +152,7 @@ namespace GillesPy3D
         ///
         /// @param events List of event objects to make available to the root-finder.
         /// The trigger functions of all given events are added as root-finder targets.
-        void use_events(const std::vector<Event> &events);
-
-        /// @brief Make events and reactions available to root-finder during integration.
-        /// The root-finder itself is not activated until enable_root_finder() is called.
-        ///
-        /// @param events List of event objects to make available to the root-finder.
-        /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_events(const std::vector<Event> &events, const std::vector<Reaction> &reactions);
+        void use_events(const std::vector<EventStatus> &events);
 
         /// @brief Make reactions available to root-finder during integration.
         /// The root-finder itself is not activated until enable_root_finder() is called.
@@ -204,7 +198,7 @@ namespace GillesPy3D
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(const SUNContext &context, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
+        Integrator(const SUNContext &context, const GillesPy3D::ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
         N_Vector init_model_vector(const SUNContext &context);
         void reset_model_vector();

@@ -2,6 +2,7 @@
 
 #include "sundials/sundials_types.h"
 #include <memory>
+#include <vector>
 
 namespace GillesPy3D
 {

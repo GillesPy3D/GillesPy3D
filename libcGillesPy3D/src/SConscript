@@ -15,6 +15,7 @@ libcgillespy3d = env.SharedObject(
         "simulation.cpp",
         "error.cpp",
         "integrator.cpp",
+        "event_state.cpp",
     ],
     TOOLCHAIN_WIN32_CXXFLAGS="/EHsc",
 )

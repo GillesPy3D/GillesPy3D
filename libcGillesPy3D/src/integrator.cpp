@@ -22,9 +22,11 @@
 static bool validate(GillesPy3D::Integrator *integrator, int retcode);
 
 GillesPy3D::IntegratorData::IntegratorData(
+    const GillesPy3D::ParameterState &parameter_state,
     const GillesPy3D::SpeciesState &species_state,
     const GillesPy3D::ReactionState &reaction_state)
-    : m_species_state(species_state),
+    : m_parameter_state(parameter_state),
+      m_species_state(species_state),
       m_reaction_state(reaction_state)
 {
     propensities.reserve(m_reaction_state.size());
@@ -33,12 +35,13 @@ GillesPy3D::IntegratorData::IntegratorData(
 
 GillesPy3D::Integrator::Integrator(
     const SUNContext &context,
+    const GillesPy3D::ParameterState &parameter_state,
     const GillesPy3D::SpeciesState &species_state,
     const GillesPy3D::ReactionState &reaction_state,
     const URNGenerator urn,
     double reltol, double abstol)
     : t(0.0f),
-      data(species_state, reaction_state),
+      data(parameter_state, species_state, reaction_state),
       urn(urn)
 {
     y0 = init_model_vector(context);
@@ -224,13 +227,13 @@ GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate(double *t, std:
     return results;
 }
 
-void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events)
+void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::EventStatus> &events)
 {
     data.active_triggers.clear();
-    for (const GillesPy3D::Event &event : events)
+    for (const GillesPy3D::EventStatus &event : events)
     {
-        data.active_triggers.emplace_back([event](double t, const double *state) -> double {
-            return event.trigger(t, state) ? 1.0 : -1.0;
+        data.active_triggers.emplace_back([event](double t, const double *state, const double *parameters) -> double {
+            return event.trigger(t, state, parameters) ? 1.0 : -1.0;
         });
     }
 }
@@ -341,14 +344,14 @@ int GillesPy3D::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
     realtype propensity;
 
     // Extract simulation data
-    GillesPy3D::IntegratorData *data = static_cast<IntegratorData*>(user_data);
+    GillesPy3D::IntegratorData *data = static_cast<GillesPy3D::IntegratorData*>(user_data);
     const GillesPy3D::SpeciesState &species = data->species();
     const GillesPy3D::ReactionState &reactions = data->reactions();
     std::vector<double> &propensities = data->propensities;
 
     // Differentiate different regions of the input/output vectors.
     // First half is for concentrations, second half is for reaction offsets.
-    realtype *dydt_offsets = &dydt[species.size()];
+    sunrealtype *dydt_offsets = &dydt[species.size()];
     species.integrate(t, Y, dydt);
     reactions.ssa_propensity(Y, dydt_offsets);
 
@@ -367,7 +370,7 @@ int GillesPy3D::rootfn(realtype t, N_Vector y, realtype *gout, void *user_data)
     unsigned long long trigger_id;
     for (trigger_id = 0; trigger_id < num_triggers; ++trigger_id)
     {
-        gout[trigger_id] = data.active_triggers[trigger_id](t, y_t);
+        gout[trigger_id] = data.active_triggers[trigger_id](t, y_t, data.parameters().data());
     }
 
     unsigned long long rxn_id;
