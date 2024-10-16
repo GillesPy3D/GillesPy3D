@@ -87,7 +87,7 @@ namespace GillesPy3D
         bool operator<(const EventExecution &rhs) const;
         bool operator>(const EventExecution &rhs) const;
 
-        void execute(double t, EventOutput &output) const;
+        void execute(double t, EventOutput output) const;
         void execute(double t, double *state, double *parameters) const;
         inline double priority(double t, const double *state, const double *parameters) const
         {

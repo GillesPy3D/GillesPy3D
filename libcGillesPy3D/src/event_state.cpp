@@ -137,7 +137,7 @@ GillesPy3D::EventExecution::~EventExecution()
     delete[] m_variables;
 }
 
-void GillesPy3D::EventExecution::execute(double t, GillesPy3D::EventOutput &output) const
+void GillesPy3D::EventExecution::execute(double t, GillesPy3D::EventOutput output) const
 {
     for (auto assignment : m_assignments)
     {
