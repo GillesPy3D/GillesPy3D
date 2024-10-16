@@ -13,7 +13,7 @@ namespace GillesPy3D
     class Simulation
     {
     public:
-        explicit Simulation(Model &model);
+        // explicit Simulation(Model &model);
         explicit Simulation(ModelContext &context);
 
         void run_until(double t);

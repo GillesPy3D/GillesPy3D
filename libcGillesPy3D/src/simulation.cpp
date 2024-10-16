@@ -5,9 +5,9 @@
 // NOTE: below is a placeholder, but `context()` initializer is incorrect
 // Simulation::context is a reference, which implies that its lifetime exceeds Simulation's
 // This may need to be moved to a static factory method, maybe with a context manager of sorts
-GillesPy3D::Simulation::Simulation(GillesPy3D::Model &model)
-    : context(GillesPy3D::ModelContext(model))
-{
+// GillesPy3D::Simulation::Simulation(GillesPy3D::Model &model)
+//     : context(GillesPy3D::ModelContext(model))
+// {
 
     // TODO
     // to turn a Model into a Simulation, we need to compile the 
@@ -18,7 +18,7 @@ GillesPy3D::Simulation::Simulation(GillesPy3D::Model &model)
     // TODO - update:  Move this constructor to python, use numba JIT
     // as the default for the first implementation
 
-}
+// }
 
 
 GillesPy3D::Simulation::Simulation(GillesPy3D::ModelContext &context)
