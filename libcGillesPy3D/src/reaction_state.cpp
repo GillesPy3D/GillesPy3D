@@ -3,17 +3,17 @@
 GillesPy3D::ReactionState::ReactionState(const GillesPy3D::ParameterState &parameters)
     : m_parameters(parameters) {}
 
-std::size_t GillesPy3D::ReactionState::size()
+std::size_t GillesPy3D::ReactionState::size() const
 {
     return m_propensity_impl.size();
 }
 
-GillesPy3D::SimulationState GillesPy3D::ReactionState::mode(std::size_t reaction_id)
+GillesPy3D::SimulationState GillesPy3D::ReactionState::mode(std::size_t reaction_id) const
 {
     return m_reaction_state.at(reaction_id);
 }
 
-void GillesPy3D::ReactionState::ssa_propensity(sunrealtype *y, sunrealtype *propensities)
+void GillesPy3D::ReactionState::ssa_propensity(sunrealtype *y, sunrealtype *propensities) const
 {
     for (unsigned int rxn_i = 0; rxn_i < size(); ++rxn_i)
     {
