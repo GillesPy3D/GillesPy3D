@@ -15,7 +15,7 @@ toolchains.options(cmd_opts)
 env = Environment(
     variables=cmd_opts,
     tools=["default", toolchains, "swig"],
-    TOOLCHAIN_CXX_STANDARD=17,
+    TOOLCHAIN_CXX_STANDARD=20,
     SWIGOUTDIR=Dir("lib/libcgillespy3d"),
     CPPPATH=[
         Dir("include"),
@@ -42,14 +42,21 @@ VariantDir("obj/include", "include", duplicate=False)
 cgillespy3d = SConscript("obj/src/SConscript", exports=["env"])
 sundials = SConscript("obj/external/Sundials/SConscript", exports=["env"])
 
-libcgillespy3d = env.StaticLibrary(
-    "lib/cgillespy3d",
-    ["obj/include/libcgillespy3d.i", *cgillespy3d, *sundials],
+[swigfile, swigpyfile] = env.CXXFile("obj/include/libcgillespy3d.i",
     SWIGFLAGS=[
         "-c++",
         "-python",
-        "-features",
-        "autodoc",
+        "-features", "autodoc",
     ],
     SWIGCXXFILESUFFIX="_wrap.cpp",
+)
+swigobj = env.SharedObject(
+    source=[swigfile],
+    TOOLCHAIN_CXX_STANDARD=17,
+    TOOLCHAIN_WIN32_CXXFLAGS="/EHsc",
+)
+
+libcgillespy3d = env.StaticLibrary(
+    "lib/cgillespy3d",
+    [swigobj, *cgillespy3d, *sundials],
 )

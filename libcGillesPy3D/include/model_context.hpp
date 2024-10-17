@@ -10,6 +10,18 @@
 
 namespace GillesPy3D
 {
+    template <typename T>
+    using UniquePropensityFunction = T (*)(T* state, T* parameters);
+
+    template <typename T>
+    using UniqueContinuousFunction = T (*)(double t, T* state, T* parameters);
+
+    template <typename T>
+    using GroupPropensityFunction = void (*)(T* state, T* parameters, T* out);
+
+    template <typename T>
+    using GroupContinuousFunction = void (*)(T* state, T* parameters, T* out);
+
     class ReactionContext;
 
     class CPropensityFunction

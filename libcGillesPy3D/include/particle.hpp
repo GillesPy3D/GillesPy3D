@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef particle_hpp
 #define particle_hpp
 
+#include "species_state.hpp"
+#include "reaction_state.hpp"
 #include <vector>
 
 #include "ANN/ANN.h" // ANN KD Tree
@@ -60,8 +62,8 @@ namespace GillesPy3D{
         // Data Function
         //double * data_fn; //TODO
         // chem_rxn_system
-        std::vector<GillesPy3D::SpeciesState> species_state;
-        std::vector<GillesPy3D::ReactionState> reaction_state;
+        SpeciesState species_state;
+        ReactionState reaction_state;
         N_Vector Y_state;  // Integrator State
         N_Vector Y_save;   // Saved Integrator State
         realtype current_time;

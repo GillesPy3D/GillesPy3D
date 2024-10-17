@@ -377,10 +377,11 @@ namespace Gillespy
                     IntegrationResults result;
 
                     if(in_event_handling){
-                        sol.use_events(events, simulation->reaction_state);
+                        sol.use_events(events);
+                        sol.use_reactions();
                         sol.enable_root_finder();
                     }else if(use_root_finding){
-                        sol.use_reactions(simulation->reaction_state);
+                        sol.use_reactions();
                         sol.enable_root_finder();
                         if(neg_state_loop_cnt > 0){
                             neg_state_loop_cnt--;
