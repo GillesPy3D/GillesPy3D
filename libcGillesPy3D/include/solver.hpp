@@ -11,9 +11,18 @@
 namespace GillesPy3D
 {
 
+    struct SolverConfiguration
+    {
+        unsigned long long random_seed;
+        IntegratorConfiguration integrator;
+        SpeciesState &species;
+        ReactionState &reactions;
+        ParameterState &parameters;
+    };
+
     struct Solver
     {
-        Solver(sunrealtype t0, unsigned long long random_seed, SpeciesState &species, ReactionState &reactions, ParameterState &parameters);
+        Solver(sunrealtype t0, SolverConfiguration config);
 
     private:
         sunrealtype t;

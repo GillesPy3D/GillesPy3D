@@ -1,18 +1,18 @@
 #include "solver.hpp"
+#include "error.hpp"
+
+#include <sstream>
 
 GillesPy3D::Solver::Solver(
     sunrealtype t0,
-    unsigned long long random_seed,
-    GillesPy3D::SpeciesState &species,
-    GillesPy3D::ReactionState &reactions,
-    GillesPy3D::ParameterState &parameters)
+    GillesPy3D::SolverConfiguration config)
     : t(t0),
-      urn(random_seed),
-      sol(parameters, species, reactions, urn, 0, 0),
-      generator(random_seed),
-      species(species),
-      reactions(reactions),
-      parameters(parameters)
+      urn(config.random_seed),
+      sol(config.parameters, config.species, config.reactions, urn, config.integrator.rel_tol, config.integrator.abs_tol),
+      generator(config.random_seed),
+      species(config.species),
+      reactions(config.reactions),
+      parameters(config.parameters)
 {
     for (std::size_t spec = 0; spec < species.size(); spec++) {
         num_rate_rules += species.diff_equation(spec).rate_rules.size();
@@ -24,5 +24,15 @@ GillesPy3D::Solver::Solver(
                 break;// once we flagged it, skip to the next species
             }
         }
+    }
+
+    if (!sol.configure(config.integrator))
+    {
+        std::stringstream ss;
+        throw GillesPy3D::GillesPyError((std::stringstream()
+            << "Invalid integrator configuration (abstol = "
+            << config.integrator.abs_tol
+            << ", reltol = " << config.integrator.rel_tol
+            << ")").str().c_str());
     }
 }
