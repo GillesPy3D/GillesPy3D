@@ -28,3 +28,8 @@ GillesPy3D::Species::Species(const std::string &name,
     this->restrict_diffusion_to_type_list = std::vector<int>();
     this->non_spatial_initial_value = initial_value;
 }
+
+const std::string &GillesPy3D::Species::get_name() const
+{
+    return name;
+}

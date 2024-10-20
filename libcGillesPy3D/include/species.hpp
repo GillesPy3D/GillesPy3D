@@ -20,7 +20,8 @@ namespace GillesPy3D
                 const std::vector<int> restrict_to);
         Species(const std::string &name, 
                 const double initial_value);
-             
+
+        const std::string &get_name() const;
     };
 
 }

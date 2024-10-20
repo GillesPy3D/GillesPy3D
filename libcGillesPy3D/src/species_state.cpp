@@ -24,6 +24,11 @@ GillesPy3D::SpeciesState::SpeciesState(
       m_parameters(parameters),
       m_state(initial_populations) {}
 
+const GillesPy3D::DifferentialEquation &GillesPy3D::SpeciesState::diff_equation(std::size_t species_id) const
+{
+    return m_diff_equations[species_id];
+}
+
 std::size_t GillesPy3D::SpeciesState::size() const
 {
     return m_state.size();

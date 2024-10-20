@@ -28,6 +28,7 @@ namespace GillesPy3D
     public:
         SpeciesState(const std::vector<sunrealtype> &initial_populations, const ParameterState &parameters);
 
+        const DifferentialEquation &diff_equation(std::size_t species_id) const;
         std::size_t size() const;
         void integrate(sunrealtype t, sunrealtype *y, sunrealtype *dydt) const;
         void initialize(sunrealtype *out) const;
