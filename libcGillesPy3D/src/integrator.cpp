@@ -34,7 +34,6 @@ GillesPy3D::IntegratorData::IntegratorData(
 
 
 GillesPy3D::Integrator::Integrator(
-    const SUNContext &context,
     const GillesPy3D::ParameterState &parameter_state,
     const GillesPy3D::SpeciesState &species_state,
     const GillesPy3D::ReactionState &reaction_state,
@@ -44,7 +43,7 @@ GillesPy3D::Integrator::Integrator(
       data(parameter_state, species_state, reaction_state),
       urn(urn)
 {
-    y0 = init_model_vector(context);
+    y0 = init_model_vector(*context);
     reset_model_vector();
     y = N_VClone_Serial(y0);
     y_save = N_VClone_Serial(y0);
@@ -59,11 +58,11 @@ GillesPy3D::Integrator::Integrator(
         data.propensities[rxn_i] = 0;
     }
 
-    cvode_mem = CVodeCreate(CV_BDF, context);
+    cvode_mem = CVodeCreate(CV_BDF, *context);
     validate(this, CVodeInit(cvode_mem, rhs, t, y));
     validate(this, CVodeSStolerances(cvode_mem, reltol, abstol));
 
-    solver = SUNLinSol_SPGMR(y, 0, 0, context);
+    solver = SUNLinSol_SPGMR(y, 0, 0, *context);
     validate(this, CVodeSetUserData(cvode_mem, &data));
     validate(this, CVodeSetLinearSolver(cvode_mem, solver, NULL));
 }
@@ -306,6 +305,11 @@ GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem)
 GillesPy3D::IntegratorContext::~IntegratorContext()
 {
     SUNContext_Free(&m_sundials_context);
+}
+
+SUNContext &GillesPy3D::IntegratorContext::operator*()
+{
+    return m_sundials_context;
 }
 
 

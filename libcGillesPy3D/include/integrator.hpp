@@ -102,10 +102,26 @@ namespace GillesPy3D
         int retcode;
     };
 
+    class IntegratorContext
+    {
+    public:
+        explicit IntegratorContext(void *mpi_mem = nullptr);
+        ~IntegratorContext();
+        IntegratorContext(IntegratorContext&) = delete;
+        IntegratorContext(IntegratorContext&&) = default;
+        IntegratorContext &operator=(const IntegratorContext &context) = delete;
+        IntegratorContext &operator=(IntegratorContext &&context) = default;
+        SUNContext &operator*();
+
+    private:
+        SUNContext m_sundials_context;
+    };
+
     class Integrator
     {
     private:
         void *cvode_mem;
+        IntegratorContext context;
         SUNLinearSolver solver;
         int num_species;
         int num_reactions;
@@ -198,24 +214,10 @@ namespace GillesPy3D
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(const SUNContext &context, const GillesPy3D::ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
+        Integrator(const GillesPy3D::ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
         N_Vector init_model_vector(const SUNContext &context);
         void reset_model_vector();
-    };
-
-    class IntegratorContext
-    {
-    public:
-        explicit IntegratorContext(void *mpi_mem = nullptr);
-        ~IntegratorContext();
-        IntegratorContext(IntegratorContext&) = delete;
-        IntegratorContext(IntegratorContext&&) = default;
-        IntegratorContext &operator=(const IntegratorContext &context) = delete;
-        IntegratorContext &operator=(IntegratorContext &&context) = default;
-
-    private:
-        SUNContext m_sundials_context;
     };
 
     int rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
