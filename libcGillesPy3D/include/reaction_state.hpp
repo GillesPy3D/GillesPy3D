@@ -9,6 +9,12 @@
 namespace GillesPy3D
 {
 
+    struct ReactionVector
+    {
+        const std::vector<std::int32_t> reactants_change;
+        const std::vector<std::int32_t> products_change;
+    };
+
     class ReactionState
     {
     public:
@@ -16,6 +22,7 @@ namespace GillesPy3D
         std::size_t size() const;
         void ssa_propensity(sunrealtype *y, sunrealtype *propensities) const;
         SimulationState mode(std::size_t reaction_id) const;
+        const ReactionVector &change(std::size_t reaction_id);
 
     private:
         const ParameterState &m_parameters;
