@@ -13,12 +13,13 @@ namespace GillesPy3D
 
     struct Solver
     {
-        Solver(sunrealtype t0, unsigned long long random_seed, Integrator &sol, SpeciesState &species, ReactionState &reactions, ParameterState &parameters);
+        Solver(sunrealtype t0, unsigned long long random_seed, SpeciesState &species, ReactionState &reactions, ParameterState &parameters);
 
     private:
         sunrealtype t;
         Integrator sol;
         std::mt19937_64 generator;
+        GillesPy3D::URNGenerator urn;
         std::vector<sunrealtype> current_state;
         int num_rate_rules = 0;
         int num_species;

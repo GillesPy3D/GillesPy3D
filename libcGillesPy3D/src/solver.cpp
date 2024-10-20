@@ -3,12 +3,12 @@
 GillesPy3D::Solver::Solver(
     sunrealtype t0,
     unsigned long long random_seed,
-    GillesPy3D::Integrator &sol,
     GillesPy3D::SpeciesState &species,
     GillesPy3D::ReactionState &reactions,
     GillesPy3D::ParameterState &parameters)
     : t(t0),
-      sol(sol),
+      urn(random_seed),
+      sol(parameters, species, reactions, urn, 0, 0),
       generator(random_seed),
       species(species),
       reactions(reactions),
