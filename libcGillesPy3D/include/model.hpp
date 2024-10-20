@@ -41,6 +41,7 @@ namespace GillesPy3D
         Model(const std::string & name="");
 
         void add_reaction(const Reaction &reaction);
+        const std::vector<Species> &get_species() const;
         const std::vector<Reaction> &get_reactions() const;
         void add_parameter(const Parameter &parameter);
         void add_species(Species &species);

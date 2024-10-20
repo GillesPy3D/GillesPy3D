@@ -19,13 +19,15 @@
 #pragma once
 
 #include "model.hpp"
-#include "reaction.hpp"
-#include "event.hpp"
+#include "reaction_state.hpp"
+#include "species_state.hpp"
+#include "event_state.hpp"
 #include "simulation.hpp"
 #include "cvode/cvode.h"
 #include "sunlinsol/sunlinsol_spgmr.h"
 #include "sundials/sundials_types.h"
 #include "sundials/sundials_context.h"
+#include "sundials/sundials_nvector.h"
 #include "nvector/nvector_serial.h"
 #include <vector>
 #include <random>
@@ -59,21 +61,11 @@ namespace GillesPy3D
         double max_step;
     };
 
-    /// @brief indicator for the "type" of step being taken for a particular species
-    enum SimulationState : unsigned int
+    class IntegratorData
     {
-        CONTINUOUS = 0,
-        DISCRETE = 1,
-        DYNAMIC = 2
-    };
-
-    struct IntegratorData
-    {
-        Simulation *simulation;
-        std::vector<Species> *species_state;
-        std::vector<Reaction> *reaction_state;
-        std::vector<Event> *events = nullptr;
-        std::vector<std::function<double(double, const double*)>> active_triggers;
+    public:
+        std::vector<EventStatus> *events = nullptr;
+        std::vector<std::function<double(double, const double*, const double*)>> active_triggers;
         // Container representing the rootfinder-enabled reactions.
         // Each integer at index i represents the reaction id corresponding to rootfinder element i.
         // In `rootfn`, this means that gout[i] is the "output" of reaction active_reaction_ids[i].
@@ -81,9 +73,16 @@ namespace GillesPy3D
         std::vector<unsigned int> active_reaction_ids;
         std::vector<double> propensities;
 
-        IntegratorData(Simulation *simulation);
-        IntegratorData(Simulation *simulation, int num_species, int num_reactions);
-        IntegratorData(IntegratorData &prev_data);
+        IntegratorData(const ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state);
+
+        const ParameterState &parameters() { return m_parameter_state; }
+        const SpeciesState &species() { return m_species_state; }
+        const ReactionState &reactions() { return m_reaction_state; }
+
+    private:
+        const ParameterState &m_parameter_state;
+        const SpeciesState &m_species_state;
+        const ReactionState &m_reaction_state;
     };
 
     /* :IntegrationResults:
@@ -103,16 +102,31 @@ namespace GillesPy3D
         int retcode;
     };
 
+    class IntegratorContext
+    {
+    public:
+        explicit IntegratorContext(void *mpi_mem = nullptr);
+        ~IntegratorContext();
+        IntegratorContext(IntegratorContext&) = delete;
+        IntegratorContext(IntegratorContext&&) = default;
+        IntegratorContext &operator=(const IntegratorContext &context) = delete;
+        IntegratorContext &operator=(IntegratorContext &&context) = default;
+        SUNContext &operator*();
+
+    private:
+        SUNContext m_sundials_context;
+    };
 
     class Integrator
     {
     private:
         void *cvode_mem;
+        IntegratorContext context;
         SUNLinearSolver solver;
         int num_species;
         int num_reactions;
         int *m_roots = nullptr;
-        //Model &model;
+        URNGenerator urn;
     public:
         // status: check for errors before using the results.
         IntegrationStatus status;
@@ -154,20 +168,11 @@ namespace GillesPy3D
         ///
         /// @param events List of event objects to make available to the root-finder.
         /// The trigger functions of all given events are added as root-finder targets.
-        void use_events(const std::vector<Event> &events);
-
-        /// @brief Make events and reactions available to root-finder during integration.
-        /// The root-finder itself is not activated until enable_root_finder() is called.
-        ///
-        /// @param events List of event objects to make available to the root-finder.
-        /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_events(const std::vector<Event> &events, const std::vector<Reaction> &reactions);
+        void use_events(const std::vector<EventStatus> &events);
 
         /// @brief Make reactions available to root-finder during integration.
         /// The root-finder itself is not activated until enable_root_finder() is called.
-        ///
-        /// @param reactions List of reaction objects to make available to the root-finder.
-        void use_reactions(const std::vector<Reaction> &reactions);
+        void use_reactions();
 
         /// @brief Installs a CVODE root-finder onto the integrator.
         /// Any events or reactions provided by previous calls to use_events() or use_reactions()
@@ -209,26 +214,11 @@ namespace GillesPy3D
         IntegrationResults integrate(double *t, std::set<int> &event_roots, std::set<unsigned int> &reaction_roots, int num_det_rxns, int num_rate_rules);
         IntegratorData data;
 
-        Integrator(const SUNContext &context, Simulation *simulation, Model &model, URNGenerator urn, double reltol, double abstol);
+        Integrator(const GillesPy3D::ParameterState &parameter_state, const SpeciesState &species_state, const ReactionState &reaction_state, URNGenerator urn, double reltol, double abstol);
         ~Integrator();
+        N_Vector init_model_vector(const SUNContext &context);
         void reset_model_vector();
     };
-
-    class IntegratorContext
-    {
-    public:
-        explicit IntegratorContext(void *mpi_mem = nullptr);
-        ~IntegratorContext();
-        IntegratorContext(IntegratorContext&) = delete;
-        IntegratorContext(IntegratorContext&&) = default;
-        IntegratorContext &operator=(const IntegratorContext &context) = delete;
-        IntegratorContext &operator=(IntegratorContext &&context) = default;
-
-    private:
-        SUNContext m_sundials_context;
-    };
-
-    N_Vector init_model_vector(Model &model, URNGenerator urn);
 
     int rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data);
     int rootfn(realtype t, N_Vector y, realtype *gout, void *user_data);

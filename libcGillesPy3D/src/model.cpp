@@ -14,6 +14,11 @@ void GillesPy3D::Model::add_reaction(const GillesPy3D::Reaction &reaction)
     listOfReactions.emplace_back(reaction);
 }
 
+const std::vector<GillesPy3D::Species> &GillesPy3D::Model::get_species() const
+{
+    return listOfSpecies;
+}
+
 const std::vector<GillesPy3D::Reaction> &GillesPy3D::Model::get_reactions() const
 {
     return listOfReactions;
@@ -58,9 +63,11 @@ void GillesPy3D::Model::add_timespan(int num_timesteps, double timestep_size, do
 
 void GillesPy3D::Model::run()
 {
-    sim = Simulation(this);
-    while(t < this.t_end){
-       sim.run_until(next_t);
-       // save to result
-    }
+    // <Example>
+    // sim = Simulation(this);
+    // while(t < this.t_end){
+    //    sim.run_until(next_t);
+    //    // save to result
+    // }
+    // </Example>
 }

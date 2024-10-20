@@ -1,7 +1,8 @@
 #include "model_context.hpp"
 
 GillesPy3D::ModelContext::ModelContext(GillesPy3D::Model &model)
-    : reaction_context(model)
+    : species_context(model),
+      reaction_context(model)
 {
 
 }
@@ -19,6 +20,11 @@ GillesPy3D::CPropensityFunction::CPropensityFunction(double (*propensity_functio
     : propensity_function(propensity_function)
 {
     
+}
+
+GillesPy3D::SpeciesContext &GillesPy3D::ModelContext::species()
+{
+    return species_context;
 }
 
 GillesPy3D::ReactionContext &GillesPy3D::ModelContext::reactions()
@@ -68,4 +74,18 @@ void GillesPy3D::ReactionContext::set_ssa_propensity_function(std::size_t reacti
 void GillesPy3D::ReactionContext::set_ode_propensity_function(std::size_t reaction_id, double (*propensity_function)(double*, double*))
 {
     ode_propensity_map[reaction_id] = propensity_function;
+}
+
+GillesPy3D::SpeciesContext::SpeciesContext(GillesPy3D::Model &model)
+{
+    for (std::size_t species_id = 0; species_id < model.get_species().size(); ++species_id)
+    {
+        const GillesPy3D::Species &species = model.get_species().at(species_id);
+        species_id_map[species.get_name()] = species_id;
+    }
+}
+
+const std::vector<GillesPy3D::UniqueContinuousFunction<sunrealtype>> &GillesPy3D::SpeciesContext::rate_rules(std::size_t species_id) const
+{
+    return rate_rules_map.at(species_id);
 }

@@ -10,6 +10,18 @@
 
 namespace GillesPy3D
 {
+    template <typename T>
+    using UniquePropensityFunction = T (*)(T* state, T* parameters);
+
+    template <typename T>
+    using UniqueContinuousFunction = T (*)(double t, T* state, T* parameters);
+
+    template <typename T>
+    using GroupPropensityFunction = void (*)(T* state, T* parameters, T* out);
+
+    template <typename T>
+    using GroupContinuousFunction = void (*)(T* state, T* parameters, T* out);
+
     class ReactionContext;
 
     class CPropensityFunction
@@ -42,13 +54,26 @@ namespace GillesPy3D
         std::unordered_map<std::size_t, double(*)(double*, double*)> ode_propensity_map;
     };
 
+    class SpeciesContext
+    {
+    public:
+        explicit SpeciesContext(Model &model);
+        const std::vector<UniqueContinuousFunction<sunrealtype>> &rate_rules(std::size_t species_id) const;
+
+    private:
+        std::unordered_map<std::string, std::size_t> species_id_map;
+        std::unordered_map<std::size_t, std::vector<UniqueContinuousFunction<sunrealtype>>> rate_rules_map;
+    };
+
     class ModelContext
     {
     public:
         explicit ModelContext(Model &model);
+        SpeciesContext &species();
         ReactionContext &reactions();
 
     private:
+        SpeciesContext species_context;
         ReactionContext reaction_context;
     };
 

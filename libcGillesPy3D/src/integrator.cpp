@@ -16,35 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "integrator.h"
+#include "integrator.hpp"
+#include "model.hpp"
 
 static bool validate(GillesPy3D::Integrator *integrator, int retcode);
 
 GillesPy3D::IntegratorData::IntegratorData(
-    GillesPy3D::Simulation *simulation,
-    int num_species,
-    int num_reactions)
-    : simulation(simulation),
-      propensities(std::vector<double>(num_reactions)),
-      species_state(&simulation->species_state),
-      reaction_state(&simulation->reaction_state) {}
-
-GillesPy3D::IntegratorData::IntegratorData(GillesPy3D::Simulation *simulation)
-    : IntegratorData(
-        simulation,
-        simulation->model->number_species,
-        simulation->model->number_reactions) {}
-
-
-GillesPy3D::Integrator::Integrator(const SUNContext &context, GillesPy3D::Simulation *simulation, GillesPy3D::Model &model, URNGenerator urn, double reltol, double abstol)
-    : t(0.0f),
-      data(simulation),
-      urn(urn),
-      model(model),
-      num_reactions(model.number_reactions),
-      num_species(model.number_species)
+    const GillesPy3D::ParameterState &parameter_state,
+    const GillesPy3D::SpeciesState &species_state,
+    const GillesPy3D::ReactionState &reaction_state)
+    : m_parameter_state(parameter_state),
+      m_species_state(species_state),
+      m_reaction_state(reaction_state)
 {
-    y0 = init_model_vector(model, urn);
+    propensities.reserve(m_reaction_state.size());
+}
+
+
+GillesPy3D::Integrator::Integrator(
+    const GillesPy3D::ParameterState &parameter_state,
+    const GillesPy3D::SpeciesState &species_state,
+    const GillesPy3D::ReactionState &reaction_state,
+    const URNGenerator urn,
+    double reltol, double abstol)
+    : t(0.0f),
+      data(parameter_state, species_state, reaction_state),
+      urn(urn)
+{
+    y0 = init_model_vector(*context);
     reset_model_vector();
     y = N_VClone_Serial(y0);
     y_save = N_VClone_Serial(y0);
@@ -59,11 +58,11 @@ GillesPy3D::Integrator::Integrator(const SUNContext &context, GillesPy3D::Simula
         data.propensities[rxn_i] = 0;
     }
 
-    cvode_mem = CVodeCreate(CV_BDF, context);
+    cvode_mem = CVodeCreate(CV_BDF, *context);
     validate(this, CVodeInit(cvode_mem, rhs, t, y));
     validate(this, CVodeSStolerances(cvode_mem, reltol, abstol));
 
-    solver = SUNLinSol_SPGMR(y, 0, 0);
+    solver = SUNLinSol_SPGMR(y, 0, 0, *context);
     validate(this, CVodeSetUserData(cvode_mem, &data));
     validate(this, CVodeSetLinearSolver(cvode_mem, solver, NULL));
 }
@@ -125,29 +124,13 @@ GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate_constant(double
 {
     // this function assumes no deterministic species or 
     realtype *Y = N_VGetArrayPointer(y);
-    GillesPy3D::Simulation *sim = data.simulation;
-    std::vector<GillesPy3D::Species> *species = data.species_state;
-    std::vector<GillesPy3D::Reaction> *reactions = data.reaction_state;
+    const GillesPy3D::SpeciesState &species = data.species();
+    const GillesPy3D::ReactionState &reactions = data.reactions();
     std::vector<double> &propensities = data.propensities;
-    unsigned int num_species = sim->model->number_species;
-    unsigned int num_reactions = sim->model->number_reactions;
+    unsigned int num_species = species.size();
+    unsigned int num_reactions = reactions.size();
     realtype propensity;
-    for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
-    {
-        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
-        switch (rxn.mode) {
-        case GillesPy3D::SimulationState::DISCRETE:
-            // Process stochastic reaction state by updating the root offset for each reaction.
-            propensity = rxn.ssa_propensity(Y);
-            propensities[rxn_i] = propensity;
-            break;
-
-        case SimulationState::CONTINUOUS:
-            break;
-        default:
-            break;
-        }
-    }
+    reactions.ssa_propensity(Y, propensities.data());
 
     double tau = *t - this->t;
     for (int rxn_i = 0; rxn_i < num_reactions; ++rxn_i){
@@ -181,11 +164,11 @@ GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate(double *t)
 
 void GillesPy3D::Integrator::reset_model_vector()
 {
-    int rxn_offset_boundary = model.number_reactions + model.number_species;
+    int rxn_offset_boundary = num_reactions + num_species;
 
     // The second half represents the current "randomized state" for each reaction.
     // ... | --- rxn_offsets --- ]
-    for (int rxn_i = model.number_species; rxn_i < rxn_offset_boundary; ++rxn_i)
+    for (int rxn_i = num_species; rxn_i < rxn_offset_boundary; ++rxn_i)
     {
         // Represents the current "randomized state" for each reaction, used as a
         //   helper value to determine if/how many stochastic reactions fire.
@@ -243,36 +226,32 @@ GillesPy3D::IntegrationResults GillesPy3D::Integrator::integrate(double *t, std:
     return results;
 }
 
-void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events)
+void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::EventStatus> &events)
 {
     data.active_triggers.clear();
-    for (const GillesPy3D::Event &event : events)
+    for (const GillesPy3D::EventStatus &event : events)
     {
-        data.active_triggers.emplace_back([event](double t, const double *state) -> double {
-            return event.trigger(t, state) ? 1.0 : -1.0;
+        data.active_triggers.emplace_back([event](double t, const double *state, const double *parameters) -> double {
+            return event.trigger(t, state, parameters) ? 1.0 : -1.0;
         });
     }
 }
 
-void GillesPy3D::Integrator::use_reactions(const std::vector<GillesPy3D::Reaction> &reactions)
+void GillesPy3D::Integrator::use_reactions()
 {
     data.active_reaction_ids.clear();
-    for (auto &reaction : reactions)
+
+    auto &reactions = data.reactions();
+    for (std::size_t rxn_id = 0; rxn_id < reactions.size(); ++rxn_id)
     {
-        if (reaction.mode == SimulationState::DISCRETE)
+        if (reactions.mode(rxn_id) == GillesPy3D::SimulationState::DISCRETE)
         {
             // Reaction root-finder should only be used on discrete-valued reactions.
             // The required IDs are placed into a reference vector and are mapped back out
             // when the caller of integrate() retrieves them.
-            data.active_reaction_ids.push_back(reaction.get_base_reaction()->id);
+            data.active_reaction_ids.push_back(rxn_id);
         }
     }
-}
-
-void GillesPy3D::Integrator::use_events(const std::vector<GillesPy3D::Event> &events, const std::vector<GillesPy3D::Reaction> &reactions)
-{
-    use_events(events);
-    use_reactions(reactions);
 }
 
 bool GillesPy3D::Integrator::enable_root_finder()
@@ -318,7 +297,7 @@ double GillesPy3D::URNGenerator::next()
 }
 
 
-GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem = nullptr)
+GillesPy3D::IntegratorContext::IntegratorContext(void *mpi_mem)
 {
     SUNContext_Create(mpi_mem, &m_sundials_context);
 }
@@ -328,13 +307,18 @@ GillesPy3D::IntegratorContext::~IntegratorContext()
     SUNContext_Free(&m_sundials_context);
 }
 
+SUNContext &GillesPy3D::IntegratorContext::operator*()
+{
+    return m_sundials_context;
+}
+
 
 /* Initialize a SUNDials N_Vector based on information provided in the model.
  * 
  */
-N_Vector GillesPy3D::init_model_vector(GillesPy3D::Model &model, GillesPy3D::URNGenerator urn)
+N_Vector GillesPy3D::Integrator::init_model_vector(const SUNContext &context)
 {
-    int rxn_offset_boundary = model.number_reactions + model.number_species;
+    int rxn_offset_boundary = num_species + num_reactions;
 
     // INITIAL INTEGRATOR STATE VECTOR
     // Integrator is used to integrate two vector regions separately:
@@ -343,14 +327,11 @@ N_Vector GillesPy3D::init_model_vector(GillesPy3D::Model &model, GillesPy3D::URN
     // [ --- concentrations --- | --- rxn_offsets --- ]
     // concentrations: bounded by [0, num_species)
     // rxn_offsets:    bounded by [num_species, num_species + num_reactions)
-    N_Vector y0 = N_VNew_Serial(rxn_offset_boundary);
+    N_Vector y0 = N_VNew_Serial(rxn_offset_boundary, context);
 
     // The first half of the integration vector is used for integrating species concentrations.
     // [ --- concentrations --- | ...
-    for (int spec_i = 0; spec_i < model.number_species; ++spec_i)
-    {
-        NV_Ith_S(y0, spec_i) = model.species[spec_i].initial_population;
-    }
+    data.species().initialize(N_VGetArrayPointer(y0));
 
     return y0;
 }
@@ -367,54 +348,16 @@ int GillesPy3D::rhs(realtype t, N_Vector y, N_Vector ydot, void *user_data)
     realtype propensity;
 
     // Extract simulation data
-    GillesPy3D::IntegratorData *data = static_cast<IntegratorData*>(user_data);
-    GillesPy3D::Simulation *sim = data->simulation;
-    std::vector<GillesPy3D::Species> *species = data->species_state;
-    std::vector<GillesPy3D::Reaction> *reactions = data->reaction_state;
+    GillesPy3D::IntegratorData *data = static_cast<GillesPy3D::IntegratorData*>(user_data);
+    const GillesPy3D::SpeciesState &species = data->species();
+    const GillesPy3D::ReactionState &reactions = data->reactions();
     std::vector<double> &propensities = data->propensities;
-    unsigned int num_species = sim->model->number_species;
-    unsigned int num_reactions = sim->model->number_reactions;
 
     // Differentiate different regions of the input/output vectors.
     // First half is for concentrations, second half is for reaction offsets.
-    realtype *dydt_offsets = &dydt[num_species];
-
-    // Deterministic reactions generally are "evaluated" by generating dy/dt functions
-    //   for each of their dependent species.
-    // To handle these, we will go ahead and evaluate each species' differential equations.
-    unsigned int spec_i;
-    for (spec_i = 0; spec_i < num_species; ++spec_i)
-    {
-        if ((*species)[spec_i].boundary_condition) {
-            // The effective dy/dt of a boundary condition is 0.
-            dydt[spec_i] = 0.0;
-        }
-        else
-        {
-            dydt[spec_i] = (*species)[spec_i].diff_equation.evaluate(t, Y);
-        }
-    }
-
-    // Process deterministic propensity state
-    // These updates get written directly to the integrator's concentration state
-    for (unsigned int rxn_i = 0; rxn_i < num_reactions; ++rxn_i)
-    {
-        GillesPy3D::Reaction rxn = (*reactions)[rxn_i];
-
-        switch (rxn.mode) {
-        case SimulationState::DISCRETE:
-            // Process stochastic reaction state by updating the root offset for each reaction.
-            propensity = rxn.ssa_propensity(Y);
-            dydt_offsets[rxn_i] = propensity;
-            propensities[rxn_i] = propensity;
-            break;
-
-        case SimulationState::CONTINUOUS:
-        default:
-            dydt_offsets[rxn_i] = 0;
-            break;
-        }
-    }
+    sunrealtype *dydt_offsets = &dydt[species.size()];
+    species.integrate(t, Y, dydt);
+    reactions.ssa_propensity(Y, dydt_offsets);
 
     return 0;
 };
@@ -425,13 +368,13 @@ int GillesPy3D::rootfn(realtype t, N_Vector y, realtype *gout, void *user_data)
     unsigned long long num_triggers = data.active_triggers.size();
     unsigned long long num_reactions = data.active_reaction_ids.size();
     realtype *y_t = N_VGetArrayPointer(y);
-    realtype *rxn_t = y_t + data.species_state->size();
+    realtype *rxn_t = y_t + data.species().size();
     realtype *rxn_out = gout + num_triggers;
 
     unsigned long long trigger_id;
     for (trigger_id = 0; trigger_id < num_triggers; ++trigger_id)
     {
-        gout[trigger_id] = data.active_triggers[trigger_id](t, y_t);
+        gout[trigger_id] = data.active_triggers[trigger_id](t, y_t, data.parameters().data());
     }
 
     unsigned long long rxn_id;
