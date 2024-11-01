@@ -30,6 +30,7 @@ env = Environment(
         Dir("obj"),
         Dir("obj/external/Sundials"),
     ],
+    ENV={"PATH": os.environ.get("PATH")},
 )
 
 # Send dependency build files to obj/ subfolders
