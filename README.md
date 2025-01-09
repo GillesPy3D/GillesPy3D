@@ -8,6 +8,8 @@ From the root-level directory, ensure that SCons is installed and run the follow
 scons -C libcGillesPy3D/
 ```
 
+If you have SCons installed, but it is not found you can use it as a python module with the following command: `python3 -m SCons -C libcGillesPy3D`
+
 The build output is placed in the `libcGillesPy3D/lib` directory, which includes any static libraries required by dependencies, as well as a SWIG-generated `libcgillespy3d` package and a to-be-compiled C++ wrapper file, `libcGillesPy3D/obj/include/libcgillespy3d_wrap.cpp`.
 
 ## Configuring the SCons Build
