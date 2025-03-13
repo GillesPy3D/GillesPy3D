@@ -1,0 +1,60 @@
+section.page
+
+  div: h2.inline Domain Editor
+
+  ul.mb-0
+    li Use the domain editor to create complex 3D <b>'Shapes'</b>.
+    li Use <b>'Shapes'</b> to define regions in space.
+    li Use <b>'Transformations'</b> to move (rotate, etc...) <b>'Shapes'</b> in space.
+    li Use <b>'Types'</b> to classify particles (e.g. Cell_Wall, Cytoplasm, Nucleus).
+    li Use <b>'Actions'</b> to fill (set properties, remove, import) <b>'Shapes'</b> with particles.
+
+  div(data-hook="two-parent-breadcrumb-links" style="display: none")
+    h5
+      nav(aria-label="breadcrumb")
+        ol.breadcrumb
+          li.breadcrumb-item
+            a.active-link(data-hook="grandparent-breadcrumb") Grandparent
+          li.breadcrumb-item
+            a.active-link(data-hook="parent-two-breadcrumb") Parent
+
+  div(data-hook="one-parent-breadcrumb-links" style="display: none")
+    h5
+      nav(aria-label="breadcrumb")
+        ol.breadcrumb
+          li.breadcrumb-item
+            a.active-link(data-hook="parent-one-breadcrumb") Parent
+
+  div(data-hook="domain-view-container")
+
+  div.inline
+
+    button.btn.btn-primary.box-shadow.dropdown-toggle(
+      id="dave-domain",
+      data-toggle="dropdown",
+      aria-haspopup="true",
+      aria-expanded="false",
+      type="button"
+    ) Save <span class="caret"></span>
+
+    ul.dropdown-menu(aria-labelledby="save-domain")
+      li.dropdown-item(data-hook="save-to-model") to Model
+      li.dropdown-item(data-hook="save-to-file") to File (.domn)
+
+  a.btn.btn-primary.box-shadow.text-break(role="button" data-hook="return-to-project") Return to Project
+
+  a.btn.btn-primary.box-shadow.text-break(role="button" data-hook="return-to-model") Return to Model
+
+  div.mdl-edit-btn.saving-status.inline(data-hook="sd-in-progress")
+
+    div.spinner-grow.mr-2
+
+    span(data-hook="sd-action-in-progress")
+
+  div.mdl-edit-btn.saved-status.inline(data-hook="sd-complete")
+
+    span(data-hook="sd-action-complete")
+
+  div.mdl-edit-btn.save-error-status(data-hook="sd-error")
+
+    span(data-hook="sd-action-error")

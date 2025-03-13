@@ -1,0 +1,261 @@
+div#workflow-results.card
+
+  div.card-header.pb-0
+
+    h3.inline Results
+
+    button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#collapse-results" data-hook="collapse-results-btn") -
+
+  div.collapse.show(id="collapse-results" data-hook="workflow-results")
+
+    div.card-body
+
+      div.collapse(id="edit-plot-args" data-hook="edit-plot-args")
+
+        table.table
+          thead
+            tr
+              th(scope="col") Title
+              th(scope="col") X-axis Label
+              th(scope="col") Y-axis Label
+
+          tbody
+            tr
+              td: div(id="title" data-hook="title")
+              td: div(id="xaxis" data-hook="xaxis")
+              td: div(id="yaxis" data-hook="yaxis")
+
+      div.card
+
+        div.card-header.pb-0
+
+          h5.inline Plot Mean and Standard Deviation
+
+          button.btn.btn-outline-collapse(
+            data-toggle="collapse"
+            data-target="#collapse-stddevrange"
+            id="collapse-stddevrange-btn"
+            data-hook="collapse-stddevrange-btn"
+            data-trigger="collapse-plot-container"
+            data-type="stddevran"
+          ) -
+
+        div.collapse.show(id="collapse-stddevrange")
+
+          div.card-body
+
+            div(data-hook="stddevran-plot")
+
+            div.spinner-border.workflow-plot(data-hook="stddevran-plot-spinner")
+            
+            button.btn.btn-primary.box-shadow(data-hook="stddevran-edit-plot" data-target="edit-plot" disabled) Edit Plot
+
+            button.btn.btn-primary.box-shadow.dropdown-toggle(
+              id="stddevran-download"
+              data-hook="stddevran-download"
+              data-toggle="dropdown",
+              aria-haspopup="true",
+              aria-expanded="false",
+              type="button"
+              disabled
+            ) Download <span class="caret"></span>
+
+            ul.dropdown-menu(aria-labelledby="#stddevran-download")
+              li.dropdown-item(
+                data-hook="stddevran-download-png-custom"
+                data-target="download-png-custom"
+                data-type="stddevran"
+              ) Plot as .png
+              li.dropdown-item(
+                data-hook="stddevran-download-json"
+                data-target="download-json"
+                data-type="stddevran"
+              ) Plot as .json
+              li.dropdown-item(
+                data-hook="stddevran-plot-csv"
+                data-target="download-plot-csv"
+                data-type="stddevran"
+              ) Plot CSV Results as .zip
+
+      div.card
+
+        div.card-header.pb-0
+
+          h5.inline Plot Trajectories
+
+          button.btn.btn-outline-collapse(
+            data-toggle="collapse"
+            data-target="#collapse-trajectories"
+            id="collapse-trajectories-btn"
+            data-hook="collapse-trajectories-btn"
+            data-trigger="collapse-plot-container"
+            data-type="trajectories"
+          ) +
+
+        div.collapse(id="collapse-trajectories")
+
+          div.card-body
+
+            div(data-hook="trajectories-plot")
+
+            div.spinner-border.workflow-plot(data-hook="trajectories-plot-spinner")
+
+            button.btn.btn-primary.box-shadow(data-hook="trajectories-edit-plot" data-target="edit-plot" disabled) Edit Plot
+
+            button.btn.btn-primary.box-shadow(data-hook="multiple-plots", data-type="mltplplt" disabled) Multiple Plots
+
+            button.btn.btn-primary.box-shadow.dropdown-toggle(
+              id="trajectories-download"
+              data-hook="trajectories-download"
+              data-toggle="dropdown",
+              aria-haspopup="true",
+              aria-expanded="false",
+              type="button"
+              disabled
+            ) Download <span class="caret"></span>
+
+            ul.dropdown-menu(aria-labelledby="#trajectories-download")
+              li.dropdown-item(
+                data-hook="trajectories-download-png-custom"
+                data-target="download-png-custom"
+                data-type="trajectories"
+              ) Plot as .png
+              li.dropdown-item(
+                data-hook="trajectories-download-json"
+                data-target="download-json"
+                data-type="trajectories"
+              ) Plot as .json
+              li.dropdown-item(
+                data-hook="trajectories-plot-csv"
+                data-target="download-plot-csv"
+                data-type="trajectories"
+              ) Plot CSV Results as .zip
+
+      div.card
+
+        div.card-header.pb-0
+
+          h5.inline Plot Standard Deviation
+
+          button.btn.btn-outline-collapse(
+            data-toggle="collapse"
+            data-target="#collapse-stddev"
+            id="collapse-stddev-btn"
+            data-hook="collapse-stddev-btn"
+            data-trigger="collapse-plot-container"
+            data-type="stddev"
+          ) +
+
+        div.collapse(id="collapse-stddev")
+
+          div.card-body
+
+            div(data-hook="stddev-plot")
+
+            div.spinner-border.workflow-plot(data-hook="stddev-plot-spinner")
+
+            button.btn.btn-primary.box-shadow(data-hook="stddev-edit-plot" data-target="edit-plot" disabled) Edit Plot
+
+            button.btn.btn-primary.box-shadow.dropdown-toggle(
+              id="stddev-download"
+              data-hook="stddev-download"
+              data-toggle="dropdown",
+              aria-haspopup="true",
+              aria-expanded="false",
+              type="button"
+              disabled
+            ) Download <span class="caret"></span>
+
+            ul.dropdown-menu(aria-labelledby="#stddev-download")
+              li.dropdown-item(
+                data-hook="stddev-download-png-custom"
+                data-target="download-png-custom"
+                data-type="stddev"
+              ) Plot as .png
+              li.dropdown-item(
+                data-hook="stddev-download-json"
+                data-target="download-json"
+                data-type="stddev"
+              ) Plot as .json
+              li.dropdown-item(
+                data-hook="stddev-plot-csv"
+                data-target="download-plot-csv"
+                data-type="stddev"
+              ) Plot CSV Results as .zip
+
+      div.card
+
+        div.card-header.pb-0
+
+          h5.inline Plot Trajectory Mean
+
+          button.btn.btn-outline-collapse(
+            data-toggle="collapse"
+            data-target="#collapse-trajmean"
+            id="collapse-trajmean-btn"
+            data-hook="collapse-trajmean-btn"
+            data-trigger="collapse-plot-container"
+            data-type="avg"
+          ) +
+
+        div.collapse(id="collapse-trajmean")
+
+          div.card-body
+
+            div(data-hook="avg-plot")
+
+            div.spinner-border.workflow-plot(data-hook="avg-plot-spinner")
+
+            button.btn.btn-primary.box-shadow(data-hook="avg-edit-plot" data-target="edit-plot" disabled) Edit Plot
+
+            button.btn.btn-primary.box-shadow.dropdown-toggle(
+              id="avg-download"
+              data-hook="avg-download"
+              data-toggle="dropdown",
+              aria-haspopup="true",
+              aria-expanded="false",
+              type="button"
+              disabled
+            ) Download <span class="caret"></span>
+
+            ul.dropdown-menu(aria-labelledby="#avg-download")
+              li.dropdown-item(
+                data-hook="avg-download-png-custom"
+                data-target="download-png-custom"
+                data-type="avg"
+              ) Plot as .png
+              li.dropdown-item(
+                data-hook="avg-download-json"
+                data-target="download-json"
+                data-type="avg"
+              ) Plot as .json
+              li.dropdown-item(
+                data-hook="avg-plot-csv"
+                data-target="download-plot-csv"
+                data-type="avg"
+              ) Plot CSV Results as .zip
+
+      div
+
+        button.btn.btn-primary.box-shadow(id="convert-to-notebook" data-hook="convert-to-notebook") Convert to Notebook
+
+        button.btn.btn-primary.box-shadow(id="download-results-csv" data-hook="download-results-csv") Download Full CSV Results as .zip
+
+        button.btn.btn-primary.box-shadow(id="job-presentation" data-hook="job-presentation") Publish
+
+        div.saving-status(data-hook="job-action-start")
+
+          div.spinner-grow
+
+          span Publishing ...
+
+        div.saved-status(data-hook="job-action-end")
+
+          span Published
+
+        div.save-error-status(data-hook="job-action-err")
+
+          span Error
+
+      div.text-info(data-hook="update-format-message" style="display: none;")
+        | To publish you job the workflows format must be updated.

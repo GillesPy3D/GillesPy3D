@@ -1,0 +1,103 @@
+div#domain-view
+
+  div(data-hook="domain-properties-container")
+
+  div(data-hook="domain-types-container")
+
+  div(data-hook="domain-shapes-container")
+
+  div(data-hook="domain-transformations-container")
+
+  div(data-hook="domain-actions-container")
+
+  div#domain-particles-editor.card(data-hook="domain-particles-editor")
+
+    div.card-header.pb-0
+
+      h3.inline.mr-3 Edit Single Particle
+
+      button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#domain-particles-section" data-hook="collapse-domain-particles") +
+
+    div.collapse(id="domain-particles-section" data-hook="domain-particles-section")
+
+      div.card-body
+
+        div(id="edit-selected-particle" data-hook="edit-particle-section")
+
+          div.text-info.mb-4(data-hook="edit-select-message" style="display: none")
+            | Click on a particle in the Domain section to begin editing.
+
+          div(data-hook="edit-particle-container")
+
+          button.btn.btn-outline-primary.box-shadow.ml-2(data-hook="save-selected-particle") Save Particle
+
+          div.mdl-edit-btn.saving-status.inline(data-hook="esp-in-progress")
+
+            div.spinner-grow.mr-2
+
+            span Saving particle ...
+
+          div.mdl-edit-btn.saved-status.inline(data-hook="esp-complete")
+
+            span Particle Saved
+
+          button.btn.btn-outline-primary.box-shadow.ml-2(data-hook="remove-selected-particle") Remove Particle
+
+          div.mdl-edit-btn.saving-status.inline(data-hook="rsp-in-progress")
+
+            div.spinner-grow.mr-2
+
+            span Removing particle ...
+
+          div.mdl-edit-btn.saved-status.inline(data-hook="rsp-complete")
+
+            span Particle Removed
+
+  div#domain-figure-preview.card(data-hook="domain-figure-preview")
+
+    div.card-header.pb-0
+
+      h3.inline.mr-3 Domain
+
+      button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#domain-figure-container" data-hook="collapse-domain-figure") -
+
+    div.card-body
+
+      p.mb-0
+       | Preview the domain below.
+
+      div.collapse.show(id="domain-figure-container" data-hook="domain-figure-container")
+
+        div(id="domain-figure" data-hook="domain-figure" style="height: 800px")
+
+        div.text-danger(data-hook="domain-figure-empty") The domain currently has no particles to display
+
+        button.btn.btn-outline-primary.box-shadow.ml-2(data-hook="update-preview-plot") Update Preview
+
+        div.mdl-edit-btn.saving-status.inline(data-hook="upp-in-progress")
+
+          div.spinner-grow.mr-2
+
+          span Updating preview ...
+
+        div.mdl-edit-btn.saved-status.inline(data-hook="upp-complete")
+
+          span Preview Updated
+
+        div.mdl-edit-btn.save-error-status(data-hook="upp-error")
+
+          span(data-hook="upp-action-error")
+
+  div.card(data-hook="domain-view-advanced-container")
+
+    div.card-header.pb-0
+
+      h3.inline Advanced
+
+      button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#dv-advanced-section" data-hook="collapse-dv-advanced-section") +
+
+    div.collapse(id="dv-advanced-section" data-hook="dv-advanced-section")
+
+      div.card-body
+
+        div(data-hook="domain-limits-container")

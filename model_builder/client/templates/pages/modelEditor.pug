@@ -1,0 +1,138 @@
+section.page
+
+  div
+    h2.inline Model Editor
+
+    button.big-tip.btn.information-btn.help(data-hook="edit-model-help") <svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="question-circle" class="svg-inline--fa fa-question-circle fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 448c-110.532 0-200-89.431-200-200 0-110.495 89.472-200 200-200 110.491 0 200 89.471 200 200 0 110.53-89.431 200-200 200zm107.244-255.2c0 67.052-72.421 68.084-72.421 92.863V300c0 6.627-5.373 12-12 12h-45.647c-6.627 0-12-5.373-12-12v-8.659c0-35.745 27.1-50.034 47.579-61.516 17.561-9.845 28.324-16.541 28.324-29.579 0-17.246-21.999-28.693-39.784-28.693-23.189 0-33.894 10.977-48.942 29.969-4.057 5.12-11.46 6.071-16.666 2.124l-27.824-21.098c-5.107-3.872-6.251-11.066-2.644-16.363C184.846 131.491 214.94 112 261.794 112c49.071 0 101.45 38.304 101.45 88.8zM298 368c0 23.159-18.841 42-42 42s-42-18.841-42-42 18.841-42 42-42 42 18.841 42 42z"></path></svg>
+
+  div(data-hook="project-breadcrumb-links" style="display: none")
+    h5
+      nav(aria-label="breadcrumb")
+        ol.breadcrumb
+          li.breadcrumb-item
+            a.active-link(data-hook="project-breadcrumb-link")=this.projectName
+          li.breadcrumb-item.active(aria-current="page")=this.model.name
+
+  div(data-hook="model-name-header")
+    h5
+      nav(aria-label="breadcrumb")
+        ol.breadcrumb
+          li.breadcrumb-item.active(aria-current="page")=this.model.name
+
+  div(data-hook="model-view-container")
+
+  div(data-hook="model-settings-container")
+
+  div(style="height:425px;")
+
+  div(class="preview-nav")
+
+    div(data-hook="domain-plot-viewer-container" style="display: none")
+
+      div: h4 Domain and Particle Preview
+
+      div.row
+
+        div.col-sm-8
+
+          div(data-hook="domain-plot-container")
+
+          div.text-danger(data-hook="domain-plot-container-empty") The domain currently has no particles to display
+
+        div.col-sm-4.overflow-auto(style="max-height:450px;")
+
+          div.mt-2.particle-view(data-hook="me-particle-viewer")
+
+          div.mt-2.particle-view(data-hook="me-select-particle")
+
+            div.text-info
+              | Click on a particle to view its properties.
+
+            div.mt-2
+
+              h4 Particles per Type
+
+              div(data-hook="me-types-quick-view")
+
+    div(data-hook="model-run-container")
+
+      div(data-hook="preview-plot-container")
+
+      div.spinner-border(data-hook="plot-loader")
+
+      div.collapse(data-hook="model-timeout-message")
+
+        p.text-warning The model took longer than 5 seconds to run and timed out!
+
+      div.errors(data-hook="model-run-error-container")
+
+        p.text-danger(data-hook="model-run-error-message")
+
+    div(data-hook="error-detected-msg" style="display: none;"): p.text-danger Errors were detected in your model please ensure that your model has all required components and that all required fields are filled in correctly or click the <b>X</b> next to a component to remove it.
+
+    div
+
+      div.mt-1.inline(data-hook="preview-domain-buttons")
+
+        button.btn.btn-outline-secondary.box-shadow.mx-2(data-hook="toggle-preview-domain" style="display: none") Hide Domain
+
+      div.mt-1.preview-buttons.inline(data-hook="preview-plot-buttons")
+
+        button.btn.btn-outline-secondary.box-shadow.inline.mx-2(data-hook="toggle-preview-plot") Hide Preview
+
+        button.btn.btn-outline-secondary.box-shadow.inline.dropdown-toggle(
+          id="preview-options",
+          data-toggle="dropdown",
+          aria-haspopup="true",
+          aria-expanded="false",
+          type="button"
+        ) Preview Options <span class="caret"></span>
+
+        ul.dropdown-menu(aria-labelledby="preview-options")
+          li.dropdown-item(data-hook="download-png") Download as PNG
+
+      div.model-state-buttons(data-hook="model-state-buttons-container")
+      
+        div.mdl-edit-btn
+    
+          div.mdl-edit-btn.saving-status(data-hook="mdl-action-start")
+
+            div.spinner-grow
+
+            span(data-hook="saving" style="display: none") Saving ...
+
+            span(data-hook="publishing" style="display: none") Publishing ...
+
+          div.mdl-edit-btn.saved-status(data-hook="mdl-action-end")
+
+            span(data-hook="saved" style="display: none") Saved
+
+            span(data-hook="published" style="display: none") Published
+
+          div.mdl-edit-btn.save-error-status(data-hook="mdl-action-err")
+
+            span Error
+          
+          button.btn.btn-primary.box-shadow(data-hook="save") Save
+
+          button.btn.btn-primary.box-shadow(data-hook="return-to-project-btn" style="display: none;") Return to Project
+
+          a.btn.btn-primary.box-shadow.text-break.hidden(data-hook="return-to-inf-btn" href="" role="button") Return to Inference
+
+          button.btn.btn-primary.box-shadow.dropdown-toggle(
+            id="simulate-model",
+            data-hook="simulate-model",
+            data-toggle="dropdown",
+            aria-haspopup="true",
+            aria-expanded="false",
+            type="button"
+          ) Simulate <span class="caret"></span>
+
+          ul.dropdown-menu(aria-labelledby="preview-options")
+            li.dropdown-item(data-hook="run" data-type="preview") Preview
+            li.dropdown-divider
+            li.dropdown-item(id="stochss-es" data-hook="stochss-es" data-type="ensemble") Ensemble Simulation
+            li.dropdown-item(id="stochss-ps" data-hook="stochss-ps" data-type="psweep") Parameter Sweep
+            li.dropdown-item(data-hook="new-workflow" data-type="notebook") Jupyter Notebook
+
+          button.btn.btn-primary.box-shadow(data-hook="presentation") Publish
