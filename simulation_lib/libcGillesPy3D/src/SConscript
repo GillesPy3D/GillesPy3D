@@ -1,0 +1,27 @@
+Import("env")
+
+libcgillespy3d = env.SharedObject(
+    source=[
+        "model.cpp",
+        "model_context.cpp",
+        "reaction.cpp",
+        "parameter.cpp",
+        "species.cpp",
+        "timespan.cpp",
+        "initial_condition.cpp",
+        "data_function.cpp",
+        "boundary_condition.cpp",
+        "domain.cpp",
+        "simulation.cpp",
+        "error.cpp",
+        "integrator.cpp",
+        "species_state.cpp",
+        "reaction_state.cpp",
+        "event_state.cpp",
+        "solver.cpp",
+    ],
+    TOOLCHAIN_WIN32_CXXFLAGS="/EHsc",
+)
+
+Return("libcgillespy3d")
+

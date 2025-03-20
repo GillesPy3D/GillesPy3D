@@ -1,0 +1,18 @@
+div.mx-1
+
+  if(this.model.collection.indexOf(this.model) !== 0)
+    hr
+
+  div.row
+
+    div.col-sm-3
+
+      div.pl-2(data-hook="event-assignment-variable")
+
+    div.col-sm-7
+
+      div(data-hook="event-assignment-expression")
+
+    div.col-sm-2
+
+      button.btn.btn-outline-secondary(data-hook="remove-assignment") X

@@ -1,0 +1,9 @@
+Import("env")
+
+env.Append(
+    CPPPATH=[
+        Dir("ANN/include")
+    ]
+)
+SConscript("ANN/src/SConscript")
+# SConscript("Sundials/src/SCosncript")

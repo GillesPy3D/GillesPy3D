@@ -1,0 +1,52 @@
+section.page
+
+  h3(data-hook="wkfl-selection-header")
+
+  div(data-hook="workflow-selection-breadcrumb-links" style="display: none")
+    h5
+      nav(aria-label="breadcrumb")
+        ol.breadcrumb
+          li.breadcrumb-item
+            a(href="stochss/project/manager?path="+this.projectPath data-hook="project-breadcrumb")=this.projectName
+          
+  div.alert-danger.hidden(data-hook="invalid-model-message")
+    | You cannot create a workflow if your model does not have at least one <b>Variable</b> and one <b>Reaction</b>, <b>Event</b>, or <b>Rule</b>
+
+  div.alert-info.hidden(data-hook="psweep-workflow-message")
+    | <b>Parameter Sweep</b> workflows require at least one parameter
+
+  div
+
+    div.alert-info <b>AWS Cloud</b> is only supported in the <b>Ensemble Simulation</b> workflow
+
+    div.my-2
+
+      span.mr-2.inline(for="#compute-env-select") Compute Environment:
+
+      div.inline(id="compute-env-select" data-hook="compute-env-select")
+
+  table.table
+    thead
+      tr
+        th(scope="col" colspan="3") Jupyter Notebook Workflows
+    tbody
+      tr
+        td
+          button.btn.btn-outline-primary.box-shadow(id="ensemble-simulation" data-hook="ensemble-simulation" data-type="gillespy")
+            | Ensemble Simulation
+        td
+          button.btn.btn-outline-primary.box-shadow(id="spatial-simulation" data-hook="spatial-simulation" data-type="spatial")
+            | Spatial Ensemble Simulation
+        td
+          button.btn.btn-outline-primary.box-shadow(id="oned-parameter-sweep" data-hook="oned-parameter-sweep" data-type="1d_parameter_sweep")
+            | 1D Parameter Sweep
+      tr
+        td
+          button.btn.btn-outline-primary.box-shadow(id="twod-parameter-sweep" data-hook="twod-parameter-sweep" data-type="2d_parameter_sweep")
+            | 2D Parameter Sweep
+        td
+          button.btn.btn-outline-primary.box-shadow(id="sciope-model-exploration" data-hook="sciope-model-exploration" data-type="sciope_model_exploration")
+            | Sciope Model Exploration
+        td
+          button.btn.btn-outline-primary.box-shadow(id="model-inference" data-hook="model-inference" data-type="model_inference")
+            | Sciope Model Inference

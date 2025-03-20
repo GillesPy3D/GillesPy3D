@@ -1,0 +1,140 @@
+section.page
+
+  div.verticle-space
+
+    h2.inline(id="page-title" data-hook="page-title")= "Project: "
+
+  div.no-gutters-padding
+
+    div(id=this.model.elementID+"-annotation-section")
+
+      div.verticle-space-2
+        button.btn.btn-outline-secondary.btn-sm.box-shadow(data-hook="edit-annotation-btn") Add Notes
+      
+      div.mx-3.mt-2.collapse.verticle-space-2(data-hook="collapse-annotation-container")
+
+        div.col-md-2.inline.align-top
+
+          div.row
+
+            div
+              h5="Notes: "
+
+            div
+              button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#annotation-text" data-hook="collapse-annotation-text") +
+
+        div.collapse.col-md-10.inline(id="annotation-text")
+
+            div
+              textarea(id="annotation" data-hook="annotation-text-container" rows="7" style="width: 100%;")
+
+    div.verticle-space-3(id=this.model.elementID + "-models-section")
+
+      div
+
+        h3.inline Models
+
+      div.mx-1.row.head
+
+      div.mt-3(id=this.model.elementID + "-models-list" data-hook="model-listing")
+
+      div
+
+        button.btn.btn-outline-primary.inline.dropdown-toggle.box-shadow(
+          id="project-manager-add-model-btn",
+          data-hook="add-element-btn",
+          data-toggle="dropdown",
+          aria-haspopup="true",
+          aria-expanded="false",
+          type="button"
+        ) Add Model <span class="caret"></span>
+
+        ul.dropdown-menu(aria-labelledby="project-manager-add-model-btn")
+          li.dropdown-item(id="new-model" data-hook="new-model" data-type="model") New Model
+          li.dropdown-item(id="new-model" data-hook="new-model" data-type="spatial") New Spatial Model
+          li.dropdown-divider
+          li.dropdown-item(id="existing-model" data-hook="existing-model") Existing Model
+          li.dropdown-divider
+          li.dropdown-item(id="upload-model-btn" data-hook="upload-model-btn") Upload StochSS Model (.mdl or .smdl)
+
+    div.verticle-space-3(id=this.model.elementID + "-workflows-section" style="display: none;")
+
+      div
+
+        h3.inline Workflows
+
+      div.mx-1.row.head
+
+      div.mt-3(id=this.model.elementID + "-workflows-list" data-hook="workflow-listing")
+
+      div
+
+        button.btn.btn-outline-primary.inline.dropdown-toggle.box-shadow(
+          id=this.model.elementID + "-workflow-btn",
+          data-hook=this.model.elementID + "-workflow-btn",
+          data-toggle="dropdown",
+          aria-haspopup="true",
+          aria-expanded="false",
+          type="button"
+        ) Add New Workflow <span class="caret"></span>
+
+        ul.dropdown-menu(aria-labelledby=this.model.elementID + "-workflow-btn")
+          li.dropdown-item(id="new-ensemble-simulation" data-hook="new-ensemble-simulation" data-type="Ensemble Simulation") Ensemble Simulation
+          li.dropdown-item(id="new-parameter-sweep" data-hook="new-parameter-sweep" data-type="Parameter Sweep") Parameter Sweep
+          li.dropdown-item(id="new-jupyter-notebook" data-hook="new-jupyter-notebook" data-type="Jupyter Notebook") Jupyter Notebook
+
+    div.card.card-body(id=this.model.elementID + "-advanced-section")
+
+      div
+
+        h3.inline Advanced
+
+        button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#project-manager-advanced" data-hook="project-manager-advanced-btn") +
+
+      div.collapse(id="project-manager-advanced" data-hook="project-manager-advanced")
+
+        div.card.card-body(id=this.model.elementID + "-archive-section" style="display: none;")
+
+          div
+
+            h3.inline Archived Workflows
+
+            button.btn.btn-outline-collapse(data-toggle="collapse" data-target="#" + this.model.elementID + "-archive-container" data-hook="archive-btn") +
+
+          div.collapse(id=this.model.elementID + "-archive-container")
+          
+            div.mt-1.mb-3.head
+
+            div(id=this.model.elementID + "-archive-list" data-hook="archive-listing")
+
+        div(id="project-meta-data-container" data-hook="project-meta-data-container")
+
+        div#browse-files.card.card-body
+
+          div
+
+            h3.inline Browse Files
+            div.inline
+              button.btn.btn-outline-collapse(data-toggle="collapse", data-target="#collapse-browse-files", id="collapse-browse-files-btn" data-hook="collapse-browse-files") +
+
+          div.collapse(id="collapse-browse-files")
+
+            div(id="project-manager-file-browser" data-hook="file-browser")
+
+        div
+
+          button.btn.btn-primary.inline.dropdown-toggle.box-shadow(
+            id="download-project-btn",
+            data-hook="download-project-btn",
+            data-toggle="dropdown",
+            aria-haspopup="true",
+            aria-expanded="false",
+            type="button"
+          ) Download <span class="caret"></span>
+
+          ul.dropdown-menu(aria-labelledby="download-project-btn")
+            li.dropdown-item(id="export-project-as-zip" data-hook="export-project-as-zip") as .zip
+            li.dropdown-item.disabled(id="export-project-as-combine" data-hook="export-project-as-combine") as COMBINE
+
+          button.btn.btn-primary.inline.box-shadow(id="empty-project-trash" data-hook="empty-project-trash") Empty Trash
+

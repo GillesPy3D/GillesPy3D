@@ -1,0 +1,63 @@
+import sysconfig
+import os
+
+
+# Make sure python3 dev headers are installed
+# On Ubuntu, python3-dev (might need version-specific, e.g. python3.11-dev, which might require adding new repos)
+# On Fedora, python3-devel (might need version-specific, e.g. python3.11-devel)
+
+cmd_opts = Variables(None, ARGUMENTS)
+cmd_opts.Add(PathVariable("PYTHONINC", help="Path to Python development header include directory", default=sysconfig.get_path("include")))
+
+toolchains = Tool("toolchains")
+toolchains.options(cmd_opts)
+
+env = Environment(
+    variables=cmd_opts,
+    tools=["default", toolchains, "swig"],
+    TOOLCHAIN_CXX_STANDARD=20,
+    SWIGOUTDIR=Dir("lib/libcgillespy3d"),
+    CPPPATH=[
+        Dir("include"),
+        Dir("external/ANN/include"),
+        Dir("external/Sundials/include"),
+        Dir("external/Sundials/src"),
+        Dir("${TOOLCHAINDIR}/include"),
+        Dir("external/Sundials/src/sundials"),
+        Dir("${PYTHONINC}"),
+    ],
+    LIBPATH=[
+        Dir("obj"),
+        Dir("obj/external/Sundials"),
+    ],
+    ENV={"PATH": os.environ.get("PATH")},
+)
+
+# Send dependency build files to obj/ subfolders
+# From this point on, refer to all source files as being relative to the build directory
+# SCons will automagically map your build-relative file to the real path
+VariantDir("obj/src", "src", duplicate=False)
+VariantDir("obj/external", "external", duplicate=False)
+VariantDir("obj/include", "include", duplicate=False)
+
+cgillespy3d = SConscript("obj/src/SConscript", exports=["env"])
+sundials = SConscript("obj/external/Sundials/SConscript", exports=["env"])
+
+[swigfile, swigpyfile] = env.CXXFile("obj/include/libcgillespy3d.i",
+    SWIGFLAGS=[
+        "-c++",
+        "-python",
+        "-features", "autodoc",
+    ],
+    SWIGCXXFILESUFFIX="_wrap.cpp",
+)
+swigobj = env.SharedObject(
+    source=[swigfile],
+    TOOLCHAIN_CXX_STANDARD=17,
+    TOOLCHAIN_WIN32_CXXFLAGS="/EHsc",
+)
+
+libcgillespy3d = env.StaticLibrary(
+    "lib/cgillespy3d",
+    [swigobj, *cgillespy3d, *sundials],
+)
