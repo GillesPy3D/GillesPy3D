@@ -360,7 +360,10 @@ let ModelEditor = PageView.extend({
     if(app.getBasePath() === "/") {
       $(this.queryByHook("presentation")).css("display", "none");
     }
-    let infLink = this.model.refLinks.filter((refLink) => { return refLink.job; })[0] || null;
+    let infLink = null;
+    if("refLinks" in this.model && this.model.refLinks !== undefined){
+        this.model.refLinks.filter((refLink) => { return refLink.job; })[0];
+    }
     if(infLink) {
       $(this.queryByHook('return-to-inf-btn')).css("display", "inline-block");
       $(this.queryByHook('return-to-inf-btn')).prop("href", `stochss/workflow/edit?path=${infLink.path}&type=none`);
