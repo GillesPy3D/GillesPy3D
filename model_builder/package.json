@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stochss/stochss.git"
+    "url": "git+https://github.com/GillesPy3D/GillesPy3D.git"
   },
-  "author": "StochSS Team (bdrawert@unca.edu)",
+  "author": "GlilesPY3D team ((NEW EMAIL HERE? )bdrawert@unca.edu)",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/stochss/stochss/issues"
+    "url": "https://github.com/GillesPy3D/GillesPy3D/issues"
   },
-  "homepage": "https://github.com/stochss/stochss#readme",
+  "homepage": "https://github.com/GillesPy3D/GillesPy3D#readme",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.0",
     "ampersand-app": "^2.0.0",
