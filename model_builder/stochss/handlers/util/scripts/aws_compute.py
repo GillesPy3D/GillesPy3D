@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-StochSS is a platform for simulating biochemical systems
+GillesPy3D is a platform for simulating biochemical systems
 Copyright (C) 2019-2022 StochSS developers.
 
 This program is free software: you can redistribute it and/or modify
