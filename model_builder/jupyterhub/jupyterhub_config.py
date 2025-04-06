@@ -87,25 +87,25 @@ c.JupyterHub.log_level = 'DEBUG'
 ## The default URL for users when they arrive (e.g. when user directs to "/")
 #
 #  By default, redirects users to their own server.
-c.JupyterHub.default_url = '/stochss'
+c.JupyterHub.default_url = '/model_builder'
 
 # StochSS request handlers
 c.JupyterHub.extra_handlers = [
-        (r"/stochss\/?", HomeHandler),
-        (r"/stochss/api/message\/?", MessageAPIHandler),
-        (r"/stochss/present-job\/?", JobPresentationHandler),
-        (r"/stochss/present-model\/?", ModelPresentationHandler),
-        (r"/stochss/present-notebook\/?", NotebookPresentationHandler),
-        (r"/stochss/multiple-plots\/?", MultiplePlotsHandler),
-        (r"/stochss/api/file/json-data\/?", JsonFileAPIHandler),
-        (r"/stochss/download_presentation/(\w+)/(.+)\/?", DownModelPresentationAPIHandler),
-        (r"/stochss/api/notebook/load\/?", NotebookAPIHandler),
-        (r"/stochss/notebook/download_presentation/(\w+)/(.+)\/?",
+        (r"/model_builder\/?", HomeHandler),
+        (r"/model_builder/api/message\/?", MessageAPIHandler),
+        (r"/model_builder/present-job\/?", JobPresentationHandler),
+        (r"/model_builder/present-model\/?", ModelPresentationHandler),
+        (r"/model_builder/present-notebook\/?", NotebookPresentationHandler),
+        (r"/model_builder/multiple-plots\/?", MultiplePlotsHandler),
+        (r"/model_builder/api/file/json-data\/?", JsonFileAPIHandler),
+        (r"/model_builder/download_presentation/(\w+)/(.+)\/?", DownModelPresentationAPIHandler),
+        (r"/model_builder/api/notebook/load\/?", NotebookAPIHandler),
+        (r"/model_builder/notebook/download_presentation/(\w+)/(.+)\/?",
          DownNotebookPresentationAPIHandler),
-        (r"/stochss/api/job/load\/?", JobAPIHandler),
-        (r"/stochss/job/download_presentation/(\w+)/(.+)\/?", DownJobPresentationAPIHandler),
-        (r"/stochss/api/workflow/plot-results\/?", PlotJobResultsAPIHandler),
-        (r"/stochss/api/job/csv\/?", DownloadCSVAPIHandler)
+        (r"/model_builder/api/job/load\/?", JobAPIHandler),
+        (r"/model_builder/job/download_presentation/(\w+)/(.+)\/?", DownJobPresentationAPIHandler),
+        (r"/model_builder/api/workflow/plot-results\/?", PlotJobResultsAPIHandler),
+        (r"/model_builder/api/job/csv\/?", DownloadCSVAPIHandler)
 ]
 
 ## Paths to search for jinja templates, before using the default templates.
@@ -393,7 +393,7 @@ c.Spawner.post_stop_hook = post_stop_hook
 #  - Start with `/notebooks` instead of `/tree` if `default_url` points to a notebook instead of a
 #    directory.
 #  - You can set this to `/lab` to have JupyterLab start by default, rather than Jupyter Notebook.
-c.Spawner.default_url = '/stochss/models'
+c.Spawner.default_url = '/model_builder/models'
 
 ## Maximum number of bytes a single-user notebook server is allowed to use.
 #
@@ -500,7 +500,7 @@ update_users_sets()
 # Slack integration
 # slack access bot token
 slack_user_name = "StochSS Live Bot"
-slack_channel = "#stochss-live"
+slack_channel = "#model_builder-live"
 slack_icon_emoji = ':red_circle:'
 slack_token = None
 try:

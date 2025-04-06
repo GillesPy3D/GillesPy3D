@@ -44,6 +44,7 @@ module.exports = View.extend({
   initialize: function (attrs, options) {
     View.prototype.initialize.apply(this, arguments);
     let links = [];
+ 
     if("refLinks" in this.model.model && this.model.model.refLinks !== undefined){
         this.model.model.refLinks.forEach((link) => {
           links.push(
@@ -57,7 +58,7 @@ module.exports = View.extend({
     View.prototype.render.apply(this, arguments);
     let parentPath = path.dirname(this.model.model.directory);
     let queryString = "?path=" + this.model.model.directory + "&parentPath=" + parentPath;
-    let endpoint = path.join(app.getBasePath(), 'stochss/workflow/selection') + queryString;
+    let endpoint = path.join(app.getBasePath(), 'model_builder/workflow/selection') + queryString;
     $(this.queryByHook(this.model.elementID + "-jupyter-notebook")).prop("href", endpoint);
     this.renderWorkflowCollection();
     if(this.htmlLinks) {
@@ -114,7 +115,7 @@ module.exports = View.extend({
             document.querySelector("#errorModal").remove();
           }
           let title = "Model Errors Detected";
-          let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + '?path=' + model.directory + '&validate';
+          let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + '?path=' + model.directory + '&validate';
           let message = 'Errors were detected in you model <a href="' + endpoint + '">click here to fix your model<a/>';
           $(modals.errorHtml(title, message)).modal();
         }

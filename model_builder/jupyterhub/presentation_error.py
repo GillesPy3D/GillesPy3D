@@ -20,7 +20,7 @@ import traceback
 
 def report_error(handler, log, err):
     '''
-    Report a stochss error to the front end
+    Report a model_builder error to the front end
 
     Attributes
     ----------
@@ -49,7 +49,7 @@ class StochSSAPIError(Exception):
 
     def __init__(self, status_code, reason, msg, trace):
         '''
-        Base error for all stochss api errors
+        Base error for all model_builder api errors
 
         Attributes
         ----------

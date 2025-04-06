@@ -116,7 +116,7 @@ let FileBrowser = PageView.extend({
       app.getXHR(endpoint, {
         success: (err, response, body) => {
           let queryStr = `?path=${body.path}`;
-          window.location.href = path.join(app.getBasePath(), "stochss/project/manager") + queryStr;
+          window.location.href = path.join(app.getBasePath(), "model_builder/project/manager") + queryStr;
         },
         error: (err, response, body) => {
           if(document.querySelector("#errorModal")) {
@@ -149,7 +149,7 @@ let FileBrowser = PageView.extend({
     );
     let href = window.location.href;
     if(href.includes("#file-browser-section")) {
-      location.href = "stochss/files#file-browser-section";
+      location.href = "model_builder/files#file-browser-section";
     }
   },
   renderProjectsView: function (projects) {
@@ -165,9 +165,9 @@ let FileBrowser = PageView.extend({
     );
     let href = window.location.href;
     if(href.includes("#file-browser-section")) {
-      location.href = "stochss/files#file-browser-section";
+      location.href = "model_builder/files#file-browser-section";
     }else if(href.includes("#presentation-browser-section")) {
-      location.href = "stochss/files#presentation-browser-section";
+      location.href = "model_builder/files#presentation-browser-section";
     }
   },
   update: function (target) {

@@ -1,0 +1,53 @@
+{
+	"is_spatial": false,
+	"defaultID": 1,
+	"defaultMode": "",
+	"annotation": "",
+	"volume": 1,
+	"modelSettings": {
+		"endSim": 20,
+		"timeStep": 0.05,
+		"timestepSize": 1e-5
+	},
+	"domain": {
+        "actions": [],
+		"boundary_condition": {
+        	"reflect_x": true,
+        	"reflect_y": true,
+        	"reflect_z": true},
+        "c_0": 10,
+        "gravity": [0, 0, 0],
+        "p_0": 100.0,
+        "rho_0": 1.0,
+        "shapes": [],
+        "size": null,
+        "static": true,
+        "template_version": 2,
+        "transformations": [],
+        "types": [
+            {
+                "c":10,
+                "fixed":false,
+                "mass":1.0,
+                "name":"Un-Assigned",
+                "nu":0.0,
+                "rho":1.0,
+                "typeID":0,
+                "volume":1.0
+            }
+        ],
+        "x_lim": [0, 0],
+        "y_lim": [0, 0],
+        "z_lim": [0, 0]
+    },
+	"species": [],
+    "initialConditions": [],
+	"parameters": [],
+	"reactions": [],
+    "refLinks": [],
+	"rules": [],
+	"eventsCollection": [],
+	"functionDefinitions": [],
+	"boundaryConditions": [],
+	"template_version": 1
+}

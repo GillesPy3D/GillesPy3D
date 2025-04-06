@@ -73,15 +73,15 @@ let ModelPresentationPage = PageView.extend({
         this.renderSubviews(false, domainPlot);
       },
       error: (err, response, body) => {
-        this.logoPath = "/hub/static/stochss-logo.png";
+        this.logoPath = "/hub/static/model_builder-logo.png";
         this.title = "404 PAGE NOT FOUND";
         this.errMsg = `This ${this.fileType} presentation was removed by the author and is no longer available.`;
         this.renderSubviews(true);
       }
     });
-    let downloadStart = "/stochss/download_presentation";
+    let downloadStart = "/model_builder/download_presentation";
     this.downloadLink = path.join(downloadStart, owner, file);
-    this.openLink = `https://open.stochss.org?open=${window.location.protocol}//${window.location.hostname}${this.downloadLink}`;
+    this.openLink = `https://open.model_builder.org?open=${window.location.protocol}//${window.location.hostname}${this.downloadLink}`;
   },
   render: function (attrs, options) {
     PageView.prototype.render.apply(this, arguments);

@@ -33,7 +33,7 @@ from presentation_error import StochSSAPIError, DomainUpdateError, StochSSModelF
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('stochss')
+log = logging.getLogger('model_builder')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -332,7 +332,7 @@ class StochSSSpatialModel(StochSSBase):
         return NewGeometry()
 
     @classmethod
-    def __build_stochss_domain_particles(cls, domain):
+    def __build_model_builder_domain_particles(cls, domain):
         particles = []
         for i, vertex in enumerate(domain.vertices):
             viscosity = domain.nu[i]
@@ -769,7 +769,7 @@ class StochSSSpatialModel(StochSSBase):
         ----------
         domain : spatialpy.Domain
             SpatialPy domain object used to generate plot data.
-        s_domain : stochss.Domain
+        s_domain : model_builder.Domain
             StochSS domain object used to generate plot data.
         '''
         fig = domain.plot_types(return_plotly_figure=True)
@@ -830,6 +830,6 @@ class StochSSSpatialModel(StochSSBase):
         domain = self.__convert_domain(type_ids, s_domain=s_domain)
         xlim, ylim, zlim = domain.get_bounding_box()
         limits = [list(xlim), list(ylim), list(zlim)]
-        s_domain['particles'] = self.__build_stochss_domain_particles(domain)
+        s_domain['particles'] = self.__build_model_builder_domain_particles(domain)
         plot = self.get_domain_plot(domain, s_domain)
         return plot, limits

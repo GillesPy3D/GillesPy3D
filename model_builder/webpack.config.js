@@ -18,84 +18,84 @@ module.exports = {
     multiplePlots: './client/pages/multiple-plots.js'
   },
   output: {
-    filename: 'stochss-[name].bundle.js',
-    path: path.resolve(__dirname, "stochss/dist")
+    filename: 'model_builder-[name].bundle.js',
+    path: path.resolve(__dirname, "model_builder/dist")
   },
   devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       title: 'StochSS | Home',
-      filename: 'stochss-user-home.html',
+      filename: 'model_builder-user-home.html',
       template: 'page_template.pug',
       name: 'home',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | User Settings',
-      filename: 'stochss-user-settings.html',
+      filename: 'model_builder-user-settings.html',
       template: 'page_template.pug',
       name: 'userSettings',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Quickstart',
-      filename: 'stochss-quickstart.html',
+      filename: 'model_builder-quickstart.html',
       template: 'page_template.pug',
       name: 'quickstart',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Example Library',
-      filename: 'stochss-example-library.html',
+      filename: 'model_builder-example-library.html',
       template: 'page_template.pug',
       name: 'exampleLibrary',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Model Browser',
-      filename: 'stochss-file-browser.html',
+      filename: 'model_builder-file-browser.html',
       template: 'page_template.pug',
       name: 'browser',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Model Editor',
-      filename: 'stochss-model-editor.html',
+      filename: 'model_builder-model-editor.html',
       template: 'page_template.pug',
       name: 'editor',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Domain Editor',
-      filename: 'stochss-domain-editor.html',
+      filename: 'model_builder-domain-editor.html',
       template: 'page_template.pug',
       name: 'domainEditor',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Workflow Selection',
-      filename: 'stochss-workflow-selection.html',
+      filename: 'model_builder-workflow-selection.html',
       template: 'page_template.pug',
       name: 'workflowSelection',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Workflow Editor',
-      filename: 'stochss-workflow-manager.html',
+      filename: 'model_builder-workflow-manager.html',
       template: 'page_template.pug',
       name: 'workflowEditor',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Project Manager',
-      filename: 'stochss-project-manager.html',
+      filename: 'model_builder-project-manager.html',
       template: 'page_template.pug',
       name: 'projectManager',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: "StochSS | Loading Page",
-      filename: 'stochss-loading-page.html',
+      filename: 'model_builder-loading-page.html',
       template: 'page_template.pug',
       name: 'loadingPage',
       inject: false

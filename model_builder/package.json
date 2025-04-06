@@ -1,5 +1,5 @@
 {
-  "name": "stochss",
+  "name": "model_builder",
   "version": "2.4.12",
   "description": "",
   "main": "webpack.config.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stochss/stochss.git"
+    "url": "git+https://github.com/model_builder/model_builder.git"
   },
   "author": "StochSS Team (bdrawert@unca.edu)",
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/stochss/stochss/issues"
+    "url": "https://github.com/model_builder/model_builder/issues"
   },
-  "homepage": "https://github.com/stochss/stochss#readme",
+  "homepage": "https://github.com/model_builder/model_builder#readme",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.12.0",
     "ampersand-app": "^2.0.0",

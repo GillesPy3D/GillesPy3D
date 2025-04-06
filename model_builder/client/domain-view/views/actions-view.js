@@ -35,7 +35,7 @@ module.exports = View.extend({
     'click [data-hook=remove-action]' : 'addAction',
     'click [data-hook=xml-mesh-action]' : 'addAction',
     'click [data-hook=mesh-io-action]' : 'addAction',
-    'click [data-hook=stochss-domain-action]' : 'addAction'
+    'click [data-hook=model_builder-domain-action]' : 'addAction'
   },
   initialize: function (attrs, options) {
     View.prototype.initialize.apply(this, arguments);

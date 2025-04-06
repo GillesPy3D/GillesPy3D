@@ -32,10 +32,10 @@ def __get_presentation_from_volume(client, owner, file):
         user_volume = list(filter(lambda volume: volume.name == f"jupyterhub-user-{owner}",
                                   volumes))[0]
         volume_mnts = {user_volume.name: {"bind": "/user_volume", "mode": "ro"},
-                       "/stochss/jupyterhub": {"bind": "/mnt/cache", "mode": "rw"}}
+                       "/model_builder/jupyterhub": {"bind": "/mnt/cache", "mode": "rw"}}
         command = ['cp', os.path.join('/user_volume/.presentations', file),
                    '/mnt/cache/presentation_cache/']
-        client.containers.run('stochss-lab', command, volumes=volume_mnts)
+        client.containers.run('model_builder-lab', command, volumes=volume_mnts)
         file_path = os.path.join('/srv/jupyterhub/presentation_cache', file)
         return file_path
     except docker.errors.ContainerError as err:

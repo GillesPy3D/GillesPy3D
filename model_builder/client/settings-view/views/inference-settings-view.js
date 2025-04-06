@@ -57,7 +57,7 @@ module.exports = View.extend({
   initialize: function (attrs, options) {
     View.prototype.initialize.apply(this, arguments);
     this.readOnly = attrs.readOnly ? attrs.readOnly : false;
-    this.stochssModel = attrs.stochssModel;
+    this.model_builderModel = attrs.model_builderModel;
     this.obsDataFiles = null;
     this.obsDataFile = null;
     this.obsFig = null;
@@ -163,7 +163,7 @@ module.exports = View.extend({
     }
     this.editParameterSpace = new InferenceParametersView({
       collection: this.model.parameters,
-      stochssModel: this.stochssModel,
+      model_builderModel: this.model_builderModel,
       priorMethod: this.model.priorMethod
     });
     let hook = "edit-parameter-space-container";
@@ -237,7 +237,7 @@ module.exports = View.extend({
     this.viewParameterSpace = new InferenceParametersView({
       collection: this.model.parameters,
       readOnly: true,
-      stochssModel: this.stochssModel,
+      model_builderModel: this.model_builderModel,
       priorMethod: this.model.priorMethod
     });
     let hook = "view-parameter-space-container";

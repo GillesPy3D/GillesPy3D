@@ -86,7 +86,7 @@ module.exports = View.extend({
       model: this.model.settings,
       newFormat: this.newFormat,
       readOnly: true,
-      stochssModel: this.model.model,
+      model_builderModel: this.model.model,
       type: this.titleType
     });
     app.registerRenderSubview(this, settingsView, "settings-viewer-container");

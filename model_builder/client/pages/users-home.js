@@ -45,7 +45,7 @@ let usersHomePage = PageView.extend({
     let urlParams = new URLSearchParams(window.location.search)
     if(urlParams.has("open")){
       let queryString = "?path=" + urlParams.get("open") + "&action=open";
-      let endpoint = path.join(app.getBasePath(), 'stochss/loading-page') + queryString;
+      let endpoint = path.join(app.getBasePath(), 'model_builder/loading-page') + queryString;
       window.location.href = endpoint;
     }
   },
@@ -85,7 +85,7 @@ let usersHomePage = PageView.extend({
         app.getXHR(endpoint, {
           success: function (err, response, body) {
             let projectQS = "?path="+body.path;
-            let projectEP = path.join(app.getBasePath(), "stochss/project/manager")+projectQS;
+            let projectEP = path.join(app.getBasePath(), "model_builder/project/manager")+projectQS;
             self.navToPage(projectEP);
           },
           error: function (err, response, body) {
@@ -99,11 +99,11 @@ let usersHomePage = PageView.extend({
     });
   },
   handleBrowseProjectsClick: function (e) {
-    let endpoint = path.join(app.getBasePath(), "stochss/files#project-browser-section")
+    let endpoint = path.join(app.getBasePath(), "model_builder/files#project-browser-section")
     this.navToPage(endpoint)
   },
   handleQuickstartClick: function (e) {
-    let endpoint = path.join(app.getBasePath(), "stochss/quickstart")
+    let endpoint = path.join(app.getBasePath(), "model_builder/quickstart")
     this.navToPage(endpoint)
   },
   navToPage: function (endpoint) {

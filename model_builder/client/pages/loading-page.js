@@ -35,7 +35,7 @@ let LoadingPage = PageView.extend({
     let urlParams = new URLSearchParams(window.location.search)
     this.filePath = urlParams.get("path");
     this.action = urlParams.get("action");
-    this.homeLink = path.join(app.getBasePath(), 'stochss/home');
+    this.homeLink = path.join(app.getBasePath(), 'model_builder/home');
   },
   render: function (attrs, options) {
     PageView.prototype.render.apply(this, arguments);
@@ -108,17 +108,17 @@ let LoadingPage = PageView.extend({
             errorCB(err, response, body);
           }else if(body.done) {
             if(body.file_path.endsWith(".proj")){
-              this.openStochSSPage("stochss/project/manager", body.file_path);
+              this.openStochSSPage("model_builder/project/manager", body.file_path);
             }else if(body.file_path.endsWith(".wkfl")){
-              this.openStochSSPage("stochss/workflow/edit", body.file_path);
+              this.openStochSSPage("model_builder/workflow/edit", body.file_path);
             }else if(body.file_path.endsWith(".mdl")){
-              this.openStochSSPage("stochss/models/edit", body.file_path);
+              this.openStochSSPage("model_builder/models/edit", body.file_path);
             }else if(body.file_path.endsWith(".domn")){
-              this.openStochSSPage("stochss/domain/edit", body.file_path);
+              this.openStochSSPage("model_builder/domain/edit", body.file_path);
             }else if(body.file_path.endsWith(".ipynb")){
               this.openNotebookFile(body.file_path);
             }else{
-              this.openStochSSPage('stochss/files');
+              this.openStochSSPage('model_builder/files');
             }
           }else{
             this.getUploadResponse();
@@ -155,12 +155,12 @@ let LoadingPage = PageView.extend({
   },
   updateProjectFormat: function (filePath) {
     let message = `You can update the format of any project and its workflows by opening the project and clicking yes when prompted to update the format.`;
-    let identifier = "stochss/project/manager"
+    let identifier = "model_builder/project/manager"
     this.updateFormat(filePath, message, "project", identifier);
   },
   updateWorkflowFormat: function (filePath) {
     let message = `You can update the format of any workflow by opening the workflow and clicking yes when prompted to update the format.`;
-    let identifier = "stochss/workflow/edit"
+    let identifier = "model_builder/workflow/edit"
     this.updateFormat(filePath, message, "workflow", identifier);
   },
   uploadFileFromLink: function (filePath, overwrite) {

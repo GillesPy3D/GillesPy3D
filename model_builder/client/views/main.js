@@ -50,7 +50,7 @@ module.exports = View.extend({
   },
   initialize: function () {
     this.listenTo(App, 'page', this.handleNewPage);
-    this.homePath = window.location.pathname.startsWith("/user") ? "/hub/spawn" : "stochss/home";
+    this.homePath = window.location.pathname.startsWith("/user") ? "/hub/spawn" : "model_builder/home";
     this.ulClosed = false;
   },
   render: function () {

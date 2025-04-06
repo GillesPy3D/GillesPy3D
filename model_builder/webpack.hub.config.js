@@ -11,35 +11,35 @@ module.exports = {
     multiplePlots: './client/pages/multiple-plots.js'
   },
   output: {
-    filename: 'stochss-[name].bundle.js',
+    filename: 'model_builder-[name].bundle.js',
     path: path.resolve(__dirname, 'jupyterhub/static')
   },
   devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       title: 'StochSS | Home',
-      filename: '../templates/stochss-home.html',
+      filename: '../templates/model_builder-home.html',
       template: 'jupyterhub/home_template.pug',
       name: 'home',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Job Presentation',
-      filename: '../templates/stochss-job-presentation.html',
+      filename: '../templates/model_builder-job-presentation.html',
       template: 'jupyterhub/home_template.pug',
       name: 'jobPresentation',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Model Presentation',
-      filename: '../templates/stochss-model-presentation.html',
+      filename: '../templates/model_builder-model-presentation.html',
       template: 'jupyterhub/home_template.pug',
       name: 'modelPresentation',
       inject: false
     }),
     new HtmlWebpackPlugin({
       title: 'StochSS | Notebook Presentation',
-      filename: '../templates/stochss-notebook-presentation.html',
+      filename: '../templates/model_builder-notebook-presentation.html',
       template: 'jupyterhub/home_template.pug',
       name: 'notebookPresentation',
       inject: false

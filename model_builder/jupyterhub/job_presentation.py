@@ -37,7 +37,7 @@ from presentation_error import StochSSJobResultsError, StochSSFileNotFoundError,
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('stochss')
+log = logging.getLogger('model_builder')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods

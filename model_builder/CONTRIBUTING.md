@@ -6,7 +6,7 @@ By contributing to GlilesPy3D, you agree to the [Code of Conduct](/CODE_OF_CONDU
 2. Create a new branch from the 'develop' branch. Use a meaningful name and include an issue number if applicable.
 3. Add new changes to your branch. Be sure to document your code and remove any dead code.
 4. Add the [COPYRIGHT](/COPYRIGHT) notice to the beginning of any new files you create.
-5. Create unit tests to cover changes. Unit tests should be placed in the [test](/stochss/tests) subdirectory.
+5. Create unit tests to cover changes. Unit tests should be placed in the [test](/model_builder/tests) subdirectory.
 6. Use [pylint](https://pylint.org) to validate any new Python code to ensure [PEP 8](https://www.python.org/dev/peps/pep-0008/) compliance.
 
 ## Submitting a Pull Request

@@ -22,7 +22,7 @@ import os.path
 #  be used to enable and disable the loading ofthe extensions. The extensions
 #  will be loaded in alphabetical order.
 c.NotebookApp.nbserver_extensions = {
-    'stochss.handlers' : True
+    'model_builder.handlers' : True
 }
 
 ## Extra paths to search for serving static files.
@@ -30,10 +30,10 @@ c.NotebookApp.nbserver_extensions = {
 #  This allows adding javascript/css to be available from the notebook server
 #  machine, or overriding individual files in the IPython
 #
-# This is also where we put stochss page bundles
+# This is also where we put model_builder page bundles
 c.NotebookApp.extra_static_paths = [
     # This entry comes first
-    os.path.realpath('/stochss/stochss/dist')
+    os.path.realpath('/model_builder/model_builder/dist')
 ]
 
 ## Disable cross-site-request-forgery protection
@@ -51,7 +51,7 @@ c.NotebookApp.extra_static_paths = [
 c.NotebookApp.disable_check_xsrf = True
 
 ## The default URL to redirect to from `/`
-c.NotebookApp.default_url = '/stochss/home'
+c.NotebookApp.default_url = '/model_builder/home'
 
 c.NotebookApp.allow_remote_access = True
 

@@ -144,11 +144,11 @@ test: create_working_dir
 	docker run --rm \
 		--name $(DOCKER_STOCHSS_IMAGE) \
 		--env-file .env \
-		-v $(DOCKER_ROOT_DIR):/stochss \
+		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
 		$(DOCKER_STOCHSS_IMAGE):latest \
-		/stochss/stochss/tests/run_all_tests.py
+		/model_builder/model_builder/tests/run_all_tests.py
 
 build_and_test: build test
 
@@ -169,7 +169,7 @@ run_bash:
 	docker run -it --rm \
 		--name $(DOCKER_STOCHSS_IMAGE) \
 		--env-file .env \
-		-v $(DOCKER_ROOT_DIR):/stochss \
+		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
 		$(DOCKER_STOCHSS_IMAGE):latest \
@@ -179,14 +179,14 @@ watch:
 	docker run -it --rm \
 		--name $(DOCKER_STOCHSS_IMAGE) \
 		--env-file .env \
-		-v $(DOCKER_ROOT_DIR):/stochss \
+		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
 		$(DOCKER_STOCHSS_IMAGE):latest \
-		bash -c "cd /stochss;pip install --no-cache-dir -e .; npm run watch & sleep 10; cd /home/jovyan; start-notebook.sh "
+		bash -c "cd /model_builder;pip install --no-cache-dir -e .; npm run watch & sleep 10; cd /home/jovyan; start-notebook.sh "
 
 update:
-	docker exec -it $(DOCKER_STOCHSS_IMAGE) python -m pip install -e /stochss
+	docker exec -it $(DOCKER_STOCHSS_IMAGE) python -m pip install -e /model_builder
 
 
 .PHONY: network volumes check-files pull notebook_image build
