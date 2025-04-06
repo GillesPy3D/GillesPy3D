@@ -2,14 +2,14 @@
 
 StochSS provides advanced tools for simulating and analyzing biochemical systems as Software as a Service. StochSS supports a wide range of model types ranging from continuous ODEs to discrete (spatial) stochastic simulations as well as advanced model analysis workflows.  
   
-**Try out [StochSS Live!](https://live.model_builder.org)**  
+**Try out [StochSS Live!](https://live.stochss.org)**  
   
 ## Why use StochSS
 StochSS provides both an easy-to-use UI for constructing biochemical models as well as intuitive UIs for the most common model analysis tools such as visualization of results, parameter sweeps and parameter inference. StochSS is built on top of Jupyter Hub, and this lets you seemlessly switch between UI representations and Notebooks exposing the full backend API. In this way a user can benefit from the best of graphical representations with a clear upgrade path to modeling as code. For this reason, StochSS is also uniquely suited for the computational biologist starting out with mathematical modeling of biochemical systems. 
 
-StochSS is a software project involving several leading research groups in computational systems biology. We welcome collaborators to help expand the capabilities of StochSS. Read more about the project at [www.model_builder.org](http://www.model_builder.org).   
+StochSS is a software project involving several leading research groups in computational systems biology. We welcome collaborators to help expand the capabilities of StochSS. Read more about the project at [www.stochss.org](http://www.stochss.org).   
 
-StochSS is intended to be used as Software as a Service via [StochSS Live!](https://live.model_builder.org). The following instructions can help you set up your own local development environment or deploy your own instance as SaaS.
+StochSS is intended to be used as Software as a Service via [StochSS Live!](https://live.stochss.org). The following instructions can help you set up your own local development environment or deploy your own instance as SaaS.
 
 ## Deploying your own Single-User StochSS Instance
 ### Requirements
@@ -40,7 +40,7 @@ At the moment StochSS development on Windows is not supported. You can try using
 - Rebuild frontend static assets on changes to files in `/client` .  
   `make watch`
 
-- Upon changing backend code in model_builder/handlers you can update a running StochSS notebook server.  
+- Upon changing backend code in stochss/handlers you can update a running StochSS notebook server.  
   `make update`
 
 - [Optional] By default your files are saved to your local machine at `./local\_data/` . You can change this location by the changing value of `DOCKER\_WORKING\_DIR` in the file `.env` .
@@ -98,7 +98,7 @@ To set up the staging environment you'll need to [set up Google OAuth](https://d
 Example oauth file:
 
 ```bash
-OAUTH_CALLBACK=https://staging.model_builder.org/hub/oauth_callback
+OAUTH_CALLBACK=https://staging.stochss.org/hub/oauth_callback
 CLIENT_ID=8432438242-32432ada3ff23f248sf7ds.apps.googleusercontent.com
 CLIENT_SECRET=adfsaf2327f2f7taafdsa34
 ```
