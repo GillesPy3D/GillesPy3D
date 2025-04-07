@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # =============================================================================
 # @file    __version__.py
-# @brief   StochSS version info
+# @brief   GillesPy3D version info
 # @license Please see the file named LICENSE in the project directory
-# @website https://github.com/model_builder/model_builder
+# @website https://github.com/GillesPy3D/GillesPy3D
 # =============================================================================
 
 import os
