@@ -919,7 +919,7 @@ class StochSSNotebook(StochSSBase):
         present_link = f"/model_builder/present-notebook{query_str}"
         dl_link_base = "/model_builder/notebook/download_presentation"
         download_link = os.path.join(dl_link_base, hostname, file)
-        open_link = f"https://open.model_builder.org?open={download_link}"
+        open_link = f"https://open.stochss.org?open={download_link}"
         return {"presentation": present_link, "download": download_link, "open": open_link}
 
     def __get_spatialpy_run_setting(self):

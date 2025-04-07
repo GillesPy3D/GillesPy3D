@@ -81,7 +81,7 @@ let ModelPresentationPage = PageView.extend({
     });
     let downloadStart = "/model_builder/download_presentation";
     this.downloadLink = path.join(downloadStart, owner, file);
-    this.openLink = `https://open.model_builder.org?open=${window.location.protocol}//${window.location.hostname}${this.downloadLink}`;
+    this.openLink = `https://open.stochss.org?open=${window.location.protocol}//${window.location.hostname}${this.downloadLink}`;
   },
   render: function (attrs, options) {
     PageView.prototype.render.apply(this, arguments);

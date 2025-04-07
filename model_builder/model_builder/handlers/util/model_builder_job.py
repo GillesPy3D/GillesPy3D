@@ -226,7 +226,7 @@ class StochSSJob(StochSSBase):
         present_link = f"/model_builder/present-job{query_str}"
         dl_base = "/model_builder/job/download_presentation"
         downloadlink = os.path.join(dl_base, hostname, file)
-        open_link = f"https://open.model_builder.org?open={downloadlink}"
+        open_link = f"https://open.stochss.org?open={downloadlink}"
         links = {"presentation": present_link, "download": downloadlink, "open": open_link}
         return links
 

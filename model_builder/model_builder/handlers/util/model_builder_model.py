@@ -535,7 +535,7 @@ class StochSSModel(StochSSBase):
             present_link = f"/model_builder/present-model{query_str}"
             downloadlink = os.path.join("/model_builder/download_presentation",
                                         hostname, file)
-            open_link = f"https://open.model_builder.org?open={downloadlink}"
+            open_link = f"https://open.stochss.org?open={downloadlink}"
             links = {"presentation": present_link, "download": downloadlink, "open": open_link}
             return links, data
         except PermissionError as err:
