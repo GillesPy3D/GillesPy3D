@@ -162,7 +162,7 @@ c.JupyterHub.services = [
 # Dockerspawner configuration
 #---------------------------------------------------------------------------------------------------
 
-c.DockerSpawner.image = os.environ['DOCKER_STOCHSS_IMAGE']
+c.DockerSpawner.image = os.environ['DOCKER_GILLESPY3D_IMAGE']
 # JupyterHub requires a single-user instance of the Notebook server, so we
 # default to using the `start-singleuser.sh` script included in the
 # jupyter/docker-stacks *-notebook images as the Docker run command when

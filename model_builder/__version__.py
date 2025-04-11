@@ -1,6 +1,6 @@
 # =============================================================================
 # @file    __version__.py
-# @brief   StochSS version info
+# @brief   GillesPy3D version info
 # @license Please see the file named LICENSE in the project directory
 # @website https://github.com/model_builder/model_builder
 # =============================================================================

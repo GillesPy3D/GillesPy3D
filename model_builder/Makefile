@@ -122,7 +122,7 @@ clean_hub:
 	docker image prune
 
 clean_notebook_server:
-	docker rmi $(DOCKER_STOCHSS_IMAGE):latest
+	docker rmi $(DOCKER_GILLESPY3D_IMAGE):latest
 	docker image prune
 
 hub: build_hub build run_hub_dev
@@ -130,7 +130,7 @@ hub: build_hub build run_hub_dev
 build_clean:
 	docker build \
 		--build-arg JUPYTER_CONFIG_DIR=$(JUPYTER_CONFIG_DIR) \
-		--no-cache -t $(DOCKER_STOCHSS_IMAGE):latest .
+		--no-cache -t $(DOCKER_GILLESPY3D_IMAGE):latest .
 
 create_working_dir:
 	$(DOCKER_SETUP_COMMAND)
@@ -138,16 +138,16 @@ create_working_dir:
 build:
 	docker build \
 		--build-arg JUPYTER_CONFIG_DIR=$(JUPYTER_CONFIG_DIR) \
-		-t $(DOCKER_STOCHSS_IMAGE):latest .
+		-t $(DOCKER_GILLESPY3D_IMAGE):latest .
 
 test: create_working_dir
 	docker run --rm \
-		--name $(DOCKER_STOCHSS_IMAGE) \
+		--name $(DOCKER_GILLESPY3D_IMAGE) \
 		--env-file .env \
 		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
-		$(DOCKER_STOCHSS_IMAGE):latest \
+		$(DOCKER_GILLESPY3D_IMAGE):latest \
 		/model_builder/model_builder/tests/run_all_tests.py
 
 build_and_test: build test
@@ -155,11 +155,11 @@ build_and_test: build test
 run: create_working_dir
 	$(PYTHON_EXE) launch_webbrowser.py &
 	docker run --rm \
-		--name $(DOCKER_STOCHSS_IMAGE) \
+		--name $(DOCKER_GILLESPY3D_IMAGE) \
 		--env-file .env \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
-		$(DOCKER_STOCHSS_IMAGE):latest \
+		$(DOCKER_GILLESPY3D_IMAGE):latest \
 		bash -c "cd /home/jovyan; start-notebook.sh "
 
 
@@ -167,26 +167,26 @@ build_and_run: build run
 
 run_bash:
 	docker run -it --rm \
-		--name $(DOCKER_STOCHSS_IMAGE) \
+		--name $(DOCKER_GILLESPY3D_IMAGE) \
 		--env-file .env \
 		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
-		$(DOCKER_STOCHSS_IMAGE):latest \
+		$(DOCKER_GILLESPY3D_IMAGE):latest \
 		/bin/bash
 watch:
 	$(PYTHON_EXE) launch_webbrowser.py &
 	docker run -it --rm \
-		--name $(DOCKER_STOCHSS_IMAGE) \
+		--name $(DOCKER_GILLESPY3D_IMAGE) \
 		--env-file .env \
 		-v $(DOCKER_ROOT_DIR):/model_builder \
 		-v $(DOCKER_WORKING_DIR):/home/jovyan/ \
 		-p 8888:8888 \
-		$(DOCKER_STOCHSS_IMAGE):latest \
+		$(DOCKER_GILLESPY3D_IMAGE):latest \
 		bash -c "cd /model_builder;pip install --no-cache-dir -e .; npm run watch & sleep 10; cd /home/jovyan; start-notebook.sh "
 
 update:
-	docker exec -it $(DOCKER_STOCHSS_IMAGE) python -m pip install -e /model_builder
+	docker exec -it $(DOCKER_GILLESPY3D_IMAGE) python -m pip install -e /model_builder
 
 
 .PHONY: network volumes check-files pull notebook_image build

@@ -35,7 +35,7 @@ def __get_presentation_from_volume(client, owner, file):
                        "/model_builder/jupyterhub": {"bind": "/mnt/cache", "mode": "rw"}}
         command = ['cp', os.path.join('/user_volume/.presentations', file),
                    '/mnt/cache/presentation_cache/']
-        client.containers.run('model_builder-lab', command, volumes=volume_mnts)
+        client.containers.run('gillespy3d-lab', command, volumes=volume_mnts)
         file_path = os.path.join('/srv/jupyterhub/presentation_cache', file)
         return file_path
     except docker.errors.ContainerError as err:
