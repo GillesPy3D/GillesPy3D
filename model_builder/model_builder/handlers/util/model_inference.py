@@ -46,7 +46,7 @@ from sciope.utilities.priors import uniform_prior
 from sciope.utilities.summarystats import auto_tsfresh, identity
 from sciope.utilities.epsilonselectors import RelativeEpsilonSelector
 
-from .model_builder_job import StochSSJob
+from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import StochSSJobError, StochSSJobResultsError
 
 log = logging.getLogger("model_builder")
@@ -1178,7 +1178,7 @@ class InferenceResults(UserList):
                 line.extend(list(inf_round.inferred_parameters.values()))
                 csv_writer.writerow(line)
 
-class ModelInference(StochSSJob):
+class ModelInference(GillesPy3DJob):
     '''
     ################################################################################################
     StochSS model inference job object

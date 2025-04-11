@@ -28,10 +28,10 @@ import numpy
 
 from gillespy2.solvers.utilities.cpp_support_test import check_cpp_support
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError, StochSSModelFormatError, StochSSPermissionsError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError, StochSSModelFormatError, GillesPy3DPermissionsError
 
-class StochSSNotebook(StochSSBase):
+class GillesPy3DNotebook(GillesPy3DBase):
     '''
     ####################################################################################################################
     StochSS notebook object
@@ -1019,7 +1019,7 @@ class StochSSNotebook(StochSSBase):
                 return json.load(notebook_file)
         except FileNotFoundError as err:
             message = f"Could not find the notebook file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
     def publish_presentation(self):
         '''Publish a notebook presentation'''
@@ -1043,7 +1043,7 @@ class StochSSNotebook(StochSSBase):
             return self.__get_presentation_links(hostname, file), exists
         except PermissionError as err:
             message = f"You do not have permission to publish this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
     def write_notebook_file(self, cells):
         '''Write the new notebook file to disk

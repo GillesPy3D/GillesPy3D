@@ -27,7 +27,7 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSFolder, StochSSProject, StochSSModel, StochSSSpatialModel, \
+from .util import StochSSFolder, StochSSProject, GillesPy3DModel, GillesPy3DSpatialModel, \
                   StochSSAPIError, report_error, report_critical_error
 
 log = logging.getLogger('model_builder')
@@ -205,7 +205,7 @@ class AddExistingModelAPIHandler(APIHandler):
         try:
             project = StochSSProject(path=path)
             log.info("Loading model data")
-            model_class = StochSSModel if mdl_path.endswith(".mdl") else StochSSSpatialModel
+            model_class = GillesPy3DModel if mdl_path.endswith(".mdl") else GillesPy3DSpatialModel
             model = model_class(path=mdl_path)
             log.info(f"Adding {model.get_file()} to {project.get_file()}")
             resp = project.add_model(file=model.get_file(), model=model.load())
@@ -240,9 +240,9 @@ class ExtractModelAPIHandler(APIHandler):
         dst_path = self.get_query_argument(name="dstPath")
         log.debug(f"Destination path for the target model: {dst_path}")
         try:
-            src_model = StochSSModel(path=src_path)
+            src_model = GillesPy3DModel(path=src_path)
             log.info(f"Extracting {src_model.get_file()}")
-            dst_model = StochSSModel(path=dst_path, new=True, model=src_model.load())
+            dst_model = GillesPy3DModel(path=dst_path, new=True, model=src_model.load())
             dirname = dst_model.get_dir_name()
             if not dirname:
                 dirname = "/"

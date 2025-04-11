@@ -26,12 +26,12 @@ import traceback
 import gillespy2
 from stochss_compute import RemoteSimulation
 
-from .model_builder_job import StochSSJob
-from .model_builder_errors import StochSSAPIError, StochSSFileNotFoundError, StochSSJobResultsError
+from .model_builder_job import GillesPy3DJob
+from .model_builder_errors import StochSSAPIError, GillesPy3DFileNotFoundError, StochSSJobResultsError
 
 log = logging.getLogger("model_builder")
 
-class EnsembleSimulation(StochSSJob):
+class EnsembleSimulation(GillesPy3DJob):
     '''
     ################################################################################################
     StochSS ensemble simulation job object
@@ -160,7 +160,7 @@ class EnsembleSimulation(StochSSJob):
         '''
         try:
             compute_env = self.load_info()['compute_env']
-        except StochSSFileNotFoundError:
+        except GillesPy3DFileNotFoundError:
             compute_env = "local"
         if compute_env == 'AWS':
             results = self.__run(self.__run_in_aws, preview=preview, verbose=verbose)

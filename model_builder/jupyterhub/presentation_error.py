@@ -73,7 +73,7 @@ class StochSSAPIError(Exception):
 # File System Errors
 ####################################################################################################
 
-class StochSSFileNotFoundError(StochSSAPIError):
+class GillesPy3DFileNotFoundError(StochSSAPIError):
     '''
     ################################################################################################
     StochSS File/Folder Not Found API Handler Error

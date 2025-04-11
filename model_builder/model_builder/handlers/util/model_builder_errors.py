@@ -95,7 +95,7 @@ class StochSSAPIError(Exception):
 # File System Errors
 ####################################################################################################
 
-class StochSSFileExistsError(StochSSAPIError):
+class GillesPy3DFileExistsError(StochSSAPIError):
     '''
     ################################################################################################
     StochSS File/Folder Exists API Handler Error
@@ -116,7 +116,7 @@ class StochSSFileExistsError(StochSSAPIError):
         super().__init__(406, "File Already Exists", msg, trace)
 
 
-class StochSSFileNotFoundError(StochSSAPIError):
+class GillesPy3DFileNotFoundError(StochSSAPIError):
     '''
     ################################################################################################
     StochSS File/Folder Not Found API Handler Error
@@ -137,7 +137,7 @@ class StochSSFileNotFoundError(StochSSAPIError):
         super().__init__(404, "StochSS File or Directory Not Found", msg, trace)
 
 
-class StochSSPermissionsError(StochSSAPIError):
+class GillesPy3DPermissionsError(StochSSAPIError):
     '''
     ################################################################################################
     StochSS File/Folder Not Found API Handler Error

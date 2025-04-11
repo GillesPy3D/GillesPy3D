@@ -29,8 +29,8 @@ from unittest import mock
 from pathlib import Path
 
 from model_builder.handlers import StochSSFile
-from model_builder.handlers.util.model_builder_errors import StochSSFileNotFoundError, StochSSUnzipError, \
-                                                 StochSSFileExistsError, StochSSPermissionsError
+from model_builder.handlers.util.model_builder_errors import GillesPy3DFileNotFoundError, StochSSUnzipError, \
+                                                 GillesPy3DFileExistsError, GillesPy3DPermissionsError
 
 os.chdir('/model_builder')
 
@@ -89,20 +89,20 @@ class TestStochSSFileObject(unittest.TestCase):
 
 
     def test_delete__file_not_found_error(self):
-        ''' Check if the StochSSFileNotFoundError is raised when the target file is missing. '''
+        ''' Check if the GillesPy3DFileNotFoundError is raised when the target file is missing. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("os.remove", mock.mock_open()) as mock_remove:
             mock_remove.side_effect = FileNotFoundError
-            with self.assertRaises(StochSSFileNotFoundError):
+            with self.assertRaises(GillesPy3DFileNotFoundError):
                 test_file.delete()
 
 
     def test_delete_permission_error(self):
-        ''' Check if the StochSSPermissionsError is raised when the user doesn't have the correct permissions. '''
+        ''' Check if the GillesPy3DPermissionsError is raised when the user doesn't have the correct permissions. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("os.remove") as mock_remove:
             mock_remove.side_effect = PermissionError
-            with self.assertRaises(StochSSPermissionsError):
+            with self.assertRaises(GillesPy3DPermissionsError):
                 test_file.delete()
 
     ################################################################################################
@@ -134,20 +134,20 @@ class TestStochSSFileObject(unittest.TestCase):
 
 
     def test_duplicate__file_not_found_error(self):
-        ''' Check if the StochSSFileNotFoundError is raised when the target file is missing. '''
+        ''' Check if the GillesPy3DFileNotFoundError is raised when the target file is missing. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("shutil.copyfile", mock.mock_open()) as mock_copyfile:
             mock_copyfile.side_effect = FileNotFoundError
-            with self.assertRaises(StochSSFileNotFoundError):
+            with self.assertRaises(GillesPy3DFileNotFoundError):
                 test_file.duplicate()
 
 
     def test_duplicate_permission_error(self):
-        ''' Check if the StochSSPermissionsError is raised when the user doesn't have the correct permissions. '''
+        ''' Check if the GillesPy3DPermissionsError is raised when the user doesn't have the correct permissions. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("shutil.copyfile") as mock_copyfile:
             mock_copyfile.side_effect = PermissionError
-            with self.assertRaises(StochSSPermissionsError):
+            with self.assertRaises(GillesPy3DPermissionsError):
                 test_file.duplicate()
 
     ################################################################################################
@@ -166,20 +166,20 @@ class TestStochSSFileObject(unittest.TestCase):
 
 
     def test_move__file_not_found_error(self):
-        ''' Check if the StochSSFileNotFoundError is raised when the target file is missing. '''
+        ''' Check if the GillesPy3DFileNotFoundError is raised when the target file is missing. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("os.rename", mock.mock_open()) as mock_rename:
             mock_rename.side_effect = FileNotFoundError
-            with self.assertRaises(StochSSFileNotFoundError):
+            with self.assertRaises(GillesPy3DFileNotFoundError):
                 test_file.move("test_folder")
 
 
     def test_move_permission_error(self):
-        ''' Check if the StochSSPermissionsError is raised when the user doesn't have the correct permissions. '''
+        ''' Check if the GillesPy3DPermissionsError is raised when the user doesn't have the correct permissions. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("os.rename") as mock_rename:
             mock_rename.side_effect = PermissionError
-            with self.assertRaises(StochSSPermissionsError):
+            with self.assertRaises(GillesPy3DPermissionsError):
                 test_file.move("test_folder")
 
     ################################################################################################
@@ -196,11 +196,11 @@ class TestStochSSFileObject(unittest.TestCase):
 
 
     def test_read__file_not_found_error(self):
-        ''' Check if the StochSSFileNotFoundError is raised when the target file is missing. '''
+        ''' Check if the GillesPy3DFileNotFoundError is raised when the target file is missing. '''
         test_file = StochSSFile(path=self.test_filepath)
         with mock.patch("builtins.open", mock.mock_open()) as mock_file:
             mock_file.side_effect = FileNotFoundError
-            with self.assertRaises(StochSSFileNotFoundError):
+            with self.assertRaises(GillesPy3DFileNotFoundError):
                 test_file.read()
 
     ################################################################################################
@@ -236,14 +236,14 @@ class TestStochSSFileObject(unittest.TestCase):
 
 
     def test_unzip__file_exists_error(self):
-        ''' Check if the StochSSFileExistsError is raised when the contents of the archive already exist. '''
+        ''' Check if the GillesPy3DFileExistsError is raised when the contents of the archive already exist. '''
         test_dir_path = os.path.join(self.tempdir.name, "test_folder")
         os.mkdir(test_dir_path)
         test_file_path = os.path.join(test_dir_path, "test_file")
         Path(test_file_path).touch()
         shutil.make_archive(os.path.join(self.tempdir.name, "test_zip"), "zip", self.tempdir.name, "test_folder")
         test_file = StochSSFile(path="test_zip.zip")
-        with self.assertRaises(StochSSFileExistsError):
+        with self.assertRaises(GillesPy3DFileExistsError):
             test_file.unzip()
 
 

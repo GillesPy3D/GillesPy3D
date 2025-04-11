@@ -33,13 +33,13 @@ from spatialpy import Model, Species, Parameter, Reaction, Domain, DomainError, 
                       RotationTransformation, ReflectionTransformation, ScalingTransformation, \
                       ModelError
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError, FileNotJSONFormatError, DomainFormatError, \
-                            StochSSModelFormatError, StochSSPermissionsError, DomainUpdateError, \
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError, FileNotJSONFormatError, DomainFormatError, \
+                            StochSSModelFormatError, GillesPy3DPermissionsError, DomainUpdateError, \
                             DomainActionError, DomainShapeError, DomainTransformationError, \
                             StochSSAPIError
 
-class StochSSSpatialModel(StochSSBase):
+class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS spatial model object
@@ -644,7 +644,7 @@ class StochSSSpatialModel(StochSSBase):
             return self.__build_model_builder_domain(s_domain=s_domain)
         except FileNotFoundError as err:
             message = f"Could not find the domain file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The domain file is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -658,7 +658,7 @@ class StochSSSpatialModel(StochSSBase):
                 self.model = json.load(smdl_file)
         except FileNotFoundError as err:
             message = f"Could not find the spatial model file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The spatial model is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -864,7 +864,7 @@ class StochSSSpatialModel(StochSSBase):
         if domains is None:
             if new:
                 path = '/model_builder/model_builder_templates/modelTemplate.json'
-                s_domain = StochSSSpatialModel(path).load()['domain']
+                s_domain = GillesPy3DSpatialModel(path).load()['domain']
             elif path is None:
                 path = self.path
                 s_domain = self.load()['domain']
@@ -994,7 +994,7 @@ class StochSSSpatialModel(StochSSBase):
             return links, data
         except PermissionError as err:
             message = f"You do not have permission to publish this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
     def save_domain(self, domain):
         '''

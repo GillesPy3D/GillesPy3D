@@ -19,10 +19,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import traceback
 from nbformat import v4 as nbf
 
-from .model_builder_notebook import StochSSNotebook
+from .model_builder_notebook import GillesPy3DNotebook
 from .model_builder_errors import StochSSModelFormatError
 
-class StochSSParamSweepNotebook(StochSSNotebook):
+class StochSSParamSweepNotebook(GillesPy3DNotebook):
     '''
     ################################################################################################
     StochSS parameter sweep notebook object

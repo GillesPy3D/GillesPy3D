@@ -30,9 +30,9 @@ from pathlib import Path
 import numpy
 import plotly
 
-from presentation_base import StochSSBase, get_presentation_from_user
-from model_presentation import StochSSSpatialModel
-from presentation_error import StochSSJobResultsError, StochSSFileNotFoundError, report_error, \
+from presentation_base import GillesPy3DBase, get_presentation_from_user
+from model_presentation import GillesPy3DSpatialModel
+from presentation_error import StochSSJobResultsError, GillesPy3DFileNotFoundError, report_error, \
                                PlotNotAvailableError, StochSSAPIError
 
 from jupyterhub.handlers.base import BaseHandler
@@ -62,7 +62,7 @@ class JobAPIHandler(BaseHandler):
         try:
             path = os.path.join("/tmp/presentation_cache", file)
             if os.path.exists(path):
-                job = StochSSJob(path=path).load()
+                job = GillesPy3DJob(path=path).load()
             else:
                 job = get_presentation_from_user(owner=owner, file=file, kwargs={"file": file},
                                                  process_func=process_job_presentation)
@@ -119,7 +119,7 @@ class PlotJobResultsAPIHandler(BaseHandler):
         body = json.loads(self.get_query_argument(name='data'))
         log.debug(f"Plot args passed to the plot: {body}")
         try:
-            job = StochSSJob(path=path)
+            job = GillesPy3DJob(path=path)
             if body['sim_type'] in  ("GillesPy2", "GillesPy2_PS"):
                 fig = job.get_plot_from_results(data_keys=body['data_keys'],
                                                 plt_key=body['plt_key'], add_config=True)
@@ -159,7 +159,7 @@ class DownloadCSVAPIHandler(BaseHandler):
         csv_type = self.get_query_argument(name="type")
         data = json.loads(self.get_query_argument(name="data", default=None))
         try:
-            job = StochSSJob(path=path)
+            job = GillesPy3DJob(path=path)
             name = job.load()['name']
             self.set_header('Content-Disposition', f'attachment; filename="{name}.zip"')
             if csv_type == "time series":
@@ -201,7 +201,7 @@ def process_job_presentation(path, file=None, for_download=False):
             pickle.dump(job['results'], res_file)
         if not job['job']['model']['is_spatial']:
             return {"job": job['job']}
-        model = StochSSSpatialModel(model=job['job']['model'])
+        model = GillesPy3DSpatialModel(model=job['job']['model'])
         data = model.load()
         job['job']['model'] = data['model']
         return {"job": job['job'], "domainPlot": data['domainPlot']}
@@ -266,7 +266,7 @@ def write_json(path, body):
         json.dump(body, file, sort_keys=True, indent=4)
 
 
-class StochSSJob(StochSSBase):
+class GillesPy3DJob(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS model object
@@ -403,7 +403,7 @@ class StochSSJob(StochSSBase):
             return self.__get_csvzip(dirname=tmp_dir.name, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -460,7 +460,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -501,7 +501,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -541,7 +541,7 @@ class StochSSJob(StochSSBase):
             return self.__get_csvzip(dirname=tmp_dir.name, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -576,7 +576,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -593,7 +593,7 @@ class StochSSJob(StochSSBase):
             job = json.load(job_file)
         if not job['model']['is_spatial']:
             return {"job": job}
-        model = StochSSSpatialModel(job['model'])
+        model = GillesPy3DSpatialModel(job['model'])
         data = model.load()
         job['model'] = data['model']
         return {"job": job, "domainPlot": data['domainPlot']}

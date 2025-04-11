@@ -33,16 +33,16 @@ import plotly
 
 from escapism import escape
 
-from .model_builder_base import StochSSBase
-from .model_builder_model import StochSSModel
+from .model_builder_base import GillesPy3DBase
+from .model_builder_model import GillesPy3DModel
 from .parameter_sweep_1d import ParameterSweep1D
 from .parameter_sweep_2d import ParameterSweep2D
-from .model_builder_spatial_model import StochSSSpatialModel
-from .model_builder_errors import StochSSFileNotFoundError, StochSSFileExistsError, \
+from .model_builder_spatial_model import GillesPy3DSpatialModel
+from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DFileExistsError, \
                             FileNotJSONFormatError, PlotNotAvailableError, \
-                            StochSSPermissionsError, StochSSJobResultsError
+                            GillesPy3DPermissionsError, StochSSJobResultsError
 
-class StochSSJob(StochSSBase):
+class GillesPy3DJob(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS job object
@@ -103,10 +103,10 @@ class StochSSJob(StochSSBase):
                     json.dump(settings, settings_file)
         except FileExistsError as err:
             message = f"Could not create your job: {str(err)}"
-            raise StochSSFileExistsError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileExistsError(message, traceback.format_exc()) from err
         except FileNotFoundError as err:
             message = f"Could not find the file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def __create_settings(self):
@@ -246,7 +246,7 @@ class StochSSJob(StochSSBase):
             return "No logs were recoded for this job."
         except FileNotFoundError as err:
             message = f"Could not find the log file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def __get_settings_path(self, full=False):
@@ -353,7 +353,7 @@ class StochSSJob(StochSSBase):
         ----------
         '''
         src_path = self.get_model_path()
-        model = StochSSModel(path=src_path).load()
+        model = GillesPy3DModel(path=src_path).load()
         dst_path = self.__get_extract_dst_path(mdl_file=self.get_file(path=src_path))
         kwargs = {"path":dst_path, "new":True, "model":model}
         resp = {"message":f"A copy of the model in {self.path} has been created"}
@@ -393,7 +393,7 @@ class StochSSJob(StochSSBase):
                 return self.__get_csvzip(dirname=tmp_dir, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -521,7 +521,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -564,7 +564,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -604,7 +604,7 @@ class StochSSJob(StochSSBase):
                 return self.__get_csvzip(dirname=tmp_dir, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -644,7 +644,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -715,8 +715,8 @@ class StochSSJob(StochSSBase):
         else:
             mdl_path = self.get_model_path()
         try:
-            model = StochSSModel(path=mdl_path).load()
-        except StochSSFileNotFoundError as err:
+            model = GillesPy3DModel(path=mdl_path).load()
+        except GillesPy3DFileNotFoundError as err:
             model = None
             error = {"Reason":err.reason, "Message":err.message, "traceback":err.traceback}
             self.log("error", f"Exception information: {error}")
@@ -772,7 +772,7 @@ class StochSSJob(StochSSBase):
                 return info
         except FileNotFoundError as err:
             message = f"Could not find the info file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The info file is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -787,10 +787,10 @@ class StochSSJob(StochSSBase):
         '''
         path = self.get_model_path()
         if path.endswith('.mdl'):
-            model_obj = StochSSModel(path=path)
+            model_obj = GillesPy3DModel(path=path)
             model = model_obj.convert_to_gillespy2()
         else:
-            model_obj = StochSSSpatialModel(path=path)
+            model_obj = GillesPy3DSpatialModel(path=path)
             model = model_obj.convert_to_spatialpy()
             model_obj.model['path'] = model_obj.get_file()
         return model, model_obj.model
@@ -812,7 +812,7 @@ class StochSSJob(StochSSBase):
         except FileNotFoundError as err:
             if model is None:
                 message = f"Could not find the settings file: {str(err)}"
-                raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+                raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
             settings = self.get_settings_template()
             if "simulationSettings" in model.keys():
                 settings['simulationSettings'] = model['simulationSettings']
@@ -859,7 +859,7 @@ class StochSSJob(StochSSBase):
             return links, exists
         except PermissionError as err:
             message = f"You do not have permission to publish this directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def save(self, mdl_path, settings, initialize=False):
@@ -889,7 +889,7 @@ class StochSSJob(StochSSBase):
             return f"Successfully saved the job: {self.path}"
         except FileNotFoundError as err:
             message = f"Could not find the model file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def save_plot(self, plot):

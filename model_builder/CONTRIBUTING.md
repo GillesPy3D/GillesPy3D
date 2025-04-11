@@ -1,5 +1,5 @@
 # CONTRIBUTING  
-By contributing to GlilesPy3D, you agree to the [Code of Conduct](/CODE_OF_CONDUCT.md) and the conditions of the [GNU GPL v3](/LICENSE). Please review both of these documents before contributing.
+By contributing to GillesPy3D, you agree to the [Code of Conduct](/CODE_OF_CONDUCT.md) and the conditions of the [GNU GPL v3](/LICENSE). Please review both of these documents before contributing.
 
 ## Making Changes
 1. Fork [the project repository](https://github.com/StochSS/StochSS).

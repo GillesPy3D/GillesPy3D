@@ -23,12 +23,12 @@ import traceback
 
 from spatialpy import TimeSpan
 
-from .model_builder_job import StochSSJob
+from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import StochSSJobResultsError
 
 log = logging.getLogger("model_builder")
 
-class SpatialSimulation(StochSSJob):
+class SpatialSimulation(GillesPy3DJob):
     '''
     ################################################################################################
     StochSS spatial ensemble simulation job object

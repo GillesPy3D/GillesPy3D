@@ -21,16 +21,16 @@ import json
 import shutil
 import traceback
 
-from .model_builder_base import StochSSBase
-from .model_builder_model import StochSSModel
-from .model_builder_spatial_model import StochSSSpatialModel
-from .model_builder_workflow import StochSSWorkflow
-from .model_builder_job import StochSSJob
-from .model_builder_notebook import StochSSNotebook
-from .model_builder_errors import StochSSFileExistsError, StochSSFileNotFoundError, \
-                            StochSSPermissionsError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_model import GillesPy3DModel
+from .model_builder_spatial_model import GillesPy3DSpatialModel
+from .model_builder_workflow import GillesPy3DWorkflow
+from .model_builder_job import GillesPy3DJob
+from .model_builder_notebook import GillesPy3DNotebook
+from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFoundError, \
+                            GillesPy3DPermissionsError
 
-class StochSSProject(StochSSBase):
+class StochSSProject(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS project object
@@ -57,7 +57,7 @@ class StochSSProject(StochSSBase):
                 os.makedirs(os.path.join(self.get_path(full=True), "trash"))
             except FileExistsError as err:
                 message = f"Could not create your project: {self.path}"
-                raise StochSSFileExistsError(message, traceback.format_exc()) from err
+                raise GillesPy3DFileExistsError(message, traceback.format_exc()) from err
 
 
     def __get_meta_data(self, path=None):
@@ -97,14 +97,14 @@ class StochSSProject(StochSSBase):
         for file in os.listdir(wkgp_path):
             if file.endswith(".wkfl"):
                 path = os.path.join(wkgp_path, file)
-                wkfl = StochSSWorkflow(path=path)
+                wkfl = GillesPy3DWorkflow(path=path)
                 mdl_file = wkfl.get_file(path=wkfl.get_model_path())
                 mdl_name = wkfl.get_name(path=mdl_file)
                 if mdl_name not in data.keys():
                     try:
                         _, kwargs = wkfl.extract_model()
-                        StochSSModel(**kwargs)
-                    except StochSSFileNotFoundError:
+                        GillesPy3DModel(**kwargs)
+                    except GillesPy3DFileNotFoundError:
                         mdl_file = None
                     wkgp = {"file":f"{mdl_name}.wkgp",
                             "model":mdl_file,
@@ -115,9 +115,9 @@ class StochSSProject(StochSSBase):
                     if data[mdl_name]['model'] is None:
                         try:
                             _, kwargs = wkfl.extract_model()
-                            StochSSModel(**kwargs)
+                            GillesPy3DModel(**kwargs)
                             data[mdl_name]['model'] = mdl_file
-                        except StochSSFileNotFoundError:
+                        except GillesPy3DFileNotFoundError:
                             pass
             elif not has_notebook and file.endswith(".ipynb"):
                 has_notebook = True
@@ -133,7 +133,7 @@ class StochSSProject(StochSSBase):
 
 
     def __load_model(self, dirname, file):
-        classes = {"mdl":StochSSModel, "smdl":StochSSSpatialModel}
+        classes = {"mdl":GillesPy3DModel, "smdl":GillesPy3DSpatialModel}
         model_class = classes[file.split('.').pop()]
         mdl_path = os.path.join(dirname, file)
         model = model_class(path=mdl_path).load()
@@ -144,7 +144,7 @@ class StochSSProject(StochSSBase):
 
     def __load_notebook(self, dirname, file):
         path = os.path.join(dirname, file)
-        notebook = json.dumps(StochSSNotebook(path=path).load())
+        notebook = json.dumps(GillesPy3DNotebook(path=path).load())
         status = "error" if "Traceback (most recent call last)" in notebook else "ready"
         nb_wkfl = {"directory":path.replace(self.user_dir + "/", ""), "annotation":"",
                    "name":self.get_name(path=path), "status":status, "type":"Notebook"}
@@ -155,13 +155,13 @@ class StochSSProject(StochSSBase):
         path = os.path.join(dirname, folder)
         wkfl = {"directory":path.replace(self.user_dir + "/", ""), "name":self.get_name(path=path)}
         if self.check_workflow_format(path=path):
-            workflow = StochSSWorkflow(path=path)
+            workflow = GillesPy3DWorkflow(path=path)
             workflow.load()
             wkfl['annotation'] = workflow.workflow['annotation']
             wkfl['type'] = workflow.workflow['type']
             wkfl['status'] = None
         else:
-            workflow = StochSSJob(path=path)
+            workflow = GillesPy3DJob(path=path)
             info = workflow.load_info()
             wkfl["annotation"] = info['annotation']
             wkfl["status"] = workflow.get_status()
@@ -194,7 +194,7 @@ class StochSSProject(StochSSBase):
             if file.endswith(".wkfl"):
                 path = os.path.join(wkgp, file)
                 if not self.check_workflow_format(path=path):
-                    wkfl = StochSSWorkflow(path=path)
+                    wkfl = GillesPy3DWorkflow(path=path)
                     if "error" in wkfl.check_for_external_model().keys():
                         wkfl.extract_model()
                     wkfl.update_wkfl_format()
@@ -244,11 +244,11 @@ class StochSSProject(StochSSBase):
                 path = os.path.join(self.path, file)
             if new and os.path.exists(path):
                 message = f"Could not create your model: {file}"
-                raise StochSSFileExistsError(message, traceback.format_exc())
+                raise GillesPy3DFileExistsError(message, traceback.format_exc())
             self.log("debug", f"Path to the model: {path}")
             if model is None:
                 model = self.get_model_template()
-            model_class = StochSSModel if path.endswith(".mdl") else StochSSSpatialModel
+            model_class = GillesPy3DModel if path.endswith(".mdl") else GillesPy3DSpatialModel
             model = model_class(path=path, new=True, model=model)
             if new:
                 return {"path":path}
@@ -256,7 +256,7 @@ class StochSSProject(StochSSBase):
             return {"message":message}
         except FileExistsError as err:
             message = f"Could not create your model: {file}"
-            raise StochSSFileExistsError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileExistsError(message, traceback.format_exc()) from err
 
 
     def extract_workflow(self, src, dst):
@@ -282,10 +282,10 @@ class StochSSProject(StochSSBase):
             return resp
         except FileNotFoundError as err:
             message = f"Could not find the directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to copy this directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def load(self):

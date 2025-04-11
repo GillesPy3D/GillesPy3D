@@ -30,10 +30,10 @@ import requests
 from stochss_compute.cloud import EC2Cluster, EC2LocalConfig
 from stochss_compute.cloud.exceptions import EC2Exception
 
-from .model_builder_errors import StochSSFileNotFoundError, StochSSPermissionsError, \
+from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DPermissionsError, \
                             FileNotJSONFormatError
 
-class StochSSBase():
+class GillesPy3DBase():
     '''
     ################################################################################################
     StochSS base object
@@ -336,7 +336,7 @@ class StochSSBase():
                 return json.load(template)
         except FileNotFoundError as err:
             message = f"Could not find the model template file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"Model template data is not JSON decodeable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -360,7 +360,7 @@ class StochSSBase():
                 return json.load(template)
         except FileNotFoundError as err:
             message = f"Could not find the settings template file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"Settings template data is not JSON decodeable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -435,7 +435,7 @@ class StochSSBase():
             return "ready"
         except FileNotFoundError as err:
             message = f"Could not find the workflow: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def get_unique_path(self, name, dirname=None):
@@ -637,10 +637,10 @@ class StochSSBase():
             return {"message":message, "_path":self.path, "changed":changed}
         except FileNotFoundError as err:
             message = f"Could not find the file or directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to rename this file or directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
     def terminate_aws_cluster(self):
         '''

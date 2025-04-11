@@ -18,9 +18,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import json
 from nbformat import v4 as nbf
 
-from .model_builder_notebook import StochSSNotebook
+from .model_builder_notebook import GillesPy3DNotebook
 
-class StochSSSciopeNotebook(StochSSNotebook):
+class StochSSSciopeNotebook(GillesPy3DNotebook):
     '''
     ################################################################################################
     StochSS sciope notebook object

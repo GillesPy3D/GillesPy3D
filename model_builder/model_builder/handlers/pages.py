@@ -28,7 +28,7 @@ from notebook.base.handlers import IPythonHandler, APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSBase, report_error
+from .util import GillesPy3DBase, report_error
 from .util.model_builder_errors import AWSConfigurationError
 
 log = logging.getLogger('model_builder')
@@ -356,7 +356,7 @@ class LoadUserSettings(APIHandler):
         Attributes
         ----------
         '''
-        file = StochSSBase(path='.user-settings.json')
+        file = GillesPy3DBase(path='.user-settings.json')
         settings = file.load_user_settings()
 
         i_path = "/model_builder/model_builder_templates/instance_types.txt"
@@ -422,7 +422,7 @@ class ConfirmAWSConfigHandler(APIHandler):
         Attributes
         ----------
         '''
-        file = StochSSBase(path='.user-settings.json')
+        file = GillesPy3DBase(path='.user-settings.json')
         settings = file.load_user_settings()
         if settings['awsHeadNodeStatus'] != "running":
             file.update_aws_status(settings['headNode'])
@@ -446,7 +446,7 @@ class LaunchAWSClusterHandler(APIHandler):
         Attributes
         ----------
         '''
-        file = StochSSBase(path='.user-settings.json')
+        file = GillesPy3DBase(path='.user-settings.json')
 
         script = "/model_builder/model_builder/handlers/util/scripts/aws_compute.py"
         exec_cmd = [f"{script}", "-lv"]
@@ -473,7 +473,7 @@ class AWSClusterStatusHandler(APIHandler):
         Attributes
         ----------
         '''
-        file = StochSSBase(path='.user-settings.json')
+        file = GillesPy3DBase(path='.user-settings.json')
 
         settings = file.load_user_settings()
 
@@ -496,7 +496,7 @@ class TerminateAWSClusterHandler(APIHandler):
         Attributes
         ----------
         '''
-        file = StochSSBase(path='.user-settings.json')
+        file = GillesPy3DBase(path='.user-settings.json')
 
         script = "/model_builder/model_builder/handlers/util/scripts/aws_compute.py"
         exec_cmd = [f"{script}", "-tv"]

@@ -27,7 +27,7 @@ import plotly
 
 import spatialpy
 
-from presentation_base import StochSSBase, get_presentation_from_user
+from presentation_base import GillesPy3DBase, get_presentation_from_user
 from presentation_error import StochSSAPIError, DomainUpdateError, StochSSModelFormatError, \
                                report_error
 
@@ -122,7 +122,7 @@ def process_wmmodel_presentation(path, for_download=False, **kwargs):
         model = json.load(mdl_file)
     if for_download:
         return model
-    file_obj = StochSSModel(model=model)
+    file_obj = GillesPy3DModel(model=model)
     model_pres = file_obj.load()
     file_obj.print_logs(log)
     return model_pres
@@ -141,15 +141,15 @@ def process_smodel_presentation(path, for_download=False, **kwargs):
     with open(path, "r", encoding="utf-8") as mdl_file:
         body = json.load(mdl_file)
     if "files" not in body:
-        body = StochSSSpatialModel(model=body).load(v1_domain=True)
+        body = GillesPy3DSpatialModel(model=body).load(v1_domain=True)
     if for_download:
-        return StochSSSpatialModel.get_presentation(**body)
+        return GillesPy3DSpatialModel.get_presentation(**body)
     for entry in body['files'].values():
         if not os.path.exists(os.path.dirname(entry['pres_path'])):
             os.makedirs(os.path.dirname(entry['pres_path']))
         with open(entry['pres_path'], "w", encoding="utf-8") as entry_fd:
             entry_fd.write(entry['body'])
-    file_obj = StochSSSpatialModel(model=body['model'])
+    file_obj = GillesPy3DSpatialModel(model=body['model'])
     model_pres = file_obj.load()
     file_obj.print_logs(log)
     return model_pres
@@ -172,7 +172,7 @@ template = {
     "eventsCollection": [], "functionDefinitions": [], "boundaryConditions": []
 }
 
-class StochSSModel(StochSSBase):
+class GillesPy3DModel(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS model object
@@ -290,7 +290,7 @@ class StochSSModel(StochSSBase):
         return {"model": self.model, "diff": self.diff}
 
 
-class StochSSSpatialModel(StochSSBase):
+class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS spatial model object

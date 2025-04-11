@@ -28,8 +28,8 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSBase, StochSSFolder, StochSSFile, StochSSModel, StochSSSpatialModel, \
-                  StochSSSBMLModel, StochSSNotebook, StochSSWorkflow, StochSSJob, StochSSProject, \
+from .util import GillesPy3DBase, StochSSFolder, StochSSFile, GillesPy3DModel, GillesPy3DSpatialModel, \
+                  GillesPy3DSBMLModel, GillesPy3DNotebook, GillesPy3DWorkflow, GillesPy3DJob, StochSSProject, \
                   StochSSAPIError, report_error, report_critical_error
 
 
@@ -255,14 +255,14 @@ class RenameAPIHandler(APIHandler):
             log.info(f"Renaming {path.split('/').pop()} to {new_name}")
             is_model = path.endswith(".mdl") or path.endswith(".smdl")
             if ".proj" in path and ".wkgp" in path and is_model:
-                wkgp = StochSSBase(path=os.path.dirname(path))
+                wkgp = GillesPy3DBase(path=os.path.dirname(path))
                 new_path, _ = wkgp.get_unique_path(name=f"{wkgp.get_name(path=new_name)}.wkgp")
                 wkgp.rename(name=wkgp.get_file(path=new_path))
-                file_obj = StochSSBase(path=os.path.join(wkgp.path, wkgp.get_file(path=path)))
+                file_obj = GillesPy3DBase(path=os.path.join(wkgp.path, wkgp.get_file(path=path)))
                 file_name = f"{wkgp.get_name(path=new_path)}.{path.split('.').pop()}"
                 resp = file_obj.rename(name=file_name)
             else:
-                file_obj = StochSSBase(path=path)
+                file_obj = GillesPy3DBase(path=path)
                 resp = file_obj.rename(name=new_name)
             log.info(f"Successfully renamed {path.split('/').pop()} to {file_obj.get_file()}")
             log.debug(f"Response message: {resp}")
@@ -294,10 +294,10 @@ class ConvertToSpatialAPIHandler(APIHandler):
         log.debug(f"Converting non-spatial model to spatial model: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a spatial model")
-            model = StochSSModel(path=path)
+            model = GillesPy3DModel(path=path)
             log.info("Getting spatial model data")
             resp, data = model.convert_to_spatial()
-            _ = StochSSModel(path=data['path'], new=True, model=data['spatial'])
+            _ = GillesPy3DModel(path=data['path'], new=True, model=data['spatial'])
             log.info(f"Successfully converted {path.split('/').pop()} to a spatial model")
             log.debug(f"Response: {resp}")
             self.write(resp)
@@ -328,10 +328,10 @@ class ConvertToModelAPIHandler(APIHandler):
         log.debug(f"Converting spatial model to non-spatial model: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a model")
-            model = StochSSSpatialModel(path=path)
+            model = GillesPy3DSpatialModel(path=path)
             log.info("Getting model data")
             resp, data = model.convert_to_model()
-            _ = StochSSModel(path=data['path'], new=True, model=data['model'])
+            _ = GillesPy3DModel(path=data['path'], new=True, model=data['model'])
             log.info(f"Successfully converted {path.split('/').pop()} to a model")
             log.debug(f"Response: {resp}")
             self.write(resp)
@@ -362,11 +362,11 @@ class ModelToSBMLAPIHandler(APIHandler):
         log.debug(f"Converting to SBML: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to sbml")
-            model = StochSSModel(path=path)
+            model = GillesPy3DModel(path=path)
             log.info("Getting sbml data")
             resp, data = model.convert_to_sbml()
             model.print_logs(log)
-            sbml = StochSSSBMLModel(path=data['path'], new=True, document=data['document'])
+            sbml = GillesPy3DSBMLModel(path=data['path'], new=True, document=data['document'])
             resp["File"] = sbml.get_file()
             log.info(f"Successfully converted {path.split('/').pop()} to sbml")
             log.debug(f"Response: {resp}")
@@ -399,7 +399,7 @@ class SBMLToModelAPIHandler(APIHandler):
         log.debug(f"Converting SBML: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a model")
-            sbml = StochSSSBMLModel(path=path)
+            sbml = GillesPy3DSBMLModel(path=path)
             log.info("Getting model data")
             if ".proj" in path:
                 proj = StochSSProject(path=sbml.get_dir_name())
@@ -410,7 +410,7 @@ class SBMLToModelAPIHandler(APIHandler):
             sbml.print_logs(log)
             resp = {"message":convert_resp['message'], "errors":convert_resp['errors'], "File":""}
             if convert_resp['model'] is not None:
-                model = StochSSModel(path=convert_resp['path'], new=True,
+                model = GillesPy3DModel(path=convert_resp['path'], new=True,
                                      model=convert_resp['model'])
                 resp['File'] = model.get_file()
                 log.info(f"Successfully converted {path.split('/').pop()} to a model")
@@ -480,7 +480,7 @@ class DownloadZipFileAPIHandler(APIHandler):
                 resp = folder.generate_zip_file()
             else:
                 log.info("Zipping the csv files for download")
-                wkfl = StochSSJob(path=path)
+                wkfl = GillesPy3DJob(path=path)
                 resp = wkfl.generate_csv_zip()
             log.debug(f"Response: {resp}")
             self.write(resp)
@@ -592,11 +592,11 @@ class DuplicateWorkflowAsNewHandler(APIHandler):
         target = self.get_query_argument(name="target")
         log.debug(f"The {target} is being copied")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             if target == "wkfl_model":
                 log.info(f"Extracting the model from {wkfl.get_file()}")
                 resp, kwargs = wkfl.extract_model()
-                model = StochSSModel(**kwargs)
+                model = GillesPy3DModel(**kwargs)
                 resp['mdlPath'] = model.path
                 resp['File'] = model.get_file()
                 log.info(f"Successfully extracted the model from {wkfl.get_file()}")
@@ -605,16 +605,16 @@ class DuplicateWorkflowAsNewHandler(APIHandler):
                 if wkfl.check_workflow_format(path=path):
                     log.info("Getting the workflow data")
                     resp, kwargs = wkfl.duplicate_as_new()
-                    new_wkfl = StochSSWorkflow(**kwargs)
+                    new_wkfl = GillesPy3DWorkflow(**kwargs)
                 else:
                     time_stamp = self.get_query_argument(name="stamp")
                     if time_stamp == "None":
                         time_stamp = None
                     log.debug(f"The time stamp for the new workflow: {time_stamp}")
-                    job = StochSSJob(path=path)
+                    job = GillesPy3DJob(path=path)
                     log.info("Getting the workflow data")
                     resp, kwargs = job.duplicate_as_new(stamp=time_stamp)
-                    new_wkfl = StochSSJob(**kwargs)
+                    new_wkfl = GillesPy3DJob(**kwargs)
                     new_wkfl.update_info(new_info={"source_model":resp['mdlPath']})
                     c_resp = wkfl.check_for_external_model(path=resp['mdlPath'])
                     if "error" in c_resp.keys():
@@ -650,7 +650,7 @@ class GetWorkflowModelPathAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the workflow: {path}")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             resp = wkfl.check_for_external_model()
             wkfl.print_logs(log)
             log.debug(f"Response: {resp}")
@@ -770,7 +770,7 @@ class NotebookPresentationAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the file: {path}")
         try:
-            notebook = StochSSNotebook(path=path)
+            notebook = GillesPy3DNotebook(path=path)
             log.info(f"Publishing the {notebook.get_name()} presentation")
             links, exists = notebook.publish_presentation()
             if exists:
@@ -836,7 +836,7 @@ class ImportFromLibrary(APIHandler):
             home = "model_builder/home"
 
         try:
-            system = StochSSBase(path=".example-library.json")
+            system = GillesPy3DBase(path=".example-library.json")
             examples = system.load_example_library(home)
             self.write(examples)
         except StochSSAPIError as err:

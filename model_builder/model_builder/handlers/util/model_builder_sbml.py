@@ -23,10 +23,10 @@ import traceback
 from gillespy2.sbml.SBMLimport import convert
 from gillespy2.stochss.StochSSexport import export
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError
 
-class StochSSSBMLModel(StochSSBase):
+class GillesPy3DSBMLModel(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS notebook object
@@ -66,7 +66,7 @@ class StochSSSBMLModel(StochSSBase):
         path = self.get_path(full=True)
         if not os.path.exists(path):
             message = f"Could not find the sbml file: {path}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc())
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc())
 
         g_model, errors = convert(path)
         errors = list(map(lambda error: error[0], errors))

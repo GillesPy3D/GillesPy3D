@@ -29,15 +29,15 @@ import traceback
 import requests
 from escapism import escape
 
-from .model_builder_base import StochSSBase
+from .model_builder_base import GillesPy3DBase
 from .model_builder_file import StochSSFile
-from .model_builder_model import StochSSModel
-from .model_builder_sbml import StochSSSBMLModel
-from .model_builder_errors import StochSSFileExistsError, StochSSFileNotFoundError, \
-                            StochSSPermissionsError
+from .model_builder_model import GillesPy3DModel
+from .model_builder_sbml import GillesPy3DSBMLModel
+from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFoundError, \
+                            GillesPy3DPermissionsError
 
 
-class StochSSFolder(StochSSBase):
+class StochSSFolder(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS folder object
@@ -64,7 +64,7 @@ class StochSSFolder(StochSSBase):
                 os.makedirs(new_path)
             except FileExistsError as err:
                 message = f"Could not create your directory: {str(err)}"
-                raise StochSSFileExistsError(message, traceback.format_exc()) from err
+                raise GillesPy3DFileExistsError(message, traceback.format_exc()) from err
 
 
     def __get_file_from_link(self, remote_path):
@@ -98,7 +98,7 @@ class StochSSFolder(StochSSBase):
             message = f"Could not upload this file as {file} was not found."
             if "?token=" in remote_path:
                 message += "  The token for this file may be out of date."
-            raise StochSSFileNotFoundError(message, traceback.format_exc())
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc())
         return ext, file, body
 
     def __get_rmt_upld_path(self, file, dirname=None):
@@ -214,7 +214,7 @@ class StochSSFolder(StochSSBase):
                                     os.remove(m_path)
                 except zipfile.BadZipFile as err:
                     message = "File is not a zip file"
-                    raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+                    raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def __upload_file(self, file, body, new_name=None):
@@ -283,7 +283,7 @@ class StochSSFolder(StochSSBase):
         if file.endswith(".xml"):
             file = f"{self.get_name(path=file)}.sbml"
         path = os.path.join(self.path, file)
-        sbml = StochSSSBMLModel(path=path, new=True, document=body)
+        sbml = GillesPy3DSBMLModel(path=path, new=True, document=body)
         dirname = sbml.get_dir_name()
         is_valid, errors = self.__validate_sbml(sbml=sbml)
         if is_valid:
@@ -293,7 +293,7 @@ class StochSSFolder(StochSSBase):
                 convert_resp = sbml.convert_to_model(name=self.get_name(wkgp_path), wkgp=True)
             else:
                 convert_resp = sbml.convert_to_model(name=sbml.get_name())
-            _ = StochSSModel(path=convert_resp['path'], new=True, model=convert_resp['model'])
+            _ = GillesPy3DModel(path=convert_resp['path'], new=True, model=convert_resp['model'])
             message = f"{sbml.get_file()} was successfully uploaded to {dirname}"
         else:
             sbml.rename(name=f"{sbml.get_name()}.xml")
@@ -337,10 +337,10 @@ class StochSSFolder(StochSSBase):
             return f"The directory {self.get_file()} was successfully deleted."
         except FileNotFoundError as err:
             message = f"Could not find the directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to delete this directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def duplicate(self):
@@ -361,10 +361,10 @@ class StochSSFolder(StochSSBase):
             return {"Message":message, "File":cp_name}
         except FileNotFoundError as err:
             message = f"Could not find the directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to copy this directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def empty(self):
@@ -395,7 +395,7 @@ class StochSSFolder(StochSSBase):
         path = self.get_path(full=True)
         if not os.path.exists(path):
             message = f"Could not find the directory: {path}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc())
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc())
 
         zip_file = self.get_name() + ".zip"
         zip_path, _ = self.get_unique_path(name=zip_file)
@@ -471,7 +471,7 @@ class StochSSFolder(StochSSBase):
             return json.dumps(nodes)
         except FileNotFoundError as err:
             message = f"Could not find the directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     @classmethod
@@ -554,10 +554,10 @@ class StochSSFolder(StochSSBase):
             return f"Success! {self.get_file(path=path)} was moved to {os.path.dirname(path)}."
         except FileNotFoundError as err:
             message = f"Could not find the directory: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to move this directory: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def upload(self, file_type, file, body, new_name=None):
@@ -626,7 +626,7 @@ class StochSSFolder(StochSSBase):
                 new_path = self.__get_rmt_upld_path(file=file)
             message = f"Successfully uploaded the file {file} to {new_path}"
             return {"message":message, "file_path":new_path}
-        except StochSSFileExistsError as err:
+        except GillesPy3DFileExistsError as err:
             return {"message":err.message, "reason":err.reason}
 
 
@@ -663,5 +663,5 @@ class StochSSFolder(StochSSBase):
                             return True
             except zipfile.BadZipFile as err:
                 message = "File is not a zip file"
-                raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+                raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         return False

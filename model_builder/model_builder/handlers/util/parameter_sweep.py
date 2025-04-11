@@ -27,7 +27,7 @@ import numpy
 
 from gillespy2 import TimeSpan
 
-from .model_builder_job import StochSSJob
+from .model_builder_job import GillesPy3DJob
 from .parameter_sweep_1d import ParameterSweep1D
 from .parameter_sweep_2d import ParameterSweep2D
 from .parameter_scan import ParameterScan
@@ -47,7 +47,7 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-class ParameterSweep(StochSSJob):
+class ParameterSweep(GillesPy3DJob):
     '''
     ################################################################################################
     StochSS parameter sweep job object
