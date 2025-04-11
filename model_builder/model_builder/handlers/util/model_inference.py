@@ -47,7 +47,7 @@ from sciope.utilities.summarystats import auto_tsfresh, identity
 from sciope.utilities.epsilonselectors import RelativeEpsilonSelector
 
 from .model_builder_job import GillesPy3DJob
-from .model_builder_errors import StochSSJobError, StochSSJobResultsError
+from .model_builder_errors import StochSSJobError, GillesPy3DJobResultsError
 
 log = logging.getLogger("model_builder")
 
@@ -1280,7 +1280,7 @@ class ModelInference(GillesPy3DJob):
     @classmethod
     def __report_result_error(cls, trace):
         message = "An unexpected error occured with the result object"
-        raise StochSSJobResultsError(message, trace)
+        raise GillesPy3DJobResultsError(message, trace)
 
     @classmethod
     def __store_pickled_results(cls, results):

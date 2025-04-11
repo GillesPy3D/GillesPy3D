@@ -40,7 +40,7 @@ def report_error(handler, log, err):
     handler.write(error)
 
 
-class StochSSAPIError(Exception):
+class GillesPy3DAPIError(Exception):
     '''
     ################################################################################################
     StochSS Base Api Handler Error
@@ -73,7 +73,7 @@ class StochSSAPIError(Exception):
 # File System Errors
 ####################################################################################################
 
-class GillesPy3DFileNotFoundError(StochSSAPIError):
+class GillesPy3DFileNotFoundError(GillesPy3DAPIError):
     '''
     ################################################################################################
     StochSS File/Folder Not Found API Handler Error
@@ -97,7 +97,7 @@ class GillesPy3DFileNotFoundError(StochSSAPIError):
 # Model Errors
 ####################################################################################################
 
-class FileNotJSONFormatError(StochSSAPIError):
+class FileNotJSONFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
     StochSS Model/Template Not In JSON Format
@@ -117,7 +117,7 @@ class FileNotJSONFormatError(StochSSAPIError):
         '''
         super().__init__(406, "File Data Not JSON Format", msg, trace)
 
-class StochSSModelFormatError(StochSSAPIError):
+class GillesPy3DModelFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
     StochSS Model Not In Proper Format
@@ -137,7 +137,7 @@ class StochSSModelFormatError(StochSSAPIError):
         '''
         super().__init__(406, "StochSS Model Not In Proper Format", msg, trace)
 
-class DomainUpdateError(StochSSAPIError):
+class DomainUpdateError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain File Can't Be Updated
@@ -162,7 +162,7 @@ class DomainUpdateError(StochSSAPIError):
 # Job Errors
 ####################################################################################################
 
-class PlotNotAvailableError(StochSSAPIError):
+class PlotNotAvailableError(GillesPy3DAPIError):
     '''
     ################################################################################################
     StochSS Result Plot Not Found
@@ -183,7 +183,7 @@ class PlotNotAvailableError(StochSSAPIError):
         super().__init__(406, "Plot Figure Not Available", msg, trace)
 
 
-class StochSSJobResultsError(StochSSAPIError):
+class GillesPy3DJobResultsError(GillesPy3DAPIError):
     '''
     ################################################################################################
     StochSS Job Results Error

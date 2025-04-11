@@ -20,7 +20,7 @@ import traceback
 from nbformat import v4 as nbf
 
 from .model_builder_notebook import GillesPy3DNotebook
-from .model_builder_errors import StochSSModelFormatError
+from .model_builder_errors import GillesPy3DModelFormatError
 
 class StochSSParamSweepNotebook(GillesPy3DNotebook):
     '''
@@ -274,7 +274,7 @@ class StochSSParamSweepNotebook(GillesPy3DNotebook):
             except KeyError as err:
                 message = "Parameters are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         else:
             tmp = "psweep.add_parameter('__NAME__', values=__VALUE__)"
             try:
@@ -289,7 +289,7 @@ class StochSSParamSweepNotebook(GillesPy3DNotebook):
             except KeyError as err:
                 message = "Parameter sweep settings are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index + 1
 
     def __create_visualization(self, results):

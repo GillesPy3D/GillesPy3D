@@ -28,7 +28,7 @@ import plotly
 import spatialpy
 
 from presentation_base import GillesPy3DBase, get_presentation_from_user
-from presentation_error import StochSSAPIError, DomainUpdateError, StochSSModelFormatError, \
+from presentation_error import GillesPy3DAPIError, DomainUpdateError, GillesPy3DModelFormatError, \
                                report_error
 
 from jupyterhub.handlers.base import BaseHandler
@@ -65,7 +65,7 @@ class JsonFileAPIHandler(BaseHandler):
             )
             log.debug(f"Contents of the json file: {model['model']}")
             self.write(model)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -102,7 +102,7 @@ class DownModelPresentationAPIHandler(BaseHandler):
             self.set_header('Content-Disposition', f'attachment; filename="{filename}"')
             log.debug(f"Contents of the json file: {data}")
             self.write(data)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -435,7 +435,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial actions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_domain(self, type_ids, s_domain):
         try:
@@ -455,7 +455,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model domain properties are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_shapes(self, s_domain):
         try:
@@ -517,7 +517,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial domain shapes are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_types(cls, domain, type_ids):
@@ -604,7 +604,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial transformations are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __get_trace_data(cls, particles, name="", index=None, dimensions=3):

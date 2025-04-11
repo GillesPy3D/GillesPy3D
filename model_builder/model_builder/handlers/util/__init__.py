@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from .model_builder_base import GillesPy3DBase
 from .model_builder_file import StochSSFile
-from .model_builder_folder import StochSSFolder
+from .model_builder_folder import GillesPy3DFolder
 from .model_builder_model import GillesPy3DModel
 from .model_builder_spatial_model import GillesPy3DSpatialModel
 from .model_builder_sbml import GillesPy3DSBMLModel
@@ -31,4 +31,4 @@ from .model_builder_project import StochSSProject
 from .ensemble_simulation import EnsembleSimulation
 from .parameter_sweep import ParameterSweep
 from .model_inference import ModelInference
-from .model_builder_errors import StochSSAPIError, report_error, report_critical_error
+from .model_builder_errors import GillesPy3DAPIError, report_error, report_critical_error

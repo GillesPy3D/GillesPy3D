@@ -31,7 +31,7 @@ from .model_builder_job import GillesPy3DJob
 from .parameter_sweep_1d import ParameterSweep1D
 from .parameter_sweep_2d import ParameterSweep2D
 from .parameter_scan import ParameterScan
-from .model_builder_errors import StochSSJobResultsError, StochSSJobError
+from .model_builder_errors import GillesPy3DJobResultsError, StochSSJobError
 
 log = logging.getLogger("model_builder")
 
@@ -92,7 +92,7 @@ class ParameterSweep(GillesPy3DJob):
     @classmethod
     def __report_result_error(cls, trace):
         message = "An unexpected error occured with the result object"
-        raise StochSSJobResultsError(message, trace)
+        raise GillesPy3DJobResultsError(message, trace)
 
 
     @classmethod

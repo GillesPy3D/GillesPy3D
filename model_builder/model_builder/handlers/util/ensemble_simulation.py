@@ -27,7 +27,7 @@ import gillespy2
 from stochss_compute import RemoteSimulation
 
 from .model_builder_job import GillesPy3DJob
-from .model_builder_errors import StochSSAPIError, GillesPy3DFileNotFoundError, StochSSJobResultsError
+from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundError, GillesPy3DJobResultsError
 
 log = logging.getLogger("model_builder")
 
@@ -54,7 +54,7 @@ class EnsembleSimulation(GillesPy3DJob):
             try:
                 self.settings = self.load_settings()
                 self.g_model, self.s_model = self.load_models()
-            except StochSSAPIError as err:
+            except GillesPy3DAPIError as err:
                 log.error(str(err))
 
 
@@ -126,7 +126,7 @@ class EnsembleSimulation(GillesPy3DJob):
         if pkl_err:
             message = "An unexpected error occured with the result object"
             trace = str(pkl_err)
-            raise StochSSJobResultsError(message, trace)
+            raise GillesPy3DJobResultsError(message, trace)
         return None
 
     def __run_in_aws(self, verbose=False, **kwargs):

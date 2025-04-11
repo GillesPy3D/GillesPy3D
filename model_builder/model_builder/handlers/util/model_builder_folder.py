@@ -37,7 +37,7 @@ from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFo
                             GillesPy3DPermissionsError
 
 
-class StochSSFolder(GillesPy3DBase):
+class GillesPy3DFolder(GillesPy3DBase):
     '''
     ################################################################################################
     StochSS folder object
@@ -380,7 +380,7 @@ class StochSSFolder(GillesPy3DBase):
             return "The trash directory was removed."
         for item in os.listdir(path):
             item_path = os.path.join(self.path, item)
-            item_class = StochSSFolder if os.path.isdir(item_path) else StochSSFile
+            item_class = GillesPy3DFolder if os.path.isdir(item_path) else StochSSFile
             item_class(path=item_path).delete()
         return "Successfully emptied the trash."
 

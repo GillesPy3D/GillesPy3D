@@ -27,8 +27,8 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSFolder, StochSSProject, GillesPy3DModel, GillesPy3DSpatialModel, \
-                  StochSSAPIError, report_error, report_critical_error
+from .util import GillesPy3DFolder, StochSSProject, GillesPy3DModel, GillesPy3DSpatialModel, \
+                  GillesPy3DAPIError, report_error, report_critical_error
 
 log = logging.getLogger('model_builder')
 
@@ -51,11 +51,11 @@ class LoadProjectBrowserAPIHandler(APIHandler):
         '''
         try:
             self.set_header('Content-Type', 'application/json')
-            folder = StochSSFolder(path="")
+            folder = GillesPy3DFolder(path="")
             data = folder.get_project_list()
             log.debug(f"List of projects: {data}")
             self.write(data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -85,7 +85,7 @@ class LoadProjectAPIHandler(APIHandler):
             s_project = project.load()
             log.debug(f"Contents of the project: {s_project}")
             self.write(s_project)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -117,7 +117,7 @@ class NewProjectAPIHandler(APIHandler):
             log.debug(f"Response: {resp}")
             log.info(f"Successfully created {project.get_file()} project")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -149,7 +149,7 @@ class NewModelAPIHandler(APIHandler):
             project.print_logs(log)
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -174,7 +174,7 @@ class AddExistingModelAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the model: {path}")
         try:
-            folder = StochSSFolder(path="")
+            folder = GillesPy3DFolder(path="")
             # file will be excluded if test passes
             test = lambda ext, root, file: bool(".wkfl" in root or f"{path}" in root or \
                                                 "trash" in root.split("/") or \
@@ -182,7 +182,7 @@ class AddExistingModelAPIHandler(APIHandler):
             data = folder.get_file_list(ext=[".mdl", ".smdl"], test=test)
             log.debug(f"List of models: {data}")
             self.write(data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -213,7 +213,7 @@ class AddExistingModelAPIHandler(APIHandler):
             log.info(f"Successfully added {model.get_file()} to {project.get_file()}")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -251,7 +251,7 @@ class ExtractModelAPIHandler(APIHandler):
             log.debug(f"Response message: {message}")
             log.info(f"Successfully extracted {src_model.get_file()} to {dirname}")
             self.write(message)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -284,7 +284,7 @@ class ExtractWorkflowAPIHandler(APIHandler):
             project.print_logs(log)
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -315,7 +315,7 @@ class ProjectMetaDataAPIHandler(APIHandler):
             project = StochSSProject(path=path)
             project.update_meta_data(data=data)
             log.info("Successfully saved the metadata")
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -375,7 +375,7 @@ class UpdateAnnotationAPIHandler(APIHandler):
             project = StochSSProject(path=path)
             project.update_annotation(annotation=data)
             log.info("Successfully saved the annotation")
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -401,7 +401,7 @@ class UpadteProjectAPIHandler(APIHandler):
         try:
             proj = StochSSProject(path=path)
             proj.update_project_format()
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)

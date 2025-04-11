@@ -24,7 +24,7 @@ import traceback
 from spatialpy import TimeSpan
 
 from .model_builder_job import GillesPy3DJob
-from .model_builder_errors import StochSSJobResultsError
+from .model_builder_errors import GillesPy3DJobResultsError
 
 log = logging.getLogger("model_builder")
 
@@ -129,5 +129,5 @@ class SpatialSimulation(GillesPy3DJob):
         if pkl_err:
             message = "An unexpected error occured with the result object"
             trace = str(pkl_err)
-            raise StochSSJobResultsError(message, trace)
+            raise GillesPy3DJobResultsError(message, trace)
         return None

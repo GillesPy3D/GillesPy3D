@@ -24,9 +24,9 @@ def init_log():
     # Create console handler and set level to debug
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(asctime)s StochSS][%(levelname)s] %(message)s')
+    formatter = logging.Formatter('[%(asctime)s GillesPy3D][%(levelname)s] %(message)s')
     handler.setFormatter(formatter)
-    # add ch to StochSS logger
+    # add ch to GillesPy3D logger
     log.addHandler(log)
 
 def get_log():

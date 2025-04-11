@@ -28,7 +28,7 @@ import plotly
 import plotly.graph_objs as go
 
 from .model_builder_base import GillesPy3DBase
-from .model_builder_folder import StochSSFolder
+from .model_builder_folder import GillesPy3DFolder
 from .model_builder_model import GillesPy3DModel
 from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import GillesPy3DFileNotFoundError
@@ -410,11 +410,11 @@ class GillesPy3DWorkflow(GillesPy3DBase):
                                                     and (oldfmtrdy or self.workflow['newFormat']):
             if ".proj" in self.path:
                 if "WorkflowGroup1.wkgp" in self.path:
-                    proj = StochSSFolder(path=os.path.dirname(self.get_dir_name(full=True)))
+                    proj = GillesPy3DFolder(path=os.path.dirname(self.get_dir_name(full=True)))
                     test = lambda ext, root, file: ".wkfl" in root or "trash" in root.split("/")
                     models = proj.get_file_list(ext=[".mdl"], test=test)
                 else:
-                    wkgp = StochSSFolder(path=self.get_dir_name(full=True))
+                    wkgp = GillesPy3DFolder(path=self.get_dir_name(full=True))
                     test = lambda ext, root, file: ".wkfl" in root
                     models = wkgp.get_file_list(ext=[".mdl"], test=test)
                     if models['files']:
@@ -423,7 +423,7 @@ class GillesPy3DWorkflow(GillesPy3DBase):
                     else:
                         self.workflow['model'] = None
             else:
-                root = StochSSFolder(path="")
+                root = GillesPy3DFolder(path="")
                 test = lambda ext, root, file: ".wkfl" in root or ".proj" in root or \
                                                "trash" in root.split("/")
                 models = root.get_file_list(ext=[".mdl"], test=test)

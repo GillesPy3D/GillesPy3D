@@ -35,9 +35,9 @@ from spatialpy import Model, Species, Parameter, Reaction, Domain, DomainError, 
 
 from .model_builder_base import GillesPy3DBase
 from .model_builder_errors import GillesPy3DFileNotFoundError, FileNotJSONFormatError, DomainFormatError, \
-                            StochSSModelFormatError, GillesPy3DPermissionsError, DomainUpdateError, \
+                            GillesPy3DModelFormatError, GillesPy3DPermissionsError, DomainUpdateError, \
                             DomainActionError, DomainShapeError, DomainTransformationError, \
-                            StochSSAPIError
+                            GillesPy3DAPIError
 
 class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
@@ -252,7 +252,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial actions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain actions are invalid: {err}"
             raise DomainActionError(message, traceback.format_exc()) from err
@@ -265,7 +265,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model boundary conditions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_domain(self, type_ids, model=None, s_domain=None):
         try:
@@ -292,7 +292,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model domain properties are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_initial_conditions(self, model, type_ids):
         try:
@@ -315,7 +315,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model initial conditions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_model_settings(self, model):
         try:
@@ -327,7 +327,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model settings are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_parameters(self, model):
         try:
@@ -337,7 +337,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model parameters are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_reactions(self, model, type_ids):
         try:
@@ -365,7 +365,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model reactions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_shapes(self, s_domain):
         try:
@@ -427,7 +427,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial domain shapes are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain shapes are invalid: {err}"
             raise DomainShapeError(message, traceback.format_exc()) from err
@@ -447,7 +447,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model species are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_stoich_species(cls, model, reaction):
@@ -473,7 +473,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial model stoich species are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_transformations(cls, s_domain):
@@ -539,7 +539,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         except KeyError as err:
             message = "Spatial transformations are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain transformations are invalid: {err}"
             raise DomainTransformationError(message, traceback.format_exc()) from err
@@ -567,7 +567,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         presentation = {'model': self.model, 'files': {}}
         # Check if the domain has lattices
         if len(self.model['domain']['actions']) == 0:
-            raise StochSSAPIError(
+            raise GillesPy3DAPIError(
                 405, "Model Incomplete", "A domain must have action to publish as a presentation.", None
             )
         # Process file based lattices

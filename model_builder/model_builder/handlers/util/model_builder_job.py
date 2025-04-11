@@ -40,7 +40,7 @@ from .parameter_sweep_2d import ParameterSweep2D
 from .model_builder_spatial_model import GillesPy3DSpatialModel
 from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DFileExistsError, \
                             FileNotJSONFormatError, PlotNotAvailableError, \
-                            GillesPy3DPermissionsError, StochSSJobResultsError
+                            GillesPy3DPermissionsError, GillesPy3DJobResultsError
 
 class GillesPy3DJob(GillesPy3DBase):
     '''
@@ -199,11 +199,11 @@ class GillesPy3DJob(GillesPy3DBase):
         if dims <= 0:
             message = "Too many fixed parameters were provided."
             message += "At least one variable parameter is required."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         if dims > 2:
             message = "Not enough fixed parameters were provided."
             message += "Variable parameters cannot exceed 2."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         f_keys = [f"{name}:{value}" for name, value in fixed.items()]
         return dims, f_keys
 

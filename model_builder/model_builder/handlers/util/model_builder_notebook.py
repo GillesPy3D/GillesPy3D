@@ -29,7 +29,7 @@ import numpy
 from gillespy2.solvers.utilities.cpp_support_test import check_cpp_support
 
 from .model_builder_base import GillesPy3DBase
-from .model_builder_errors import GillesPy3DFileNotFoundError, StochSSModelFormatError, GillesPy3DPermissionsError
+from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DModelFormatError, GillesPy3DPermissionsError
 
 class GillesPy3DNotebook(GillesPy3DBase):
     '''
@@ -230,7 +230,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Parameters are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_reactions(self, nb_model, index, type_refs=None):
@@ -272,7 +272,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Reactions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_run(self, results, compute="StochSS"):
@@ -356,7 +356,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "The domain actions is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_boundary_conditions(self, nb_model, index):
@@ -381,7 +381,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Boundary conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_boundary_condition_cells(self, cells):
@@ -403,7 +403,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Boundary conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_domain(self, nb_model, index, type_refs):
@@ -437,7 +437,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             nb_model.insert(index, '\n'.join(nb_domain))
         except KeyError as err:
             message = f"The domain is not properly formatted or is referenced incorrectly for notebooks: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index + 1
 
     def __create_spatial_geometry_cells(self, cells, index):
@@ -467,7 +467,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Shapes or actions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_initial_condition(self, nb_model, index, type_refs):
@@ -506,7 +506,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Initial Conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_model_cell(self, func_name):
@@ -614,7 +614,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "The domain shape is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_species(self, nb_model, index, type_refs):
@@ -644,7 +644,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                 index += 1
             except KeyError as err:
                 message = f"Species are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_transformations(self, nb_domain, index):
@@ -693,7 +693,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "The domain transformation is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     @classmethod
@@ -744,7 +744,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                 index += 1
             except KeyError as err:
                 message = f"Events are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_event_assignments(self, s_event):
@@ -798,7 +798,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             except KeyError as err:
                 message = "Function definitions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_model_cell(self, func_name):
@@ -842,7 +842,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                 index += 1
             except KeyError as err:
                 message = f"Species are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_rules(self, nb_model, index):
@@ -885,7 +885,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                     index += 1
             except KeyError as err:
                 message = f"Rules are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __get_gillespy2_run_settings(self, use_solver=False):

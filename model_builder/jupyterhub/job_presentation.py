@@ -32,8 +32,8 @@ import plotly
 
 from presentation_base import GillesPy3DBase, get_presentation_from_user
 from model_presentation import GillesPy3DSpatialModel
-from presentation_error import StochSSJobResultsError, GillesPy3DFileNotFoundError, report_error, \
-                               PlotNotAvailableError, StochSSAPIError
+from presentation_error import GillesPy3DJobResultsError, GillesPy3DFileNotFoundError, report_error, \
+                               PlotNotAvailableError, GillesPy3DAPIError
 
 from jupyterhub.handlers.base import BaseHandler
 
@@ -68,7 +68,7 @@ class JobAPIHandler(BaseHandler):
                                                  process_func=process_job_presentation)
             log.debug(f"Contents of the json file: {job}")
             self.write(job)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -95,7 +95,7 @@ class DownJobPresentationAPIHandler(BaseHandler):
                                                    process_func=process_job_presentation)
             self.set_header('Content-Disposition', f'attachment; filename="{name}.zip"')
             self.write(job)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -136,7 +136,7 @@ class PlotJobResultsAPIHandler(BaseHandler):
                 fig = job.update_fig_layout(fig=fig, plt_data=body['plt_data'])
             log.debug(f"Plot figure: {fig}")
             self.write(fig)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         self.finish()
 
@@ -169,7 +169,7 @@ class DownloadCSVAPIHandler(BaseHandler):
             else:
                 csv_data = job.get_full_csvzip_from_results(name=name)
             self.write(csv_data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         self.finish()
 
@@ -216,7 +216,7 @@ def make_zip_for_download(job):
     Attributes
     ----------
     job : dict
-        StochSS job presentation
+        GillesPy3D job presentation
     '''
     tmp_dir = tempfile.TemporaryDirectory()
     res_path = os.path.join(tmp_dir.name, job['name'],
@@ -269,7 +269,7 @@ def write_json(path, body):
 class GillesPy3DJob(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 
@@ -341,11 +341,11 @@ class GillesPy3DJob(GillesPy3DBase):
         if dims <= 0:
             message = "Too many fixed parameters were provided."
             message += "At least one variable parameter is required."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         if dims > 2:
             message = "Not enough fixed parameters were provided."
             message += "Variable parameters cannot exceed 2."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         f_keys = [f"{name}:{value}" for name, value in fixed.items()]
         return dims, f_keys
 
@@ -628,7 +628,7 @@ class GillesPy3DJob(GillesPy3DBase):
 class ParameterSweep1D():
     '''
     ################################################################################################
-    StochSS 1D parameter sweep job object
+    GillesPy3D 1D parameter sweep job object
     ################################################################################################
     '''
 
@@ -682,7 +682,7 @@ class ParameterSweep1D():
         species : str
             Species of interest name.
         param : dict
-            StochSS sweep parameter dictionary.
+            GillesPy3D sweep parameter dictionary.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str
@@ -752,7 +752,7 @@ class ParameterSweep1D():
 class ParameterSweep2D():
     '''
     ################################################################################################
-    StochSS 2D parameter sweep job object
+    GillesPy3D 2D parameter sweep job object
     ################################################################################################
     '''
 
@@ -808,7 +808,7 @@ class ParameterSweep2D():
         species : str
             Species of interest name.
         params : list
-            List of StochSS sweep parameter dictionaries.
+            List of GillesPy3D sweep parameter dictionaries.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str
