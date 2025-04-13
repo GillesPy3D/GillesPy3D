@@ -26,7 +26,7 @@ spy_log = logging.getLogger('SpatialPy')
 
 def init_log():
     '''
-    Initialize the StochSS logger
+    Initialize the GillesPy3D logger
 
     Attributes
     ----------
@@ -73,13 +73,13 @@ def relocate_old_logs():
 
 def setup_stream_handler():
     '''
-    Initialize the StochSS stream handler
+    Initialize the GillesPy3D stream handler
 
     Attributes
     ----------
     '''
     handler = logging.StreamHandler()
-    fmt = '%(color)s[%(levelname)1.1s %(asctime)s StochSS '
+    fmt = '%(color)s[%(levelname)1.1s %(asctime)s GillesPy3D '
     fmt += '%(filename)s:%(lineno)d]%(end_color)s %(message)s'
     formatter = LogFormatter(fmt=fmt, datefmt='%H:%M:%S', color=True)
     handler.setFormatter(formatter)
@@ -89,7 +89,7 @@ def setup_stream_handler():
 
 def setup_file_handler():
     '''
-    Initialize the StochSS file handler
+    Initialize the GillesPy3D file handler
 
     Attributes
     ----------

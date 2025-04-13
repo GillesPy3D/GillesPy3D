@@ -27,7 +27,7 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import GillesPy3DFolder, StochSSProject, GillesPy3DModel, GillesPy3DSpatialModel, \
+from .util import GillesPy3DFolder, GillesPy3DProject, GillesPy3DModel, GillesPy3DSpatialModel, \
                   GillesPy3DAPIError, report_error, report_critical_error
 
 log = logging.getLogger('model_builder')
@@ -65,7 +65,7 @@ class LoadProjectBrowserAPIHandler(APIHandler):
 class LoadProjectAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for creating new StochSS Projects
+    Handler for creating new GillesPy3D Projects
     ################################################################################################
     '''
     @web.authenticated
@@ -81,7 +81,7 @@ class LoadProjectAPIHandler(APIHandler):
         log.debug(f"The path to the project directory: {path}")
         log.info("Loading project data")
         try:
-            project = StochSSProject(path=path)
+            project = GillesPy3DProject(path=path)
             s_project = project.load()
             log.debug(f"Contents of the project: {s_project}")
             self.write(s_project)
@@ -95,7 +95,7 @@ class LoadProjectAPIHandler(APIHandler):
 class NewProjectAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for creating new StochSS Projects
+    Handler for creating new GillesPy3D Projects
     ################################################################################################
     '''
     @web.authenticated
@@ -111,7 +111,7 @@ class NewProjectAPIHandler(APIHandler):
         log.debug(f"The path to the new project directory: {path}")
         log.info(f"Creating {path.split('/').pop()} project")
         try:
-            project = StochSSProject(path=path, new=True)
+            project = GillesPy3DProject(path=path, new=True)
             resp = {"message":f"Successfully created the project: {project.get_file()}",
                     "path":project.path}
             log.debug(f"Response: {resp}")
@@ -127,7 +127,7 @@ class NewProjectAPIHandler(APIHandler):
 class NewModelAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for creating new StochSS Models in StochSS Projects
+    Handler for creating new GillesPy3D Models in GillesPy3D Projects
     ################################################################################################
     '''
     @web.authenticated
@@ -144,7 +144,7 @@ class NewModelAPIHandler(APIHandler):
         file = self.get_query_argument(name="mdlFile")
         log.debug(f"Name to the file: {file}")
         try:
-            project = StochSSProject(path=path)
+            project = GillesPy3DProject(path=path)
             resp = project.add_model(file=file, new=True)
             project.print_logs(log)
             log.debug(f"Response: {resp}")
@@ -203,7 +203,7 @@ class AddExistingModelAPIHandler(APIHandler):
         mdl_path = self.get_query_argument(name="mdlPath")
         log.debug(f"Path to the model: {mdl_path}")
         try:
-            project = StochSSProject(path=path)
+            project = GillesPy3DProject(path=path)
             log.info("Loading model data")
             model_class = GillesPy3DModel if mdl_path.endswith(".mdl") else GillesPy3DSpatialModel
             model = model_class(path=mdl_path)
@@ -279,7 +279,7 @@ class ExtractWorkflowAPIHandler(APIHandler):
         log.debug(f"Destination path for the target model: {dst_path}")
         try:
             log.info(f"Extracting {src_path.split('/').pop()}")
-            project = StochSSProject(path=os.path.dirname(os.path.dirname(src_path)))
+            project = GillesPy3DProject(path=os.path.dirname(os.path.dirname(src_path)))
             resp = project.extract_workflow(src=src_path, dst=dst_path)
             project.print_logs(log)
             log.debug(f"Response message: {resp}")
@@ -312,7 +312,7 @@ class ProjectMetaDataAPIHandler(APIHandler):
         log.debug(f"Meta-data to be saved: {data}")
         try:
             log.info(f"Saving metadata for {path.split('/').pop()}")
-            project = StochSSProject(path=path)
+            project = GillesPy3DProject(path=path)
             project.update_meta_data(data=data)
             log.info("Successfully saved the metadata")
         except GillesPy3DAPIError as err:
@@ -372,7 +372,7 @@ class UpdateAnnotationAPIHandler(APIHandler):
         log.debug(f"Annotation to be saved: {data}")
         try:
             log.info(f"Saving the annotation for {path.split('/').pop()}")
-            project = StochSSProject(path=path)
+            project = GillesPy3DProject(path=path)
             project.update_annotation(annotation=data)
             log.info("Successfully saved the annotation")
         except GillesPy3DAPIError as err:
@@ -399,7 +399,7 @@ class UpadteProjectAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the project: {path}")
         try:
-            proj = StochSSProject(path=path)
+            proj = GillesPy3DProject(path=path)
             proj.update_project_format()
         except GillesPy3DAPIError as err:
             report_error(self, log, err)

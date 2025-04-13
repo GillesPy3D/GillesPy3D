@@ -28,7 +28,7 @@ from .log import init_log
 
 def get_page_handlers(route_start):
     '''
-    Get the StochSS page handlers
+    Get the GillesPy3D page handlers
 
     Attributes
     ----------

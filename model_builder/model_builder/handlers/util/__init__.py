@@ -17,17 +17,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from .model_builder_base import GillesPy3DBase
-from .model_builder_file import StochSSFile
+from .model_builder_file import GillesPy3DFile
 from .model_builder_folder import GillesPy3DFolder
 from .model_builder_model import GillesPy3DModel
 from .model_builder_spatial_model import GillesPy3DSpatialModel
 from .model_builder_sbml import GillesPy3DSBMLModel
 from .model_builder_notebook import GillesPy3DNotebook
-from .parameter_sweep_notebook import StochSSParamSweepNotebook
-from .sciope_notebook import StochSSSciopeNotebook
+from .parameter_sweep_notebook import GillesPy3DParamSweepNotebook
+from .sciope_notebook import GillesPy3DSciopeNotebook
 from .model_builder_workflow import GillesPy3DWorkflow
 from .model_builder_job import GillesPy3DJob
-from .model_builder_project import StochSSProject
+from .model_builder_project import GillesPy3DProject
 from .ensemble_simulation import EnsembleSimulation
 from .parameter_sweep import ParameterSweep
 from .model_inference import ModelInference

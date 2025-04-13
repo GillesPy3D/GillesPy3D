@@ -70,13 +70,13 @@ class PageHandler(IPythonHandler):
 class HomeHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Home Page Handler
+    GillesPy3D Home Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS home page.
+        Render the GillesPy3D home page.
 
         Attributes
         ----------
@@ -87,13 +87,13 @@ class HomeHandler(PageHandler):
 class UserHomeHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS User Home Page Handler
+    GillesPy3D User Home Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS user home page.
+        Render the GillesPy3D user home page.
 
         Attributes
         ----------
@@ -104,13 +104,13 @@ class UserHomeHandler(PageHandler):
 class QuickstartHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Tutorials Page Handler
+    GillesPy3D Tutorials Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS tutorials page.
+        Render the GillesPy3D tutorials page.
 
         Attributes
         ----------
@@ -121,13 +121,13 @@ class QuickstartHandler(PageHandler):
 class ExampleLibraryHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Example Library Page Handler
+    GillesPy3D Example Library Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS example library page.
+        Render the GillesPy3D example library page.
 
         Attributes
         ----------
@@ -138,13 +138,13 @@ class ExampleLibraryHandler(PageHandler):
 class ModelBrowserHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS File Browser Page Handler
+    GillesPy3D File Browser Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS file browser page.
+        Render the GillesPy3D file browser page.
 
         Attributes
         ----------
@@ -155,13 +155,13 @@ class ModelBrowserHandler(PageHandler):
 class ModelEditorHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Model Editor Page Handler
+    GillesPy3D Model Editor Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS model editor page.
+        Render the GillesPy3D model editor page.
 
         Attributes
         ----------
@@ -172,13 +172,13 @@ class ModelEditorHandler(PageHandler):
 class DomainEditorHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Domain Editor Page Handler
+    GillesPy3D Domain Editor Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS domain editor page.
+        Render the GillesPy3D domain editor page.
 
         Attributes
         ----------
@@ -189,13 +189,13 @@ class DomainEditorHandler(PageHandler):
 class WorkflowSelectionHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Workflow Selection Page Handler
+    GillesPy3D Workflow Selection Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS workflow selection page.
+        Render the GillesPy3D workflow selection page.
 
         Attributes
         ----------
@@ -206,13 +206,13 @@ class WorkflowSelectionHandler(PageHandler):
 class WorkflowEditorHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Workflow Manager Page Handler
+    GillesPy3D Workflow Manager Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS workflow manager page.
+        Render the GillesPy3D workflow manager page.
 
         Attributes
         ----------
@@ -223,13 +223,13 @@ class WorkflowEditorHandler(PageHandler):
 class ProjectManagerHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Project Manager Page Handler
+    GillesPy3D Project Manager Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS project manager page.
+        Render the GillesPy3D project manager page.
 
         Attributes
         ----------
@@ -240,13 +240,13 @@ class ProjectManagerHandler(PageHandler):
 class LoadingPageHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Loading Page Page Handler
+    GillesPy3D Loading Page Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS loading page.
+        Render the GillesPy3D loading page.
 
         Attributes
         ----------
@@ -257,13 +257,13 @@ class LoadingPageHandler(PageHandler):
 class MultiplePlotsHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS Multiple Plots Page Handler
+    GillesPy3D Multiple Plots Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS multiple plots page.
+        Render the GillesPy3D multiple plots page.
 
         Attributes
         ----------
@@ -274,13 +274,13 @@ class MultiplePlotsHandler(PageHandler):
 class UserSettingsHandler(PageHandler):
     '''
     ################################################################################################
-    StochSS User Settings Page Handler
+    GillesPy3D User Settings Page Handler
     ################################################################################################
     '''
     @web.authenticated
     async def get(self):
         '''
-        Render the StochSS user settings page.
+        Render the GillesPy3D user settings page.
 
         Attributes
         ----------
@@ -345,7 +345,7 @@ class ClearUserLogsAPIHandler(APIHandler):
 class LoadUserSettings(APIHandler):
     '''
     ################################################################################################
-    StochSS handler for loading user settings
+    GillesPy3D handler for loading user settings
     ################################################################################################
     '''
     @web.authenticated
@@ -411,7 +411,7 @@ class LoadUserSettings(APIHandler):
 class ConfirmAWSConfigHandler(APIHandler):
     '''
     ################################################################################################
-    StochSS handler for comfirming AWS configuration
+    GillesPy3D handler for comfirming AWS configuration
     ################################################################################################
     '''
     @web.authenticated
@@ -435,7 +435,7 @@ class ConfirmAWSConfigHandler(APIHandler):
 class LaunchAWSClusterHandler(APIHandler):
     '''
     ################################################################################################
-    StochSS handler for launching the AWS cluster
+    GillesPy3D handler for launching the AWS cluster
     ################################################################################################
     '''
     @web.authenticated
@@ -462,7 +462,7 @@ class LaunchAWSClusterHandler(APIHandler):
 class AWSClusterStatusHandler(APIHandler):
     '''
     ################################################################################################
-    StochSS handler for updating the AWS cluster status
+    GillesPy3D handler for updating the AWS cluster status
     ################################################################################################
     '''
     @web.authenticated
@@ -485,7 +485,7 @@ class AWSClusterStatusHandler(APIHandler):
 class TerminateAWSClusterHandler(APIHandler):
     '''
     ################################################################################################
-    StochSS handler for terminating the AWS cluster
+    GillesPy3D handler for terminating the AWS cluster
     ################################################################################################
     '''
     @web.authenticated

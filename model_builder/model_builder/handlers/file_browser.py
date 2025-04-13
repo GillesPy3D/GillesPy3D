@@ -28,8 +28,8 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import GillesPy3DBase, GillesPy3DFolder, StochSSFile, GillesPy3DModel, GillesPy3DSpatialModel, \
-                  GillesPy3DSBMLModel, GillesPy3DNotebook, GillesPy3DWorkflow, GillesPy3DJob, StochSSProject, \
+from .util import GillesPy3DBase, GillesPy3DFolder, GillesPy3DFile, GillesPy3DModel, GillesPy3DSpatialModel, \
+                  GillesPy3DSBMLModel, GillesPy3DNotebook, GillesPy3DWorkflow, GillesPy3DJob, GillesPy3DProject, \
                   GillesPy3DAPIError, report_error, report_critical_error
 
 
@@ -117,7 +117,7 @@ class DeleteFileAPIHandler(APIHandler):
         try:
             log.info(f"Deleting {path.split('/').pop()}")
             is_dir = os.path.isdir(path)
-            file_obj = GillesPy3DFolder(path=path) if is_dir else StochSSFile(path=path)
+            file_obj = GillesPy3DFolder(path=path) if is_dir else GillesPy3DFile(path=path)
             resp = file_obj.delete()
             log.info(f"Successfully deleted {path.split('/').pop()}")
             self.write(resp)
@@ -152,7 +152,7 @@ class MoveFileAPIHandler(APIHandler):
                 dst = "/"
             log.info(f"Moving {src_path.split('/').pop()} to {dst}")
             is_dir = os.path.isdir(src_path)
-            file_obj = GillesPy3DFolder(path=src_path) if is_dir else StochSSFile(path=src_path)
+            file_obj = GillesPy3DFolder(path=src_path) if is_dir else GillesPy3DFile(path=src_path)
             resp = file_obj.move(location=dst_path)
             file_obj.print_logs(log)
             log.info(f"Successfully moved {src_path.split('/').pop()} to {dst}")
@@ -184,7 +184,7 @@ class DuplicateModelHandler(APIHandler):
         log.debug(f"Path to the file: {path}")
         try:
             log.info(f"Coping {path.split('/').pop()}")
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             resp = file.duplicate()
             file.print_logs(log)
             log.info(f"Successfully copied {path.split('/').pop()}")
@@ -345,7 +345,7 @@ class ConvertToModelAPIHandler(APIHandler):
 class ModelToSBMLAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for converting a StochSS model to a SBML model.
+    Handler for converting a GillesPy3D model to a SBML model.
     ################################################################################################
     '''
     @web.authenticated
@@ -381,14 +381,14 @@ class ModelToSBMLAPIHandler(APIHandler):
 class SBMLToModelAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for converting a SBML model to a StochSS model.
+    Handler for converting a SBML model to a GillesPy3D model.
     ################################################################################################
     '''
 
     @web.authenticated
     async def get(self):
         '''
-        Creates a StochSS model with a unique name from an sbml model and
+        Creates a GillesPy3D model with a unique name from an sbml model and
         store it in the same directory as the original.
 
         Attributes
@@ -402,7 +402,7 @@ class SBMLToModelAPIHandler(APIHandler):
             sbml = GillesPy3DSBMLModel(path=path)
             log.info("Getting model data")
             if ".proj" in path:
-                proj = StochSSProject(path=sbml.get_dir_name())
+                proj = GillesPy3DProject(path=sbml.get_dir_name())
                 wkgp = proj.check_project_format(path=proj.path)
             else:
                 wkgp = False
@@ -441,7 +441,7 @@ class DownloadAPIHandler(APIHandler):
         log.debug(f"Path to the model: {path}")
         try:
             log.info("Getting the file contents for download")
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             data = file.read()
             file.print_logs(log)
             self.write(data)
@@ -531,7 +531,7 @@ class UploadFileAPIHandler(APIHandler):
     async def post(self):
         '''
         Uploads the target file to the target directory.  If the intended file
-        type is a StochSS Model or SBML Model, the original file is uploaded
+        type is a GillesPy3D Model or SBML Model, the original file is uploaded
         with a converted model.  If the file can't be uploaded to the intended
         type no conversion is made and errors are sent to the user.
 
@@ -741,7 +741,7 @@ class UnzipFileAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the zip archive: {path}")
         try:
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             resp = file.unzip(from_upload=False)
             log.debug(f"Response Message: {resp}")
             self.write(resp)
@@ -818,7 +818,7 @@ class PresentationListAPIHandler(APIHandler):
 class ImportFromLibrary(APIHandler):
     '''
     ################################################################################################
-    Handler for getting the list of examples from StochSS Example Library.
+    Handler for getting the list of examples from GillesPy3D Example Library.
     ################################################################################################
     '''
     @web.authenticated

@@ -22,10 +22,10 @@ from nbformat import v4 as nbf
 from .model_builder_notebook import GillesPy3DNotebook
 from .model_builder_errors import GillesPy3DModelFormatError
 
-class StochSSParamSweepNotebook(GillesPy3DNotebook):
+class GillesPy3DParamSweepNotebook(GillesPy3DNotebook):
     '''
     ################################################################################################
-    StochSS parameter sweep notebook object
+    GillesPy3D parameter sweep notebook object
     ################################################################################################
     '''
     def __init__(self, path, new=False, models=None, settings=None):
@@ -314,7 +314,7 @@ class StochSSParamSweepNotebook(GillesPy3DNotebook):
         return nbf.new_code_cell(nb_run)
 
     def create_1d_notebook(self, results=None, compute="StochSS"):
-        '''Create a 1D parameter sweep jupiter notebook for a StochSS model/workflow'''
+        '''Create a 1D parameter sweep jupiter notebook for a GillesPy3D model/workflow'''
         self.nb_type = self.PARAMETER_SWEEP_1D
         cells = self.create_common_cells()
         self.__create_import_cells(cells, results)
@@ -337,7 +337,7 @@ class StochSSParamSweepNotebook(GillesPy3DNotebook):
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
     def create_2d_notebook(self, results=None, compute="StochSS"):
-        '''Create a 2D parameter sweep jupiter notebook for a StochSS model/workflow'''
+        '''Create a 2D parameter sweep jupiter notebook for a GillesPy3D model/workflow'''
         self.nb_type = self.PARAMETER_SWEEP_2D
         cells = self.create_common_cells()
         self.__create_import_cells(cells, results)

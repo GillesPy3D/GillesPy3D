@@ -30,7 +30,7 @@ import requests
 from escapism import escape
 
 from .model_builder_base import GillesPy3DBase
-from .model_builder_file import StochSSFile
+from .model_builder_file import GillesPy3DFile
 from .model_builder_model import GillesPy3DModel
 from .model_builder_sbml import GillesPy3DSBMLModel
 from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFoundError, \
@@ -40,7 +40,7 @@ from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFo
 class GillesPy3DFolder(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS folder object
+    GillesPy3D folder object
     ################################################################################################
     '''
     def __init__(self, path, new=False):
@@ -221,7 +221,7 @@ class GillesPy3DFolder(GillesPy3DBase):
         if new_name is not None:
             file = f"{new_name}.{file.split('.').pop()}"
         path = os.path.join(self.path, file)
-        new_file = StochSSFile(path=path, new=True, body=body)
+        new_file = GillesPy3DFile(path=path, new=True, body=body)
         error = new_file.unzip()
         file = new_file.get_file()
         dirname = new_file.get_dir_name()
@@ -266,7 +266,7 @@ class GillesPy3DFolder(GillesPy3DBase):
             path = os.path.join(self.path, file)
         if not isinstance(model, str):
             model = json.dumps(model, sort_keys=True, indent=4)
-        new_file = StochSSFile(path=path, new=True, body=model)
+        new_file = GillesPy3DFile(path=path, new=True, body=model)
         file = new_file.get_file()
         dirname = new_file.get_dir_name()
         if is_valid:
@@ -380,7 +380,7 @@ class GillesPy3DFolder(GillesPy3DBase):
             return "The trash directory was removed."
         for item in os.listdir(path):
             item_path = os.path.join(self.path, item)
-            item_class = GillesPy3DFolder if os.path.isdir(item_path) else StochSSFile
+            item_class = GillesPy3DFolder if os.path.isdir(item_path) else GillesPy3DFile
             item_class(path=item_path).delete()
         return "Successfully emptied the trash."
 
@@ -605,7 +605,7 @@ class GillesPy3DFolder(GillesPy3DBase):
             Overwrite the existing files.
         '''
         ext, file, body = self.__get_file_from_link(remote_path)
-        if "github.com/StochSS/StochSS_Example_Library/raw/" in remote_path:
+        if "github.com/StochSS/StochSS_Example_Library/raw/" in remote_path: #Can't change removing the funcionalty later?
             path = self.get_new_path(dst_path=os.path.join("Examples", file))
             self.path = "Examples"
             new_path = os.path.join(self.path, file)

@@ -28,7 +28,7 @@ from notebook.base.handlers import APIHandler
 # Use finish() for json, write() for text
 
 from .util import GillesPy3DFolder, GillesPy3DJob, GillesPy3DModel, GillesPy3DSpatialModel, GillesPy3DNotebook, \
-                  GillesPy3DWorkflow, StochSSParamSweepNotebook, StochSSSciopeNotebook, \
+                  GillesPy3DWorkflow, GillesPy3DParamSweepNotebook, GillesPy3DSciopeNotebook, \
                   GillesPy3DAPIError, report_error, report_critical_error, ModelInference
 
 log = logging.getLogger('model_builder')
@@ -324,11 +324,11 @@ class WorkflowNotebookHandler(APIHandler):
                 log.info(f"Creating notebook workflow for {file_obj.get_file()}")
             log.debug(f"Type of workflow to be run: {wkfl_type}")
             if wkfl_type in ("1d_parameter_sweep", "2d_parameter_sweep"):
-                notebook = StochSSParamSweepNotebook(**kwargs)
+                notebook = GillesPy3DParamSweepNotebook(**kwargs)
                 notebooks = {"1d_parameter_sweep":notebook.create_1d_notebook,
                              "2d_parameter_sweep":notebook.create_2d_notebook}
             elif wkfl_type in ("sciope_model_exploration", "model_inference", "inference"):
-                notebook = StochSSSciopeNotebook(**kwargs)
+                notebook = GillesPy3DSciopeNotebook(**kwargs)
                 notebooks = {"sciope_model_exploration":notebook.create_me_notebook,
                              "model_inference":notebook.create_mi_notebook,
                              "inference":notebook.create_mi_notebook}

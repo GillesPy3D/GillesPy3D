@@ -71,7 +71,7 @@ class GillesPy3DSBMLModel(GillesPy3DBase):
         g_model, errors = convert(path)
         errors = list(map(lambda error: error[0], errors))
         if g_model is None:
-            errors.append("Error: could not convert the SBML Model to a StochSS Model")
+            errors.append("Error: could not convert the SBML Model to a GillesPy3D Model")
         return g_model, errors
 
 
@@ -84,10 +84,10 @@ class GillesPy3DSBMLModel(GillesPy3DBase):
         '''
         g_model, errors = self.convert_to_gillespy() # GillesPy2 Model object
         if g_model is None:
-            message = "ERROR! We were unable to convert the SBML Model into a StochSS Model."
+            message = "ERROR! We were unable to convert the SBML Model into a GillesPy3D Model."
             return {"message":message, "errors":errors, "model":None}
 
-        s_model = export(model=g_model, return_model_builder_model=True) # StochSS Model in json format
+        s_model = export(model=g_model, return_model_builder_model=True) # GillesPy3D Model in json format
         self.log("debug", f"Model: \n{json.dumps(s_model)}")
 
         s_file = f"{g_model.name}.mdl" if name is None else f"{name}.mdl"
@@ -100,5 +100,5 @@ class GillesPy3DSBMLModel(GillesPy3DBase):
         else:
             s_path = os.path.join(self.get_dir_name(), s_file)
 
-        message = "The SBML Model was successfully converted to a StochSS Model."
+        message = "The SBML Model was successfully converted to a GillesPy3D Model."
         return {"message":message, "errors":errors, "model":s_model, "path":s_path}

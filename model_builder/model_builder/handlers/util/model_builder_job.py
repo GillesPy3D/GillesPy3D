@@ -45,7 +45,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DFileExi
 class GillesPy3DJob(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS job object
+    GillesPy3D job object
     ################################################################################################
     '''
 
@@ -658,7 +658,7 @@ class GillesPy3DJob(GillesPy3DBase):
         Attributes
         ----------
         settings : dict
-            StochSS simulation settings dict
+            GillesPy3D simulation settings dict
         solver_map : dict
             Dictionary mapping algorithm to solver
         '''
@@ -780,7 +780,7 @@ class GillesPy3DJob(GillesPy3DBase):
 
     def load_models(self):
         '''
-        Load GillesPy2 and StochSS models for running
+        Load GillesPy2 and GillesPy3D models for running
 
         Atrributes
         ----------
@@ -803,7 +803,7 @@ class GillesPy3DJob(GillesPy3DBase):
         Attributes
         ----------
         model : dict
-            Stochss model dict (used to backwards compatability)
+            GillesPy3D model dict (used to backwards compatability)
         '''
         try:
             path = self.__get_settings_path(full=True)

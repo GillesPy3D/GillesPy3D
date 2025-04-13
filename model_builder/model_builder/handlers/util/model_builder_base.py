@@ -36,7 +36,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DPermiss
 class GillesPy3DBase():
     '''
     ################################################################################################
-    StochSS base object
+    GillesPy3D base object
     ################################################################################################
     '''
     user_dir = os.path.expanduser("~") # returns the path to the users home directory
@@ -115,7 +115,7 @@ class GillesPy3DBase():
     @classmethod
     def __get_from_remote(cls):
         p_path = "/model_builder/.proxies.txt"
-        rel_path = "https://raw.githubusercontent.com/StochSS/StochSS_Example_Library/main/example_data.json"
+        rel_path = "https://raw.githubusercontent.com/StochSS/StochSS_Example_Library/main/example_data.json" #can't change for now
         if os.path.exists(p_path):
             with open(p_path, "r", encoding="utf-8") as proxy_file:
                 proxy_ip = proxy_file.read().strip()
@@ -344,7 +344,7 @@ class GillesPy3DBase():
 
     def get_settings_template(self, as_string=False):
         '''
-        Get the StochSS workflow settings template
+        Get the GillesPy3D workflow settings template
 
         Attributes
         ----------

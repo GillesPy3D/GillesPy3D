@@ -34,7 +34,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DModelFo
 class GillesPy3DNotebook(GillesPy3DBase):
     '''
     ####################################################################################################################
-    StochSS notebook object
+    GillesPy3D notebook object
     ####################################################################################################################
     '''
     ENSEMBLE_SIMULATION = 1
@@ -145,7 +145,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
 
     def __create_compute_headers(self, cells, compute):
         cells.insert(2, nbf.new_markdown_cell(
-            "***\n## AWS Credentials\n***\nAWS Credentials for StochSS can be set [here](/model_builder/settings)"
+            "***\n## AWS Credentials\n***\nAWS Credentials for GillesPy3D can be set [here](/model_builder/settings)"
         ))
         cells.insert(3, nbf.new_markdown_cell("***\n## Launch AWS Cluster\n***"))
         cells.append(nbf.new_markdown_cell('***\n## Clean Up AWS Cluster\n***'))
@@ -275,7 +275,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                 raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
-    def __create_run(self, results, compute="StochSS"):
+    def __create_run(self, results, compute="StochSS"):   #Maybe can change? 
         nb_run_header = "***\n## Run the Simulation\n***"
         nb_run = ["kwargs = configure_simulation()"]
         if compute in ("AWS Cloud", "AWS"):

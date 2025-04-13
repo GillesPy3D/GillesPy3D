@@ -31,7 +31,7 @@ from .model_builder_job import GillesPy3DJob
 from .parameter_sweep_1d import ParameterSweep1D
 from .parameter_sweep_2d import ParameterSweep2D
 from .parameter_scan import ParameterScan
-from .model_builder_errors import GillesPy3DJobResultsError, StochSSJobError
+from .model_builder_errors import GillesPy3DJobResultsError, GillesPy3DJobError
 
 log = logging.getLogger("model_builder")
 
@@ -50,7 +50,7 @@ class NumpyEncoder(json.JSONEncoder):
 class ParameterSweep(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS parameter sweep job object
+    GillesPy3D parameter sweep job object
     ################################################################################################
     '''
 
@@ -159,7 +159,7 @@ class ParameterSweep(GillesPy3DJob):
         job.run(job_id=self.get_file(), verbose=verbose)
         if not job.ts_results:
             message = "All simulations failed to complete."
-            raise StochSSJobError(message)
+            raise GillesPy3DJobError(message)
         if verbose:
             log.info(f"The {sim_type} has completed")
             log.info("Storing the results as pickle.")

@@ -20,10 +20,10 @@ from nbformat import v4 as nbf
 
 from .model_builder_notebook import GillesPy3DNotebook
 
-class StochSSSciopeNotebook(GillesPy3DNotebook):
+class GillesPy3DSciopeNotebook(GillesPy3DNotebook):
     '''
     ################################################################################################
-    StochSS sciope notebook object
+    GillesPy3D sciope notebook object
     ################################################################################################
     '''
     def __init__(self, path, new=False, models=None, settings=None):
@@ -327,7 +327,7 @@ class StochSSSciopeNotebook(GillesPy3DNotebook):
         ))
 
     def create_me_notebook(self, results=None, compute="StochSS"):
-        '''Create a model exploration jupiter notebook for a StochSS model/workflow.'''
+        '''Create a model exploration jupiter notebook for a GillesPy3D model/workflow.'''
         self.nb_type = self.MODEL_EXPLORATION
         cells = self.create_common_cells()
         self.__create_import_cells(cells)
@@ -350,7 +350,7 @@ class StochSSSciopeNotebook(GillesPy3DNotebook):
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
     def create_mi_notebook(self, results=None, compute="StochSS"):
-        '''Create a model inference jupiter notebook for a StochSS model/workflow.'''
+        '''Create a model inference jupiter notebook for a GillesPy3D model/workflow.'''
         self.nb_type = self.MODEL_INFERENCE
         cells = self.create_common_cells()
         self.__create_import_cells(cells, results=results)

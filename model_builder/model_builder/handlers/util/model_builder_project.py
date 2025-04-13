@@ -30,10 +30,10 @@ from .model_builder_notebook import GillesPy3DNotebook
 from .model_builder_errors import GillesPy3DFileExistsError, GillesPy3DFileNotFoundError, \
                             GillesPy3DPermissionsError
 
-class StochSSProject(GillesPy3DBase):
+class GillesPy3DProject(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS project object
+    GillesPy3D project object
     ################################################################################################
     '''
 

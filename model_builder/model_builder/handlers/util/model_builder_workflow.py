@@ -36,7 +36,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError
 class GillesPy3DWorkflow(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS workflow object
+    GillesPy3D workflow object
     ################################################################################################
     '''
 
@@ -380,7 +380,7 @@ class GillesPy3DWorkflow(GillesPy3DBase):
 
     def load(self):
         '''
-        Load a StochSS Workflow object.
+        Load a GillesPy3D Workflow object.
 
         Attributes
         ----------

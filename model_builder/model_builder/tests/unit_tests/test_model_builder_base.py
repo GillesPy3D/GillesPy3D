@@ -35,10 +35,10 @@ os.chdir('/model_builder')
 
 # pylint: disable=too-many-public-methods
 # pylint: disable=line-too-long
-class TestStochSSBaseObject(unittest.TestCase):
+class TestGillesPy3DBaseObject(unittest.TestCase):
     '''
     ################################################################################################
-    Unit tests for the StochSS base class.
+    Unit tests for the GillesPy3D base class.
     ################################################################################################
     '''
     def setUp(self):
@@ -60,7 +60,7 @@ class TestStochSSBaseObject(unittest.TestCase):
             GillesPy3DBase.user_dir = os.path.expanduser("~")
 
     ################################################################################################
-    # Unit tests for the StochSS base class add_presentation_name function.
+    # Unit tests for the GillesPy3D base class add_presentation_name function.
     ################################################################################################
 
     def test_add_presentation_name__file_exists(self):
@@ -84,7 +84,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 mock_json_dump.assert_called_once_with({'foo': 'bar'}, mock.ANY)
 
     ################################################################################################
-    # Unit tests for the StochSS base class check_project_format function.
+    # Unit tests for the GillesPy3D base class check_project_format function.
     ################################################################################################
 
     def test_check_project_format__old_with_mdl(self):
@@ -128,7 +128,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertTrue(GillesPy3DBase.check_project_format(path=self.test_folderpath))
 
     ################################################################################################
-    # Unit tests for the StochSS base class check_workflow_format function.
+    # Unit tests for the GillesPy3D base class check_workflow_format function.
     ################################################################################################
 
     def test_check_workflow_format__old_with_old_files(self):
@@ -155,7 +155,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertTrue(GillesPy3DBase.check_workflow_format(path=self.test_folderpath))
 
     ################################################################################################
-    # Unit tests for the StochSS base class delete_presentation_name function.
+    # Unit tests for the GillesPy3D base class delete_presentation_name function.
     ################################################################################################
 
     def test_delete_presentation_name(self):
@@ -168,7 +168,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 mock_json_dump.assert_called_once_with({}, mock.ANY)
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_new_path function.
+    # Unit tests for the GillesPy3D base class get_new_path function.
     ################################################################################################
 
     def test_get_new_path(self):
@@ -205,7 +205,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertEqual(test_file_path, expected_path)
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_file function.
+    # Unit tests for the GillesPy3D base class get_file function.
     ################################################################################################
 
     def test_get_file__no_path_passed(self):
@@ -220,7 +220,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertEqual(test_base.get_file(path=self.test_filepath), "test_base_file")
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_model_template function.
+    # Unit tests for the GillesPy3D base class get_model_template function.
     ################################################################################################
 
     def test_get_model_template__as_dict(self):
@@ -255,7 +255,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 test_base.get_model_template()
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_settings_template function.
+    # Unit tests for the GillesPy3D base class get_settings_template function.
     ################################################################################################
 
     def test_get_settings_template__as_dict(self):
@@ -290,7 +290,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 test_base.get_settings_template()
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_name function.
+    # Unit tests for the GillesPy3D base class get_name function.
     ################################################################################################
 
     def test_get_name__no_path_passed(self):
@@ -311,7 +311,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 self.assertEqual(test_base.get_name(path=test_path), "test_file")
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_path function.
+    # Unit tests for the GillesPy3D base class get_path function.
     ################################################################################################
 
     def test_get_path__with_out_user_dir(self):
@@ -325,7 +325,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertEqual(test_base.get_path(full=True), os.path.join(self.user_dir, self.test_filepath))
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_dir_name function.
+    # Unit tests for the GillesPy3D base class get_dir_name function.
     ################################################################################################
 
     def test_get_dir_name__with_out_user_dir__root(self):
@@ -352,7 +352,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertEqual(test_base.get_dir_name(full=True), os.path.join(self.user_dir, "test_folder"))
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_status function.
+    # Unit tests for the GillesPy3D base class get_status function.
     ################################################################################################
 
     def test_get_status__ready__no_path_passed(self):
@@ -405,7 +405,7 @@ class TestStochSSBaseObject(unittest.TestCase):
 
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_unique_path function.
+    # Unit tests for the GillesPy3D base class get_unique_path function.
     ################################################################################################
 
     def test_get_unique_path__with_out_dirname__dirname_is_root__unique(self):
@@ -628,7 +628,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 self.setUp()
 
     ################################################################################################
-    # Unit tests for the StochSS base class get_unique_copy_path function.
+    # Unit tests for the GillesPy3D base class get_unique_copy_path function.
     ################################################################################################
 
     def test_get_unique_copy_path__with_out_path__dirname_is_root__one_iter(self):
@@ -763,7 +763,7 @@ class TestStochSSBaseObject(unittest.TestCase):
                 self.setUp()
 
     ################################################################################################
-    # Unit tests for the StochSS base class log function.
+    # Unit tests for the GillesPy3D base class log function.
     ################################################################################################
 
     def test_log(self):
@@ -774,7 +774,7 @@ class TestStochSSBaseObject(unittest.TestCase):
         self.assertIn(test_log, test_base.logs)
 
     ################################################################################################
-    # Unit tests for the StochSS base class make_parent_dirs function.
+    # Unit tests for the GillesPy3D base class make_parent_dirs function.
     ################################################################################################
 
     def test_make_parent_dirs__one_missing_dir(self):
@@ -798,7 +798,7 @@ class TestStochSSBaseObject(unittest.TestCase):
             self.assertIn("test_folder2", os.listdir(os.path.join(self.test_folderpath, "test_folder1")))
 
     ################################################################################################
-    # Unit tests for the StochSS base class print_logs function.
+    # Unit tests for the GillesPy3D base class print_logs function.
     ################################################################################################
 
     def test_print_logs__debug(self):
@@ -851,7 +851,7 @@ class TestStochSSBaseObject(unittest.TestCase):
             mock_debug_log.assert_called_once_with("testing critical log")
 
     ################################################################################################
-    # Unit tests for the StochSS base class rename function.
+    # Unit tests for the GillesPy3D base class rename function.
     ################################################################################################
 
     def test_rename__unique_name(self):

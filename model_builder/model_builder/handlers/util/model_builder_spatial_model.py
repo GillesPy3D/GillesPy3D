@@ -998,7 +998,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
 
     def save_domain(self, domain):
         '''
-        Writes a StochSS Domain to a .domn file
+        Writes a GillesPy3D Domain to a .domn file
 
         Attributes
         ----------

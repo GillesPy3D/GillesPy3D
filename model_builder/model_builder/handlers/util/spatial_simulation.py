@@ -31,7 +31,7 @@ log = logging.getLogger("model_builder")
 class SpatialSimulation(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS spatial ensemble simulation job object
+    GillesPy3D spatial ensemble simulation job object
     ################################################################################################
     '''
 

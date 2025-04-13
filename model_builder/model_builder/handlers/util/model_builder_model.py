@@ -39,7 +39,7 @@ from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundErro
 class GillesPy3DModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 

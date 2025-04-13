@@ -34,7 +34,7 @@ log = logging.getLogger("model_builder")
 class EnsembleSimulation(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS ensemble simulation job object
+    GillesPy3D ensemble simulation job object
     ################################################################################################
     '''
 

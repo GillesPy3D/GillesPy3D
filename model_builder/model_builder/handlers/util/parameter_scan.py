@@ -25,7 +25,7 @@ log = logging.getLogger("model_builder")
 class ParameterScan():
     '''
     ################################################################################################
-    StochSS parameter scan job object
+    GillesPy3D parameter scan job object
     ################################################################################################
     '''
     name = "ParameterScan"

@@ -32,7 +32,7 @@ log = logging.getLogger("model_builder")
 class ParameterSweep1D():
     '''
     ################################################################################################
-    StochSS 1D parameter sweep job object
+    GillesPy3D 1D parameter sweep job object
     ################################################################################################
     '''
     name = "ParameterSweep1D"
@@ -49,7 +49,7 @@ class ParameterSweep1D():
         model : obj
             GillesPy2 Model
         settings : dict
-            StochSS simulation settings dictionary
+            GillesPy3D simulation settings dictionary
         param : dict
             Dictionary of settings for the parameter
         '''
@@ -111,7 +111,7 @@ class ParameterSweep1D():
         species : str
             Species of interest name.
         param : dict
-            StochSS sweep parameter dictionary.
+            GillesPy3D sweep parameter dictionary.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str

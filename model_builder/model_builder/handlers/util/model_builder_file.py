@@ -23,12 +23,12 @@ import traceback
 
 from .model_builder_base import GillesPy3DBase
 from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DPermissionsError, \
-                            GillesPy3DFileExistsError, StochSSUnzipError
+                            GillesPy3DFileExistsError, GillesPy3DUnzipError
 
-class StochSSFile(GillesPy3DBase):
+class GillesPy3DFile(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS file object
+    GillesPy3D file object
     ################################################################################################
     '''
     def __init__(self, path, new=False, body=""):
@@ -175,5 +175,5 @@ class StochSSFile(GillesPy3DBase):
         except zipfile.BadZipFile as err:
             message = f"{str(err)} so it could not be unzipped."
             if not from_upload:
-                raise StochSSUnzipError(message, traceback.format_exc()) from err
+                raise GillesPy3DUnzipError(message, traceback.format_exc()) from err
             return [message]
