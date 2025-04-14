@@ -313,7 +313,7 @@ class GillesPy3DParamSweepNotebook(GillesPy3DNotebook):
         nb_run = "\n".join(nb_run)
         return nbf.new_code_cell(nb_run)
 
-    def create_1d_notebook(self, results=None, compute="StochSS"):
+    def create_1d_notebook(self, results=None, compute="StochSS"): #also here 
         '''Create a 1D parameter sweep jupiter notebook for a GillesPy3D model/workflow'''
         self.nb_type = self.PARAMETER_SWEEP_1D
         cells = self.create_common_cells()

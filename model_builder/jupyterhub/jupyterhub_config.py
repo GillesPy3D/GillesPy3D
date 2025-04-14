@@ -89,7 +89,7 @@ c.JupyterHub.log_level = 'DEBUG'
 #  By default, redirects users to their own server.
 c.JupyterHub.default_url = '/model_builder'
 
-# StochSS request handlers
+# GillesPy3D request handlers
 c.JupyterHub.extra_handlers = [
         (r"/model_builder\/?", HomeHandler),
         (r"/model_builder/api/message\/?", MessageAPIHandler),
@@ -208,8 +208,8 @@ def update_users_sets():
     Update the admin, power_users, and blacklist user sets.
     """
     c.Authenticator.admin_users = admin = set([])
-    c.StochSS.power_users = power_users = set([])
-    c.StochSS.blacklist = blacklist = set([])
+    c.GillesPy3D.power_users = power_users = set([])
+    c.GillesPy3D.blacklist = blacklist = set([])
 
     pwd = "/srv/userlist"
     path = os.path.join(pwd, 'userlist')
@@ -236,7 +236,7 @@ def get_user_cpu_count_or_fail():
     # Round up to an even number of reserved cpus
     total_cpus = os.cpu_count()
     if total_cpus <= 2:
-        c.StochSS.reserved_cpu_count = 0
+        c.GillesPy3D.reserved_cpu_count = 0
         return 0
     if reserve_count % 2 > 0:
         message = "Increasing reserved cpu count by one so it's an even number."
@@ -251,11 +251,11 @@ def get_user_cpu_count_or_fail():
     # use one less logical cpu for allocating user cpus
     if user_cpu_count % 2 > 0 and user_cpu_count > 1:
         user_cpu_count -= 1
-    c.StochSS.reserved_cpu_count = reserve_count
+    c.GillesPy3D.reserved_cpu_count = reserve_count
     return user_cpu_count
 
-c.StochSS.user_cpu_count = get_user_cpu_count_or_fail()
-c.StochSS.user_cpu_alloc = [0] * c.StochSS.user_cpu_count
+c.GillesPy3D.user_cpu_count = get_user_cpu_count_or_fail()
+c.GillesPy3D.user_cpu_alloc = [0] * c.GillesPy3D.user_cpu_count
 
 def pre_spawn_hook(spawner):
     '''
@@ -268,7 +268,7 @@ def pre_spawn_hook(spawner):
     # Update admins, power users, and blacklist users
     update_users_sets()
     # Remove the memory limit for power users
-    if c.StochSS.user_cpu_count == 0:
+    if c.GillesPy3D.user_cpu_count == 0:
         spawner.mem_limit = None
         msg = 'Skipping resource limitations since the host machine has a limited number of cpus.'
         log.info(msg)
@@ -279,11 +279,11 @@ def pre_spawn_hook(spawner):
     if spawner.user.name in c.Authenticator.admin_users:
         log.info(f"Setting usertype for {spawner.user.name} to 'admin'")
         user_type = 'admin'
-    elif spawner.user.name in c.StochSS.power_users:
+    elif spawner.user.name in c.GillesPy3D.power_users:
         log.info(f"Setting usertype for {spawner.user.name} to 'power'")
         user_type = 'power'
     else:
-        for elem in c.StochSS.blacklist:
+        for elem in c.GillesPy3D.blacklist:
             if elem.startswith('@'):
                 log.info(f"Checking for domain affiliation: {elem}")
                 if elem in spawner.user.name:
@@ -312,9 +312,9 @@ def pre_spawn_hook(spawner):
         spawner.mem_limit = None
         log.info(f'Skipping resource limitation for {user_type} user: {spawner.user.name}')
         return
-    palloc = c.StochSS.user_cpu_alloc
+    palloc = c.GillesPy3D.user_cpu_alloc
     div = len(palloc) // 2
-    reserved = c.StochSS.reserved_cpu_count
+    reserved = c.GillesPy3D.reserved_cpu_count
     log.debug(f'Reserved CPUs: {reserved}')
     log.debug(f'Number of user containers using each logical core: {palloc}')
     # We want to allocate logical cores that are on the same physical core
@@ -364,10 +364,10 @@ def post_stop_hook(spawner):
     Post stop hook
     '''
     log = spawner.log
-    reserved = c.StochSS.reserved_cpu_count
+    reserved = c.GillesPy3D.reserved_cpu_count
     if reserved == 0:
         return
-    palloc = c.StochSS.user_cpu_alloc
+    palloc = c.GillesPy3D.user_cpu_alloc
     try:
         cpu1_index, cpu2_index = spawner.extra_host_config['cpuset_cpus'].split(',')
         palloc[int(cpu1_index)] -= 1
@@ -499,7 +499,7 @@ update_users_sets()
 
 # Slack integration
 # slack access bot token
-slack_user_name = "StochSS Live Bot"
+slack_user_name = "GillesPy3D Live Bot"
 slack_channel = "#model_builder-live"
 slack_icon_emoji = ':red_circle:'
 slack_token = None
@@ -511,7 +511,7 @@ except:
 
 def post_message_to_slack(text, blocks = None):
     """
-    Post messages to the StochSS Live! slack channel.
+    Post messages to the GillesPy3D Live! slack channel.
 
     Attributes
     ----------

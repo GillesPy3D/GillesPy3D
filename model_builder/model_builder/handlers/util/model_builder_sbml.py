@@ -29,7 +29,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError
 class GillesPy3DSBMLModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS notebook object
+    GillesPy3D notebook object
     ################################################################################################
     '''
 

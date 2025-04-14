@@ -27,7 +27,7 @@ def report_error(handler, log, err):
     handler : obj
         Jupyter Notebook API Handler
     log : obj
-        StochSS log
+        GillesPy3D log
     '''
     handler.set_status(err.status_code)
     error = {"Reason":err.reason, "Message":err.message}
@@ -43,7 +43,7 @@ def report_error(handler, log, err):
 class GillesPy3DAPIError(Exception):
     '''
     ################################################################################################
-    StochSS Base Api Handler Error
+    GillesPy3D Base Api Handler Error
     ################################################################################################
     '''
 
@@ -76,7 +76,7 @@ class GillesPy3DAPIError(Exception):
 class GillesPy3DFileNotFoundError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS File/Folder Not Found API Handler Error
+    GillesPy3D File/Folder Not Found API Handler Error
     ################################################################################################
     '''
 
@@ -91,7 +91,7 @@ class GillesPy3DFileNotFoundError(GillesPy3DAPIError):
         trace : str
             Error traceback for the error
         '''
-        super().__init__(404, "StochSS File or Directory Not Found", msg, trace)
+        super().__init__(404, "GillesPy3D File or Directory Not Found", msg, trace)
 
 ####################################################################################################
 # Model Errors
@@ -100,7 +100,7 @@ class GillesPy3DFileNotFoundError(GillesPy3DAPIError):
 class FileNotJSONFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Model/Template Not In JSON Format
+    GillesPy3D Model/Template Not In JSON Format
     ################################################################################################
     '''
 
@@ -120,7 +120,7 @@ class FileNotJSONFormatError(GillesPy3DAPIError):
 class GillesPy3DModelFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Model Not In Proper Format
+    GillesPy3D Model Not In Proper Format
     ################################################################################################
     '''
 
@@ -135,7 +135,7 @@ class GillesPy3DModelFormatError(GillesPy3DAPIError):
         trace : str
             Error traceback for the error
         '''
-        super().__init__(406, "StochSS Model Not In Proper Format", msg, trace)
+        super().__init__(406, "GillesPy3D Model Not In Proper Format", msg, trace)
 
 class DomainUpdateError(GillesPy3DAPIError):
     '''
@@ -165,7 +165,7 @@ class DomainUpdateError(GillesPy3DAPIError):
 class PlotNotAvailableError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Result Plot Not Found
+    GillesPy3D Result Plot Not Found
     ################################################################################################
     '''
 
@@ -186,7 +186,7 @@ class PlotNotAvailableError(GillesPy3DAPIError):
 class GillesPy3DJobResultsError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Job Results Error
+    GillesPy3D Job Results Error
     ################################################################################################
     '''
 

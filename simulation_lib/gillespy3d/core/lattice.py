@@ -562,7 +562,7 @@ class XMLMeshLattice(Lattice):
     :param filename: Name of file to read.
     :type filename: str
 
-    :param subdomain_file: StochSS v1.x subdomain description filename (optional).
+    :param subdomain_file: GillesPy3D v1.x subdomain description filename (optional).
     :type subdomain_file: str
 
     :param type_ids: Mapping of type indices to type names (optional).
@@ -698,7 +698,7 @@ class MeshIOLattice(Lattice):
     :param filename: Name of file to read.
     :type filename: str
 
-    :param subdomain_file: StochSS v1.x subdomain description filename (optional).
+    :param subdomain_file: GillesPy3D v1.x subdomain description filename (optional).
     :type subdomain_file: str
 
     :param type_ids: Mapping of type indices to type names (optional).
@@ -824,10 +824,10 @@ class MeshIOLattice(Lattice):
                     if (char in string.punctuation and char != "_") or char == " ":
                         raise LatticeError(f"Values in type_ids cannot contain '{char}'")
 
-class StochSSLattice(Lattice):
+class GillesPy3DLattice(Lattice):
     """
-    stochss lattice class provides a method for creating parts of the spatial domain
-        with a domain defined by a stochss style .domn domain file or .smdl model file.
+    GillesPy3D lattice class provides a method for creating parts of the spatial domain
+        with a domain defined by a GillesPy3D style .domn domain file or .smdl model file.
 
     :param center: The center point of the lattice.
     :type center: float[3] | float(3)
@@ -844,7 +844,7 @@ class StochSSLattice(Lattice):
 
     def apply(self, domain, *args, transform=None, **kwargs):
         """
-        Fill a domain with particles within the stochss lattice un-restricted by a geometry.
+        Fill a domain with particles within the GillesPy3D lattice un-restricted by a geometry.
 
         :param domain: Domain particles are to be added to.
         :type domain: gillespy3d.Domain
@@ -900,11 +900,11 @@ class StochSSLattice(Lattice):
             self._update_limits(domain)
             return count
         except KeyError as err:
-            raise LatticeError("The file is not a StochSS Domain (.domn) or a StochSS Spatial Model (.smdl).") from err
+            raise LatticeError("The file is not a GillesPy3D Domain (.domn) or a GillesPy3D Spatial Model (.smdl).") from err
 
     def validate(self):
         """
-        Validate the stochss lattice dependencies.
+        Validate the GillesPy3D lattice dependencies.
         """
         super().validate()
 

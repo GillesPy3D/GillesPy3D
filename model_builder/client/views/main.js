@@ -60,7 +60,7 @@ module.exports = View.extend({
     this.pageSwitcher = new ViewSwitcher({
       el: this.pageContainer,
       show: (newView, oldView) => {
-        document.title = _.result(newView, 'pageTitle') || 'StochSS';
+        document.title = _.result(newView, 'pageTitle') || 'GillesPy3D';
         document.scrollTop = 0;
         App.currentPage = newView;
       }
@@ -211,7 +211,7 @@ module.exports = View.extend({
     window.location = url;
   },
   setupUserLogs: function ({getLogs = true}={}) {
-    let message = app.getBasePath() === "/" ? "Welcome to StochSS!" : "Welcome to StochSS Live!";
+    let message = app.getBasePath() === "/" ? "Welcome to GillesPy3D!" : "Welcome to GillesPy3D Live!";
     $("#user-logs").html(message);
     this.logBlock = [];
     this.logs = [];

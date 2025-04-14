@@ -44,7 +44,7 @@ from gillespy3d_pp.__version__ import __version__
 #     CylindricalLattice,
 #     XMLMeshLattice,
 #     MeshIOLattice,
-#     StochSSLattice
+#     GillesPy3DLattice
 # )
 from .model import Model
 # from .parameter import Parameter

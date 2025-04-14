@@ -326,7 +326,7 @@ class GillesPy3DSciopeNotebook(GillesPy3DNotebook):
             f"results.plot_round(ndx={self.settings['inferenceSettings']['numRounds'] - 1})"
         ))
 
-    def create_me_notebook(self, results=None, compute="StochSS"):
+    def create_me_notebook(self, results=None, compute="StochSS"): #Not sure what compute even does here? I don't understand the point without more context 
         '''Create a model exploration jupiter notebook for a GillesPy3D model/workflow.'''
         self.nb_type = self.MODEL_EXPLORATION
         cells = self.create_common_cells()

@@ -175,7 +175,7 @@ template = {
 class GillesPy3DModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 
@@ -293,7 +293,7 @@ class GillesPy3DModel(GillesPy3DBase):
 class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS spatial model object
+    GillesPy3D spatial model object
     ################################################################################################
     '''
     def __init__(self, model):
@@ -770,7 +770,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
         domain : spatialpy.Domain
             SpatialPy domain object used to generate plot data.
         s_domain : model_builder.Domain
-            StochSS domain object used to generate plot data.
+            GillesPy3D domain object used to generate plot data.
         '''
         fig = domain.plot_types(return_plotly_figure=True)
         # Case #3: 1 or more particles and one type

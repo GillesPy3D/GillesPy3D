@@ -44,7 +44,7 @@ from .lattice import (
     CylindricalLattice,
     XMLMeshLattice,
     MeshIOLattice,
-    StochSSLattice
+    GillesPy3DLattice
 )
 from .model import Model
 from .parameter import Parameter

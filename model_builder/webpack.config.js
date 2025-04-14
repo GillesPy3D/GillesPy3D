@@ -24,84 +24,84 @@ module.exports = {
   devtool: 'inline-source-map',
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'StochSS | Home',
+      title: 'GillesPy3D | Home',
       filename: 'model_builder-user-home.html',
       template: 'page_template.pug',
       name: 'home',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | User Settings',
+      title: 'GillesPy3D | User Settings',
       filename: 'model_builder-user-settings.html',
       template: 'page_template.pug',
       name: 'userSettings',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Quickstart',
+      title: 'GillesPy3D | Quickstart',
       filename: 'model_builder-quickstart.html',
       template: 'page_template.pug',
       name: 'quickstart',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Example Library',
+      title: 'GillesPy3D | Example Library',
       filename: 'model_builder-example-library.html',
       template: 'page_template.pug',
       name: 'exampleLibrary',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Model Browser',
+      title: 'GillesPy3D | Model Browser',
       filename: 'model_builder-file-browser.html',
       template: 'page_template.pug',
       name: 'browser',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Model Editor',
+      title: 'GillesPy3D | Model Editor',
       filename: 'model_builder-model-editor.html',
       template: 'page_template.pug',
       name: 'editor',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Domain Editor',
+      title: 'GillesPy3D | Domain Editor',
       filename: 'model_builder-domain-editor.html',
       template: 'page_template.pug',
       name: 'domainEditor',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Workflow Selection',
+      title: 'GillesPy3D | Workflow Selection',
       filename: 'model_builder-workflow-selection.html',
       template: 'page_template.pug',
       name: 'workflowSelection',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Workflow Editor',
+      title: 'GillesPy3D | Workflow Editor',
       filename: 'model_builder-workflow-manager.html',
       template: 'page_template.pug',
       name: 'workflowEditor',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: 'StochSS | Project Manager',
+      title: 'GillesPy3D | Project Manager',
       filename: 'model_builder-project-manager.html',
       template: 'page_template.pug',
       name: 'projectManager',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: "StochSS | Loading Page",
+      title: "GillesPy3D | Loading Page",
       filename: 'model_builder-loading-page.html',
       template: 'page_template.pug',
       name: 'loadingPage',
       inject: false
     }),
     new HtmlWebpackPlugin({
-      title: "StochSS | Multiple Plots Page",
+      title: "GillesPy3D | Multiple Plots Page",
       filename: 'multiple-plots-page.html',
       template: 'page_template.pug',
       name: 'multiplePlots',

@@ -605,7 +605,7 @@ class GillesPy3DFolder(GillesPy3DBase):
             Overwrite the existing files.
         '''
         ext, file, body = self.__get_file_from_link(remote_path)
-        if "github.com/StochSS/StochSS_Example_Library/raw/" in remote_path: #Can't change removing the funcionalty later?
+        if "github.com/StochSS/StochSS_Example_Library/raw/" in remote_path: #Can't change removing this later?
             path = self.get_new_path(dst_path=os.path.join("Examples", file))
             self.path = "Examples"
             new_path = os.path.join(self.path, file)

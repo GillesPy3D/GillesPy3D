@@ -42,7 +42,7 @@ from .model_builder_errors import GillesPy3DFileNotFoundError, FileNotJSONFormat
 class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS spatial model object
+    GillesPy3D spatial model object
     ################################################################################################
     '''
     def __init__(self, path, new=False, model=None):

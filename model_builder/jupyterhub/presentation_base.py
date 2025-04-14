@@ -91,7 +91,7 @@ def get_presentation_from_user(owner, file, process_func, kwargs=None):
 class GillesPy3DBase():
     '''
     ################################################################################################
-    StochSS base object
+    GillesPy3D base object
     ################################################################################################
     '''
     user_dir = os.path.expanduser("~") # returns the path to the users home directory
