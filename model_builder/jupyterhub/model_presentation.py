@@ -379,13 +379,13 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
                     else:
                         point = [action['point']['x'], action['point']['y'], action['point']['z']]
                         domain.add_point(point, **kwargs)
-                elif action['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'):
+                elif action['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'):
                     lattices = {
                         'XML Mesh': spatialpy.XMLMeshLattice, 'Mesh IO': spatialpy.MeshIOLattice,
-                        'StochSS Domain': spatialpy.StochSSLattice
+                        'GillesPy3D Domain': spatialpy.StochSSLattice
                     }
                     filename = os.path.join(self.user_dir, action['filename'])
-                    if action['type'] == "StochSS Domain" or action['subdomainFile'] == "":
+                    if action['type'] == "GillesPy3D Domain" or action['subdomainFile'] == "":
                         lattice = lattices[action['type']](filename)
                     else:
                         subdomain_file = os.path.join(self.user_dir, action['subdomainFile'])
@@ -680,7 +680,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
                     'length': 0, 'name': f"shape{len(shapes) + 1}", 'radius': 0, 'type': 'Standard'
                 })
         domain['actions'] = [{
-            'type': 'StochSS Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
+            'type': 'GillesPy3D Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
             'transformation': '', 'filename': filename.replace(f'{self.user_dir}/', ''), 'subdomainFile': '',
             'point': {'x': 0, 'y': 0, 'z': 0}, 'newPoint': {'x': 0, 'y': 0, 'z': 0},
             'c': 10, 'fixed': False, 'mass': 1.0, 'nu': 0.0, 'rho': 1.0, 'typeID': 0, 'vol': 0.0
@@ -751,7 +751,7 @@ class GillesPy3DSpatialModel(GillesPy3DBase):
     def get_presentation(cls, model=None, files=None):
         ''' Get the presentation for download. '''
         # Process file based lattices
-        file_based_types = ('XML Mesh', 'Mesh IO', 'StochSS Domain')
+        file_based_types = ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain')
         for action in model['domain']['actions']:
             if action['type'] in file_based_types:
                 action_id = hashlib.md5(json.dumps(action, sort_keys=True, indent=4).encode('utf-8')).hexdigest()

@@ -275,14 +275,11 @@ class GillesPy3DNotebook(GillesPy3DBase):
                 raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
-    def __create_run(self, results, compute="StochSS"):   #Maybe can change? 
+    def __create_run(self, results, ):   #Maybe can change? 
         nb_run_header = "***\n## Run the Simulation\n***"
         nb_run = ["kwargs = configure_simulation()"]
-        if compute in ("AWS Cloud", "AWS"):
-            nb_run.append("simulation = stochss_compute.RemoteSimulation(model, server=cluster)")
-            nb_res = "results = simulation.run(**kwargs)"
-        else:
-            nb_res = "results = model.run(**kwargs)"
+       
+        nb_res = "results = model.run(**kwargs)"
         if results is None:
             nb_run.append(nb_res)
         else:
@@ -335,7 +332,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                             p_z = s_act['point']['z']
                             args = args.replace("__GEOMETRY____ENABLE__", f"[{p_x}, {p_y}, {p_z}]")
                             nb_act = tmp.replace("__FUNCTION__", "add_point").replace("__ARGS__", args)
-                    elif s_act['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'):
+                    elif s_act['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'):
                         args = args.replace("__GEOMETRY__", f"lattice={f'ipa_lattice{l_ndx}'}, ")
                         nb_act = tmp.replace("__FUNCTION__", "add_fill_action").replace("__ARGS__", args)
                         l_ndx += 1
@@ -531,14 +528,14 @@ class GillesPy3DNotebook(GillesPy3DBase):
 
     def __create_spatial_shapes(self, nb_domain, index):
         actions = list(filter(
-            lambda act: act['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'),
+            lambda act: act['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'),
             self.s_model['domain']['actions']
         ))
         if len(self.s_model['domain']['shapes']) > 0 or len(actions) > 0:
             class_map = {
                 'Cartesian Lattice': 'CartesianLattice', 'Spherical Lattice': 'SphericalLattice',
                 'Cylindrical Lattice': 'CylindricalLattice', 'XML Mesh': 'XMLMeshLattice',
-                'Mesh IO': 'MeshIOLattice', 'StochSS Domain': 'StochSSLattice'
+                'Mesh IO': 'MeshIOLattice', 'GillesPy3D Domain': 'StochSSLattice'
             }
             pad = '    '
             comb_geoms = {}
@@ -603,7 +600,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
                     index += 1
                 for i, s_act in enumerate(actions):
                     args = f"os.path.join(home, '{s_act['filename']}')"
-                    if s_act['type'] != "StochSS Domain" and s_act['subdomainFile'] != "":
+                    if s_act['type'] != "GillesPy3D Domain" and s_act['subdomainFile'] != "":
                         args = f"{args},\n{pad*2}subdomain_file=os.path.join(home, '{s_act['subdomainFile']}')"
                     nb_latt = lat_tmp.replace("__NAME__", f"ipa_lattice{i+1}")
                     nb_latt = nb_latt.replace("__CLASS__", class_map[s_act['type']]).replace("__ARGS__", args)
@@ -945,8 +942,8 @@ class GillesPy3DNotebook(GillesPy3DBase):
         cells.append(self.__create_configuration_cell())
         return cells
 
-    def create_es_notebook(self, results=None, compute="StochSS"):
-        '''Create an ensemble simulation jupiter notebook for a StochSS model/workflow '''
+    def create_es_notebook(self, results=None):
+        '''Create an ensemble simulation jupiter notebook for a GilesPy3D model/workflow '''
         self.nb_type = self.ENSEMBLE_SIMULATION
         cells = self.create_common_cells()
 
@@ -955,16 +952,16 @@ class GillesPy3DNotebook(GillesPy3DBase):
         vis_header = nbf.new_markdown_cell("***\n## Visualization\n***")
         vis_code = nbf.new_code_cell("results.plotplotly()")
         cells.extend([run_header, run_code, vis_header, vis_code])
-        if compute != "StochSS":
-            self.__create_compute_cells(cells, compute)
+        
+        self.__create_compute_cells(cells, compute)
         if results is not None:
             cells.insert(1, nbf.new_code_cell("import os\nimport pickle"))
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
-    def create_ses_notebook(self, results=None, compute="StochSS"):
-        '''Create a spetial ensemble simulation jupiter notebook for a StochSS model/workflow '''
+    def create_ses_notebook(self, results=None):
+        '''Create a spetial ensemble simulation jupiter notebook for a GilsesPy3D model/workflow '''
         self.nb_type = self.SPATIAL_SIMULATION
         cells = self.create_common_cells()
 
@@ -980,11 +977,7 @@ class GillesPy3DNotebook(GillesPy3DBase):
             plot_str = f"results.plot_property('type', {plt_args})"
         vis_code = nbf.new_code_cell(plot_str)
         cells.extend([run_header, run_code, vis_header, vis_code])
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by spatial ensemble simulation workflows."
-            )
+    
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}

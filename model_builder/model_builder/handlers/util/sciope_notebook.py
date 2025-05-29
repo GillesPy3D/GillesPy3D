@@ -326,7 +326,7 @@ class GillesPy3DSciopeNotebook(GillesPy3DNotebook):
             f"results.plot_round(ndx={self.settings['inferenceSettings']['numRounds'] - 1})"
         ))
 
-    def create_me_notebook(self, results=None, compute="StochSS"): #Not sure what compute even does here? I don't understand the point without more context 
+    def create_me_notebook(self, results=None): #Not sure what compute even does here? I don't understand the point without more context 
         '''Create a model exploration jupiter notebook for a GillesPy3D model/workflow.'''
         self.nb_type = self.MODEL_EXPLORATION
         cells = self.create_common_cells()
@@ -340,16 +340,12 @@ class GillesPy3DSciopeNotebook(GillesPy3DNotebook):
         cells.insert(17, nbf.new_code_cell("met = StochMET(simulator, lhc, summary_stats)"))
         cells.insert(19, nbf.new_code_cell("met.compute(n_points=500, chunk_size=10)"))
         self.__create_explore_cells(cells)
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by SCIOPE model exploration workflows."
-            )
+    
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
-    def create_mi_notebook(self, results=None, compute="StochSS"):
+    def create_mi_notebook(self, results=None):
         '''Create a model inference jupiter notebook for a GillesPy3D model/workflow.'''
         self.nb_type = self.MODEL_INFERENCE
         cells = self.create_common_cells()
@@ -372,11 +368,6 @@ class GillesPy3DSciopeNotebook(GillesPy3DNotebook):
         index = self.__create_infer_cells(cells, index + 9, results)
         self.__create_visualization_cells(cells, index)
         cells.append(nbf.new_code_cell("# c.close()"))
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by SCIOPE model inference workflows."
-            )
-
+    
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
