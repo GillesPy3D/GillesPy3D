@@ -33,7 +33,7 @@ from .parameter_sweep_2d import ParameterSweep2D
 from .parameter_scan import ParameterScan
 from .model_builder_errors import GillesPy3DJobResultsError, GillesPy3DJobError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class NumpyEncoder(json.JSONEncoder):
     '''

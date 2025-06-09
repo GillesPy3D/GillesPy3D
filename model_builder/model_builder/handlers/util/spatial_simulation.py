@@ -26,7 +26,7 @@ from spatialpy import TimeSpan
 from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import GillesPy3DJobResultsError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class SpatialSimulation(GillesPy3DJob):
     '''

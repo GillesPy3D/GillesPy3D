@@ -20,7 +20,7 @@ import logging
 
 def init_log():
     ''' Initialize the user container logger '''
-    log = logging.getLogger('tornado.log.model_builder')
+    log = logging.getLogger('tornado.log.gillespy3d')
     # Create console handler and set level to debug
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
@@ -31,4 +31,4 @@ def init_log():
 
 def get_log():
     ''' Get the user container logger. '''
-    logging.getLogger('tornado.log.model_builder')
+    logging.getLogger('tornado.log.gillespy3d')

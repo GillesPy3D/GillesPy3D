@@ -37,7 +37,7 @@ from presentation_error import GillesPy3DJobResultsError, GillesPy3DFileNotFound
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods

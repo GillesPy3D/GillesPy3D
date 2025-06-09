@@ -30,7 +30,7 @@ from util.model_builder_base import GillesPy3DBase
 from handlers.log import init_log
 
 init_log()
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class OpenAndLock:
     '''

@@ -21,7 +21,7 @@ import sys
 import logging
 from tornado.log import LogFormatter
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 spy_log = logging.getLogger('SpatialPy')
 
 def init_log():

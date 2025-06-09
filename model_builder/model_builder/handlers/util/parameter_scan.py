@@ -20,7 +20,7 @@ import copy
 import logging
 import traceback
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class ParameterScan():
     '''

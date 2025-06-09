@@ -31,7 +31,7 @@ from notebook.base.handlers import IPythonHandler, APIHandler
 from .util import GillesPy3DBase, report_error
 from .util.model_builder_errors import AWSConfigurationError
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -411,7 +411,7 @@ class LoadUserSettings(APIHandler):
 class ConfirmAWSConfigHandler(APIHandler):
     '''
     ################################################################################################
-    GillesPy3D handler for comfirming AWS configuration
+    GillesPy3D handler for confirming AWS configuration
     ################################################################################################
     '''
     @web.authenticated

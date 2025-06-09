@@ -31,7 +31,7 @@ from .util import GillesPy3DFolder, GillesPy3DJob, GillesPy3DModel, GillesPy3DSp
                   GillesPy3DWorkflow, GillesPy3DParamSweepNotebook, GillesPy3DSciopeNotebook, \
                   GillesPy3DAPIError, report_error, report_critical_error, ModelInference
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 
 # pylint: disable=abstract-method

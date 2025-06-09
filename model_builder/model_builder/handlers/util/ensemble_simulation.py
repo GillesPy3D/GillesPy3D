@@ -29,7 +29,7 @@ from stochss_compute import RemoteSimulation
 from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundError, GillesPy3DJobResultsError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class EnsembleSimulation(GillesPy3DJob):
     '''

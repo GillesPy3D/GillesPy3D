@@ -27,7 +27,7 @@ import numpy
 import plotly
 # import matplotlib
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class ParameterSweep1D():
     '''

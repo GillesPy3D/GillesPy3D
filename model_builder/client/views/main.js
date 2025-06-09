@@ -211,7 +211,7 @@ module.exports = View.extend({
     window.location = url;
   },
   setupUserLogs: function ({getLogs = true}={}) {
-    let message = app.getBasePath() === "/" ? "Welcome to GillesPy3D!" : "Welcome to GillesPy3D Live!";
+    let message = "Welcome to GillesPy3D!";
     $("#user-logs").html(message);
     this.logBlock = [];
     this.logs = [];

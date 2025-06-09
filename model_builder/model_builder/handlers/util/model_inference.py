@@ -49,7 +49,7 @@ from sciope.utilities.epsilonselectors import RelativeEpsilonSelector
 from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import GillesPy3DJobError, GillesPy3DJobResultsError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 common_rgb_values = [
     '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2',

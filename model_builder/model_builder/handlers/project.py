@@ -30,7 +30,7 @@ from notebook.base.handlers import APIHandler
 from .util import GillesPy3DFolder, GillesPy3DProject, GillesPy3DModel, GillesPy3DSpatialModel, \
                   GillesPy3DAPIError, report_error, report_critical_error
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 
 # pylint: disable=abstract-method

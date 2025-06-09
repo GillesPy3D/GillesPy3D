@@ -803,7 +803,7 @@ class TestGillesPy3DBaseObject(unittest.TestCase):
 
     def test_print_logs__debug(self):
         ''' Check if debug log is logged correctly. '''
-        log = logging.getLogger('model_builder')
+        log = logging.getLogger('gillespy3d')
         test_base = GillesPy3DBase(path=self.test_folderpath)
         test_base.log("debug", "testing debug log")
         with mock.patch("model_builder.handlers.log.log.debug") as mock_debug_log:
@@ -813,7 +813,7 @@ class TestGillesPy3DBaseObject(unittest.TestCase):
 
     def test_print_logs__info(self):
         ''' Check if info log is logged correctly. '''
-        log = logging.getLogger('model_builder')
+        log = logging.getLogger('gillespy3d')
         test_base = GillesPy3DBase(path=self.test_folderpath)
         test_base.log("info", "testing info log")
         with mock.patch("model_builder.handlers.log.log.info") as mock_debug_log:
@@ -823,7 +823,7 @@ class TestGillesPy3DBaseObject(unittest.TestCase):
 
     def test_print_logs__warning(self):
         ''' Check if warning log is logged correctly. '''
-        log = logging.getLogger('model_builder')
+        log = logging.getLogger('gillespy3d')
         test_base = GillesPy3DBase(path=self.test_folderpath)
         test_base.log("warning", "testing warning log")
         with mock.patch("model_builder.handlers.log.log.warning") as mock_debug_log:
@@ -833,7 +833,7 @@ class TestGillesPy3DBaseObject(unittest.TestCase):
 
     def test_print_logs__error(self):
         ''' Check if error log is logged correctly. '''
-        log = logging.getLogger('model_builder')
+        log = logging.getLogger('gillespy3d')
         test_base = GillesPy3DBase(path=self.test_folderpath)
         test_base.log("error", "testing error log")
         with mock.patch("model_builder.handlers.log.log.error") as mock_debug_log:
@@ -843,7 +843,7 @@ class TestGillesPy3DBaseObject(unittest.TestCase):
 
     def test_print_logs__critical(self):
         ''' Check if critical log is logged correctly. '''
-        log = logging.getLogger('model_builder')
+        log = logging.getLogger('gillespy3d')
         test_base = GillesPy3DBase(path=self.test_folderpath)
         test_base.log("critical", "testing critical log")
         with mock.patch("model_builder.handlers.log.log.critical") as mock_debug_log:

@@ -31,7 +31,7 @@ from .util import GillesPy3DFolder, GillesPy3DModel, GillesPy3DSpatialModel, Gil
                   GillesPy3DAPIError, report_error, report_critical_error
 
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods

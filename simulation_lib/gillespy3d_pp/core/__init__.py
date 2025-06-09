@@ -65,7 +65,7 @@ from .model import Model
 
 version = __version__
 
-log = logging.getLogger("GillesPy3D")
+log = logging.getLogger("gillespy3d")
 log.setLevel(logging.WARNING)
 log.propagate = False
 

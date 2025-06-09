@@ -118,7 +118,7 @@ let workflowSelection = PageView.extend({
     computeEnvSelect: {
       hook: "compute-env-select",
       prepareView: function (el) {
-        let options = ["StochSS", "AWS Cloud"]; //this can be changed for 
+        let options = ["local", "AWS Cloud"]; 
         return new SelectView({
           name: 'compute-environment',
           required: true,

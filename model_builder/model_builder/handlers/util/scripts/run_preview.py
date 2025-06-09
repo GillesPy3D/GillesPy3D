@@ -40,7 +40,7 @@ from util.spatial_simulation import SpatialSimulation
 from handlers.log import init_log
 
 init_log()
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 def setup_logger():
     '''
