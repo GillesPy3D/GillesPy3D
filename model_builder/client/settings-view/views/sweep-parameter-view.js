@@ -43,7 +43,7 @@ module.exports = View.extend({
     View.prototype.initialize.apply(this, arguments);
     let self = this;
     this.viewMode = attrs.viewMode ? attrs.viewMode : false;
-    this.parameters = attrs.stochssParams;
+    this.parameters = attrs.model_builderParams;
     this.parameter = this.parameters.filter(function (param) {
       return param.compID === self.model.paramID;
     })[0];

@@ -44,7 +44,7 @@ from gillespy3d_pp.__version__ import __version__
 #     CylindricalLattice,
 #     XMLMeshLattice,
 #     MeshIOLattice,
-#     StochSSLattice
+#     GillesPy3DLattice
 # )
 from .model import Model
 # from .parameter import Parameter
@@ -65,7 +65,7 @@ from .model import Model
 
 version = __version__
 
-log = logging.getLogger("GillesPy3D")
+log = logging.getLogger("gillespy3d")
 log.setLevel(logging.WARNING)
 log.propagate = False
 

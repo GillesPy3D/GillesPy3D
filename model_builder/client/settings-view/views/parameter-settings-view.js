@@ -38,12 +38,12 @@ module.exports = View.extend({
     View.prototype.initialize.apply(this, arguments);
     this.readOnly = attrs.readOnly ? attrs.readOnly : false;
     this.tooltips = Tooltips.parameterSweepSettings;
-    this.stochssModel = attrs.stochssModel;
+    this.model_builderModel = attrs.model_builderModel;
     if(!this.readOnly) {
       if(!Boolean(this.model.speciesOfInterest.name)) {
-        this.model.speciesOfInterest = this.stochssModel.species.at(0);
+        this.model.speciesOfInterest = this.model_builderModel.species.at(0);
       }
-      this.model.updateVariables(this.stochssModel.parameters);
+      this.model.updateVariables(this.model_builderModel.parameters);
     }
   },
   render: function () {
@@ -59,7 +59,7 @@ module.exports = View.extend({
       $(this.queryByHook(this.model.elementID + '-view-parameter-settings')).addClass('active');
     }else{
       this.model.parameters.on("add remove", function () {
-        let disable = this.model.parameters.length >= 6 || this.model.parameters.length >= this.stochssModel.parameters.length;
+        let disable = this.model.parameters.length >= 6 || this.model.parameters.length >= this.model_builderModel.parameters.length;
         $(this.queryByHook("add-ps-parameter")).prop("disabled", disable);
       }, this)
       this.renderSpeciesOfInterestView();
@@ -72,7 +72,7 @@ module.exports = View.extend({
   },
   getParameter: function () {
     let parameters = this.model.parameters.map(function (param) { return param.paramID });
-    let target = this.stochssModel.parameters.filter(function (param) {
+    let target = this.model_builderModel.parameters.filter(function (param) {
       return !parameters.includes(param.compID);
     })[0];
     return target;
@@ -88,7 +88,7 @@ module.exports = View.extend({
     }
     let options = {"viewOptions": {
       parent: this,
-      stochssParams: this.stochssModel.parameters
+      model_builderParams: this.model_builderModel.parameters
     }}
     this.editSweepParameters = this.renderCollection(
       this.model.parameters,
@@ -98,7 +98,7 @@ module.exports = View.extend({
     );
   },
   renderSpeciesOfInterestView: function () {
-    let options = this.stochssModel.species.map(function (specie) {
+    let options = this.model_builderModel.species.map(function (specie) {
       return [specie.compID, specie.name];
     });
     let soi = this.model.speciesOfInterest.compID;
@@ -119,7 +119,7 @@ module.exports = View.extend({
     }
     let options = {"viewOptions": {
       parent: this,
-      stochssParams: this.stochssModel.parameters,
+      model_builderParams: this.model_builderModel.parameters,
       viewMode: true
     }}
     this.viewSweepParameters = this.renderCollection(
@@ -131,7 +131,7 @@ module.exports = View.extend({
   },
   setVariableOfInterest: function (e) {
     let target = e.target.value;
-    let variable = this.stochssModel.species.filter(function (specie) {
+    let variable = this.model_builderModel.species.filter(function (specie) {
       return specie.compID === Number(target);
     })[0];
     this.model.speciesOfInterest = variable;

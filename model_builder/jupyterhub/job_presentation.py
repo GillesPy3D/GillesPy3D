@@ -30,14 +30,14 @@ from pathlib import Path
 import numpy
 import plotly
 
-from presentation_base import StochSSBase, get_presentation_from_user
-from model_presentation import StochSSSpatialModel
-from presentation_error import StochSSJobResultsError, StochSSFileNotFoundError, report_error, \
-                               PlotNotAvailableError, StochSSAPIError
+from presentation_base import GillesPy3DBase, get_presentation_from_user
+from model_presentation import GillesPy3DSpatialModel
+from presentation_error import GillesPy3DJobResultsError, GillesPy3DFileNotFoundError, report_error, \
+                               PlotNotAvailableError, GillesPy3DAPIError
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('stochss')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -62,13 +62,13 @@ class JobAPIHandler(BaseHandler):
         try:
             path = os.path.join("/tmp/presentation_cache", file)
             if os.path.exists(path):
-                job = StochSSJob(path=path).load()
+                job = GillesPy3DJob(path=path).load()
             else:
                 job = get_presentation_from_user(owner=owner, file=file, kwargs={"file": file},
                                                  process_func=process_job_presentation)
             log.debug(f"Contents of the json file: {job}")
             self.write(job)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -95,7 +95,7 @@ class DownJobPresentationAPIHandler(BaseHandler):
                                                    process_func=process_job_presentation)
             self.set_header('Content-Disposition', f'attachment; filename="{name}.zip"')
             self.write(job)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -119,7 +119,7 @@ class PlotJobResultsAPIHandler(BaseHandler):
         body = json.loads(self.get_query_argument(name='data'))
         log.debug(f"Plot args passed to the plot: {body}")
         try:
-            job = StochSSJob(path=path)
+            job = GillesPy3DJob(path=path)
             if body['sim_type'] in  ("GillesPy2", "GillesPy2_PS"):
                 fig = job.get_plot_from_results(data_keys=body['data_keys'],
                                                 plt_key=body['plt_key'], add_config=True)
@@ -136,7 +136,7 @@ class PlotJobResultsAPIHandler(BaseHandler):
                 fig = job.update_fig_layout(fig=fig, plt_data=body['plt_data'])
             log.debug(f"Plot figure: {fig}")
             self.write(fig)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         self.finish()
 
@@ -159,7 +159,7 @@ class DownloadCSVAPIHandler(BaseHandler):
         csv_type = self.get_query_argument(name="type")
         data = json.loads(self.get_query_argument(name="data", default=None))
         try:
-            job = StochSSJob(path=path)
+            job = GillesPy3DJob(path=path)
             name = job.load()['name']
             self.set_header('Content-Disposition', f'attachment; filename="{name}.zip"')
             if csv_type == "time series":
@@ -169,7 +169,7 @@ class DownloadCSVAPIHandler(BaseHandler):
             else:
                 csv_data = job.get_full_csvzip_from_results(name=name)
             self.write(csv_data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         self.finish()
 
@@ -201,7 +201,7 @@ def process_job_presentation(path, file=None, for_download=False):
             pickle.dump(job['results'], res_file)
         if not job['job']['model']['is_spatial']:
             return {"job": job['job']}
-        model = StochSSSpatialModel(model=job['job']['model'])
+        model = GillesPy3DSpatialModel(model=job['job']['model'])
         data = model.load()
         job['job']['model'] = data['model']
         return {"job": job['job'], "domainPlot": data['domainPlot']}
@@ -216,7 +216,7 @@ def make_zip_for_download(job):
     Attributes
     ----------
     job : dict
-        StochSS job presentation
+        GillesPy3D job presentation
     '''
     tmp_dir = tempfile.TemporaryDirectory()
     res_path = os.path.join(tmp_dir.name, job['name'],
@@ -266,10 +266,10 @@ def write_json(path, body):
         json.dump(body, file, sort_keys=True, indent=4)
 
 
-class StochSSJob(StochSSBase):
+class GillesPy3DJob(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 
@@ -341,11 +341,11 @@ class StochSSJob(StochSSBase):
         if dims <= 0:
             message = "Too many fixed parameters were provided."
             message += "At least one variable parameter is required."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         if dims > 2:
             message = "Not enough fixed parameters were provided."
             message += "Variable parameters cannot exceed 2."
-            raise StochSSJobResultsError(message)
+            raise GillesPy3DJobResultsError(message)
         f_keys = [f"{name}:{value}" for name, value in fixed.items()]
         return dims, f_keys
 
@@ -403,7 +403,7 @@ class StochSSJob(StochSSBase):
             return self.__get_csvzip(dirname=tmp_dir.name, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -460,7 +460,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -501,7 +501,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -541,7 +541,7 @@ class StochSSJob(StochSSBase):
             return self.__get_csvzip(dirname=tmp_dir.name, name=name)
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested results are not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -576,7 +576,7 @@ class StochSSJob(StochSSBase):
             return json.loads(json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder))
         except FileNotFoundError as err:
             message = f"Could not find the results pickle file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except KeyError as err:
             message = f"The requested plot is not available: {str(err)}"
             raise PlotNotAvailableError(message, traceback.format_exc()) from err
@@ -593,7 +593,7 @@ class StochSSJob(StochSSBase):
             job = json.load(job_file)
         if not job['model']['is_spatial']:
             return {"job": job}
-        model = StochSSSpatialModel(job['model'])
+        model = GillesPy3DSpatialModel(job['model'])
         data = model.load()
         job['model'] = data['model']
         return {"job": job, "domainPlot": data['domainPlot']}
@@ -628,7 +628,7 @@ class StochSSJob(StochSSBase):
 class ParameterSweep1D():
     '''
     ################################################################################################
-    StochSS 1D parameter sweep job object
+    GillesPy3D 1D parameter sweep job object
     ################################################################################################
     '''
 
@@ -682,7 +682,7 @@ class ParameterSweep1D():
         species : str
             Species of interest name.
         param : dict
-            StochSS sweep parameter dictionary.
+            GillesPy3D sweep parameter dictionary.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str
@@ -752,7 +752,7 @@ class ParameterSweep1D():
 class ParameterSweep2D():
     '''
     ################################################################################################
-    StochSS 2D parameter sweep job object
+    GillesPy3D 2D parameter sweep job object
     ################################################################################################
     '''
 
@@ -808,7 +808,7 @@ class ParameterSweep2D():
         species : str
             Species of interest name.
         params : list
-            List of StochSS sweep parameter dictionaries.
+            List of GillesPy3D sweep parameter dictionaries.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str

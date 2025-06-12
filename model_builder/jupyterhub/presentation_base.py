@@ -23,7 +23,7 @@ import traceback
 
 import docker
 
-from presentation_error import StochSSFileNotFoundError
+from presentation_error import GillesPy3DFileNotFoundError
 
 
 def __get_presentation_from_volume(client, owner, file):
@@ -32,18 +32,18 @@ def __get_presentation_from_volume(client, owner, file):
         user_volume = list(filter(lambda volume: volume.name == f"jupyterhub-user-{owner}",
                                   volumes))[0]
         volume_mnts = {user_volume.name: {"bind": "/user_volume", "mode": "ro"},
-                       "/stochss/jupyterhub": {"bind": "/mnt/cache", "mode": "rw"}}
+                       "/model_builder/jupyterhub": {"bind": "/mnt/cache", "mode": "rw"}}
         command = ['cp', os.path.join('/user_volume/.presentations', file),
                    '/mnt/cache/presentation_cache/']
-        client.containers.run('stochss-lab', command, volumes=volume_mnts)
+        client.containers.run('gillespy3d-lab', command, volumes=volume_mnts)
         file_path = os.path.join('/srv/jupyterhub/presentation_cache', file)
         return file_path
     except docker.errors.ContainerError as err:
         message = "This presentation is no longer available."
-        raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+        raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
     except IndexError as err:
         message = "This presentation is no longer available."
-        raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+        raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
 def get_presentation_from_user(owner, file, process_func, kwargs=None):
@@ -73,7 +73,7 @@ def get_presentation_from_user(owner, file, process_func, kwargs=None):
         file_path = __get_presentation_from_volume(client, owner, file)
     except docker.errors.NotFound as err:
         message = "This presentation is no longer available."
-        raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+        raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
     else:
         for chunk in bits:
             tar_pres.write(chunk)
@@ -88,10 +88,10 @@ def get_presentation_from_user(owner, file, process_func, kwargs=None):
     return process_func(file_path, **kwargs)
 
 
-class StochSSBase():
+class GillesPy3DBase():
     '''
     ################################################################################################
-    StochSS base object
+    GillesPy3D base object
     ################################################################################################
     '''
     user_dir = os.path.expanduser("~") # returns the path to the users home directory

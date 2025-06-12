@@ -94,7 +94,7 @@ let workflowSelection = PageView.extend({
     this.model.updateValid();
     let invalid = !this.model.valid;
     if(invalid) {
-      let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + '?path=' + this.model.directory + '&validate';
+      let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + '?path=' + this.model.directory + '&validate';
       let message = 'Errors were detected in you model <a href="' + endpoint + '">click here to fix your model<a/>';
       $(this.queryByHook('invalid-model-message')).html(message);
       $(this.queryByHook('invalid-model-message')).css('display', 'block');
@@ -118,7 +118,7 @@ let workflowSelection = PageView.extend({
     computeEnvSelect: {
       hook: "compute-env-select",
       prepareView: function (el) {
-        let options = ["StochSS", "AWS Cloud"];
+        let options = ["local", "AWS Cloud"]; 
         return new SelectView({
           name: 'compute-environment',
           required: true,

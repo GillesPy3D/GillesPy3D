@@ -33,10 +33,10 @@ module.exports = View.extend({
     View.prototype.initialize.apply(this, arguments);
     this.readOnly = attrs.readOnly ? attrs.readOnly : false;
     this.tooltips = Tooltips.inferenceSettings;
-    this.stochssModel = attrs.stochssModel;
+    this.model_builderModel = attrs.model_builderModel;
     this.priorMethod = attrs.priorMethod;
     if(!this.readOnly) {
-      this.collection.updateVariables(this.stochssModel.parameters);
+      this.collection.updateVariables(this.model_builderModel.parameters);
     }
   },
   render: function () {
@@ -44,7 +44,7 @@ module.exports = View.extend({
     View.prototype.render.apply(this, arguments);
     if(!this.readOnly) {
       this.collection.on("add remove", () => {
-        let disable = this.collection.length >= this.stochssModel.parameters.length;
+        let disable = this.collection.length >= this.model_builderModel.parameters.length;
         $(this.queryByHook("add-mi-parameter")).prop("disabled", disable);
       }, this)
       this.renderEditInferenceParameter();
@@ -56,7 +56,7 @@ module.exports = View.extend({
   },
   getParameter: function () {
     let parameters = this.collection.map((param) => { return param.paramID; });
-    let target = this.stochssModel.parameters.filter((param) => {
+    let target = this.model_builderModel.parameters.filter((param) => {
       return !parameters.includes(param.compID);
     })[0];
     return target;
@@ -74,7 +74,7 @@ module.exports = View.extend({
     }
     let options = {"viewOptions": {
       parent: this,
-      stochssParams: this.stochssModel.parameters
+      model_builderParams: this.model_builderModel.parameters
     }}
     var inferenceParameterView = UniformParameterView;
     this.editInferenceParameter = this.renderCollection(
@@ -90,7 +90,7 @@ module.exports = View.extend({
     }
     let options = {"viewOptions": {
       parent: this, viewMode: true,
-      stochssParams: this.stochssModel.parameters
+      model_builderParams: this.model_builderModel.parameters
     }}
     var inferenceParameterView = UniformParameterView;
     this.viewInferenceParameter = this.renderCollection(
@@ -101,7 +101,7 @@ module.exports = View.extend({
     );
   },
   toggleAddParameter: function () {
-    let disable = this.collection.length >= this.stochssModel.parameters.length;
+    let disable = this.collection.length >= this.model_builderModel.parameters.length;
     $(this.queryByHook("add-mi-parameter")).prop('disabled', disable);
   },
   toggleParameterCollectionError: function () {

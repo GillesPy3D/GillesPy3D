@@ -34,7 +34,7 @@ module.exports = View.extend({
     View.prototype.initialize.apply(this, arguments);
     this.readOnly = Boolean(attrs.readOnly) ? attrs.readOnly : false
     this.newFormat = attrs.newFormat;
-    this.stochssModel = attrs.stochssModel;
+    this.model_builderModel = attrs.model_builderModel;
     this.type = attrs.type;
   },
   render: function() {
@@ -55,7 +55,7 @@ module.exports = View.extend({
     }
     this.inferenceSettingsView = new InferenceSettingsView({
       model: this.model.inferenceSettings,
-      stochssModel: this.stochssModel,
+      model_builderModel: this.model_builderModel,
       readOnly: this.readOnly
     });
     let hook = "inference-settings-container";
@@ -67,7 +67,7 @@ module.exports = View.extend({
     }
     this.parameterSettingsView = new ParameterSettingsView({
       model: this.model.parameterSweepSettings,
-      stochssModel: this.stochssModel,
+      model_builderModel: this.model_builderModel,
       readOnly: this.readOnly
     });
     app.registerRenderSubview(this, this.parameterSettingsView, "param-sweep-settings-container");
