@@ -57,7 +57,7 @@ class TestGillesPy2Dependency(unittest.TestCase):
     ####################################################################################################################
 
     def test_check_cpp_support(self):
-        ''' Check if the check cpp support functions works in StochSS. '''
+        ''' Check if the check cpp support functions works in GillesPy3D. '''
         from gillespy2.solvers.utilities.cpp_support_test import check_cpp_support
 
         self.assertIsInstance(check_cpp_support(), bool)
@@ -67,7 +67,7 @@ class TestGillesPy2Dependency(unittest.TestCase):
     ####################################################################################################################
 
     def test_get_best_solver(self):
-        ''' Check if the get best solver function works in StochSS. '''
+        ''' Check if the get best solver function works in GillesPy3D. '''
         test_model = self.test_ode_models[0]()
         test_solver = test_model.get_best_solver()
         self.assertIsInstance(test_solver(model=test_model), gillespy2.GillesPySolver)
@@ -77,7 +77,7 @@ class TestGillesPy2Dependency(unittest.TestCase):
     ####################################################################################################################
 
     def test_get_best_solver_algo(self):
-        ''' Check if the get best solver algo function works in StochSS. '''
+        ''' Check if the get best solver algo function works in GillesPy3D. '''
         test_algos = ["ODE", "SSA", "CLE", "Tau-Leaping", "Tau-Hybrid"]
         test_model = self.test_ode_models[0]()
         for test_algo in test_algos:

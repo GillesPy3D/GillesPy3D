@@ -46,10 +46,10 @@ from sciope.utilities.priors import uniform_prior
 from sciope.utilities.summarystats import auto_tsfresh, identity
 from sciope.utilities.epsilonselectors import RelativeEpsilonSelector
 
-from .model_builder_job import StochSSJob
-from .model_builder_errors import StochSSJobError, StochSSJobResultsError
+from .model_builder_job import GillesPy3DJob
+from .model_builder_errors import GillesPy3DJobError, GillesPy3DJobResultsError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 common_rgb_values = [
     '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2',
@@ -103,7 +103,7 @@ class LegendTitle(object):
 
 class InferenceRound(UserDict):
     """
-    Inference Round Dict created by a StochSS Inference Simulation containing single round, extends the UserDict object.
+    Inference Round Dict created by a GillesPy3D Inference Simulation containing single round, extends the UserDict object.
 
     :param accepted_samples: A dictionary of accepted sample values created by an inference.
     :type accepted_samples: dict
@@ -760,7 +760,7 @@ class InferenceRound(UserDict):
 
 class InferenceResults(UserList):
     """
-    List of InferenceRound objects created by a StochSS Inference Simulation, extends the UserList object.
+    List of InferenceRound objects created by a GillesPy3D Inference Simulation, extends the UserList object.
 
     :param data: A list of inference round objects
     :type data: list
@@ -1178,10 +1178,10 @@ class InferenceResults(UserList):
                 line.extend(list(inf_round.inferred_parameters.values()))
                 csv_writer.writerow(line)
 
-class ModelInference(StochSSJob):
+class ModelInference(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS model inference job object
+    GillesPy3D model inference job object
     ################################################################################################
     '''
 
@@ -1268,7 +1268,7 @@ class ModelInference(StochSSJob):
         if path is None:
             path = self.get_new_path(self.settings['inferenceSettings']['obsData'])
         if not (path.endswith(".csv") or path.endswith(".odf")):
-            raise StochSSJobError("Observed data must be a CSV file (.csv) or a directory (.odf) of CSV files.")
+            raise GillesPy3DJobError("Observed data must be a CSV file (.csv) or a directory (.odf) of CSV files.")
         if path.endswith(".csv"):
             new_data = self.__get_csv_data(path)
             data.append(new_data)
@@ -1280,7 +1280,7 @@ class ModelInference(StochSSJob):
     @classmethod
     def __report_result_error(cls, trace):
         message = "An unexpected error occured with the result object"
-        raise StochSSJobResultsError(message, trace)
+        raise GillesPy3DJobResultsError(message, trace)
 
     @classmethod
     def __store_pickled_results(cls, results):

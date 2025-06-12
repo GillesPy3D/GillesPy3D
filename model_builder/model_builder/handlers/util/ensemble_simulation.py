@@ -26,15 +26,15 @@ import traceback
 import gillespy2
 from stochss_compute import RemoteSimulation
 
-from .model_builder_job import StochSSJob
-from .model_builder_errors import StochSSAPIError, StochSSFileNotFoundError, StochSSJobResultsError
+from .model_builder_job import GillesPy3DJob
+from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundError, GillesPy3DJobResultsError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
-class EnsembleSimulation(StochSSJob):
+class EnsembleSimulation(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS ensemble simulation job object
+    GillesPy3D ensemble simulation job object
     ################################################################################################
     '''
 
@@ -54,7 +54,7 @@ class EnsembleSimulation(StochSSJob):
             try:
                 self.settings = self.load_settings()
                 self.g_model, self.s_model = self.load_models()
-            except StochSSAPIError as err:
+            except GillesPy3DAPIError as err:
                 log.error(str(err))
 
 
@@ -126,7 +126,7 @@ class EnsembleSimulation(StochSSJob):
         if pkl_err:
             message = "An unexpected error occured with the result object"
             trace = str(pkl_err)
-            raise StochSSJobResultsError(message, trace)
+            raise GillesPy3DJobResultsError(message, trace)
         return None
 
     def __run_in_aws(self, verbose=False, **kwargs):
@@ -160,7 +160,7 @@ class EnsembleSimulation(StochSSJob):
         '''
         try:
             compute_env = self.load_info()['compute_env']
-        except StochSSFileNotFoundError:
+        except GillesPy3DFileNotFoundError:
             compute_env = "local"
         if compute_env == 'AWS':
             results = self.__run(self.__run_in_aws, preview=preview, verbose=verbose)

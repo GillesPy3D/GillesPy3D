@@ -28,13 +28,13 @@ import numpy
 
 from gillespy2.solvers.utilities.cpp_support_test import check_cpp_support
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError, StochSSModelFormatError, StochSSPermissionsError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DModelFormatError, GillesPy3DPermissionsError
 
-class StochSSNotebook(StochSSBase):
+class GillesPy3DNotebook(GillesPy3DBase):
     '''
     ####################################################################################################################
-    StochSS notebook object
+    GillesPy3D notebook object
     ####################################################################################################################
     '''
     ENSEMBLE_SIMULATION = 1
@@ -145,7 +145,7 @@ class StochSSNotebook(StochSSBase):
 
     def __create_compute_headers(self, cells, compute):
         cells.insert(2, nbf.new_markdown_cell(
-            "***\n## AWS Credentials\n***\nAWS Credentials for StochSS can be set [here](/model_builder/settings)"
+            "***\n## AWS Credentials\n***\nAWS Credentials for GillesPy3D can be set [here](/model_builder/settings)"
         ))
         cells.insert(3, nbf.new_markdown_cell("***\n## Launch AWS Cluster\n***"))
         cells.append(nbf.new_markdown_cell('***\n## Clean Up AWS Cluster\n***'))
@@ -230,7 +230,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Parameters are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_reactions(self, nb_model, index, type_refs=None):
@@ -272,17 +272,14 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Reactions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
-    def __create_run(self, results, compute="StochSS"):
+    def __create_run(self, results, ):   #Maybe can change? 
         nb_run_header = "***\n## Run the Simulation\n***"
         nb_run = ["kwargs = configure_simulation()"]
-        if compute in ("AWS Cloud", "AWS"):
-            nb_run.append("simulation = stochss_compute.RemoteSimulation(model, server=cluster)")
-            nb_res = "results = simulation.run(**kwargs)"
-        else:
-            nb_res = "results = model.run(**kwargs)"
+       
+        nb_res = "results = model.run(**kwargs)"
         if results is None:
             nb_run.append(nb_res)
         else:
@@ -335,7 +332,7 @@ class StochSSNotebook(StochSSBase):
                             p_z = s_act['point']['z']
                             args = args.replace("__GEOMETRY____ENABLE__", f"[{p_x}, {p_y}, {p_z}]")
                             nb_act = tmp.replace("__FUNCTION__", "add_point").replace("__ARGS__", args)
-                    elif s_act['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'):
+                    elif s_act['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'):
                         args = args.replace("__GEOMETRY__", f"lattice={f'ipa_lattice{l_ndx}'}, ")
                         nb_act = tmp.replace("__FUNCTION__", "add_fill_action").replace("__ARGS__", args)
                         l_ndx += 1
@@ -356,7 +353,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "The domain actions is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_boundary_conditions(self, nb_model, index):
@@ -381,7 +378,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Boundary conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_boundary_condition_cells(self, cells):
@@ -403,7 +400,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Boundary conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_domain(self, nb_model, index, type_refs):
@@ -437,7 +434,7 @@ class StochSSNotebook(StochSSBase):
             nb_model.insert(index, '\n'.join(nb_domain))
         except KeyError as err:
             message = f"The domain is not properly formatted or is referenced incorrectly for notebooks: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index + 1
 
     def __create_spatial_geometry_cells(self, cells, index):
@@ -467,7 +464,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Shapes or actions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_initial_condition(self, nb_model, index, type_refs):
@@ -506,7 +503,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Initial Conditions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_model_cell(self, func_name):
@@ -531,14 +528,14 @@ class StochSSNotebook(StochSSBase):
 
     def __create_spatial_shapes(self, nb_domain, index):
         actions = list(filter(
-            lambda act: act['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'),
+            lambda act: act['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'),
             self.s_model['domain']['actions']
         ))
         if len(self.s_model['domain']['shapes']) > 0 or len(actions) > 0:
             class_map = {
                 'Cartesian Lattice': 'CartesianLattice', 'Spherical Lattice': 'SphericalLattice',
                 'Cylindrical Lattice': 'CylindricalLattice', 'XML Mesh': 'XMLMeshLattice',
-                'Mesh IO': 'MeshIOLattice', 'StochSS Domain': 'StochSSLattice'
+                'Mesh IO': 'MeshIOLattice', 'GillesPy3D Domain': 'StochSSLattice'
             }
             pad = '    '
             comb_geoms = {}
@@ -603,7 +600,7 @@ class StochSSNotebook(StochSSBase):
                     index += 1
                 for i, s_act in enumerate(actions):
                     args = f"os.path.join(home, '{s_act['filename']}')"
-                    if s_act['type'] != "StochSS Domain" and s_act['subdomainFile'] != "":
+                    if s_act['type'] != "GillesPy3D Domain" and s_act['subdomainFile'] != "":
                         args = f"{args},\n{pad*2}subdomain_file=os.path.join(home, '{s_act['subdomainFile']}')"
                     nb_latt = lat_tmp.replace("__NAME__", f"ipa_lattice{i+1}")
                     nb_latt = nb_latt.replace("__CLASS__", class_map[s_act['type']]).replace("__ARGS__", args)
@@ -614,7 +611,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "The domain shape is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_species(self, nb_model, index, type_refs):
@@ -644,7 +641,7 @@ class StochSSNotebook(StochSSBase):
                 index += 1
             except KeyError as err:
                 message = f"Species are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_spatial_transformations(self, nb_domain, index):
@@ -693,7 +690,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "The domain transformation is not properly formatted or "
                 message += f"is referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     @classmethod
@@ -744,7 +741,7 @@ class StochSSNotebook(StochSSBase):
                 index += 1
             except KeyError as err:
                 message = f"Events are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_event_assignments(self, s_event):
@@ -798,7 +795,7 @@ class StochSSNotebook(StochSSBase):
             except KeyError as err:
                 message = "Function definitions are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_model_cell(self, func_name):
@@ -842,7 +839,7 @@ class StochSSNotebook(StochSSBase):
                 index += 1
             except KeyError as err:
                 message = f"Species are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __create_well_mixed_rules(self, nb_model, index):
@@ -885,7 +882,7 @@ class StochSSNotebook(StochSSBase):
                     index += 1
             except KeyError as err:
                 message = f"Rules are not properly formatted or are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index
 
     def __get_gillespy2_run_settings(self, use_solver=False):
@@ -945,8 +942,8 @@ class StochSSNotebook(StochSSBase):
         cells.append(self.__create_configuration_cell())
         return cells
 
-    def create_es_notebook(self, results=None, compute="StochSS"):
-        '''Create an ensemble simulation jupiter notebook for a StochSS model/workflow '''
+    def create_es_notebook(self, results=None):
+        '''Create an ensemble simulation jupiter notebook for a GilesPy3D model/workflow '''
         self.nb_type = self.ENSEMBLE_SIMULATION
         cells = self.create_common_cells()
 
@@ -955,16 +952,16 @@ class StochSSNotebook(StochSSBase):
         vis_header = nbf.new_markdown_cell("***\n## Visualization\n***")
         vis_code = nbf.new_code_cell("results.plotplotly()")
         cells.extend([run_header, run_code, vis_header, vis_code])
-        if compute != "StochSS":
-            self.__create_compute_cells(cells, compute)
+        
+        self.__create_compute_cells(cells, compute)
         if results is not None:
             cells.insert(1, nbf.new_code_cell("import os\nimport pickle"))
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
-    def create_ses_notebook(self, results=None, compute="StochSS"):
-        '''Create a spetial ensemble simulation jupiter notebook for a StochSS model/workflow '''
+    def create_ses_notebook(self, results=None):
+        '''Create a spetial ensemble simulation jupiter notebook for a GilsesPy3D model/workflow '''
         self.nb_type = self.SPATIAL_SIMULATION
         cells = self.create_common_cells()
 
@@ -980,11 +977,7 @@ class StochSSNotebook(StochSSBase):
             plot_str = f"results.plot_property('type', {plt_args})"
         vis_code = nbf.new_code_cell(plot_str)
         cells.extend([run_header, run_code, vis_header, vis_code])
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by spatial ensemble simulation workflows."
-            )
+    
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
@@ -1019,7 +1012,7 @@ class StochSSNotebook(StochSSBase):
                 return json.load(notebook_file)
         except FileNotFoundError as err:
             message = f"Could not find the notebook file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
     def publish_presentation(self):
         '''Publish a notebook presentation'''
@@ -1043,7 +1036,7 @@ class StochSSNotebook(StochSSBase):
             return self.__get_presentation_links(hostname, file), exists
         except PermissionError as err:
             message = f"You do not have permission to publish this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
     def write_notebook_file(self, cells):
         '''Write the new notebook file to disk

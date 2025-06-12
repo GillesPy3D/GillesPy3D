@@ -32,14 +32,14 @@ from gillespy2 import (
     RateRule, AssignmentRule, FunctionDefinition, TimeSpan
 )
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSAPIError, StochSSFileNotFoundError, FileNotJSONFormatError, \
-                            StochSSModelFormatError, StochSSPermissionsError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundError, FileNotJSONFormatError, \
+                            GillesPy3DModelFormatError, GillesPy3DPermissionsError
 
-class StochSSModel(StochSSBase):
+class GillesPy3DModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 
@@ -90,7 +90,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Event assignments are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     @classmethod
@@ -119,7 +119,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Events are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_function_definitions(self, model):
@@ -132,7 +132,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Function definitions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_model_settings(self):
@@ -143,7 +143,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Model settings are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_parameters(self, model):
@@ -155,7 +155,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Parameters are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_reactions(self, model):
@@ -181,7 +181,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Reactions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_rules(self, model):
@@ -199,7 +199,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Rules are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __convert_species(self, model):
@@ -217,7 +217,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Species are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     @classmethod
@@ -241,7 +241,7 @@ class StochSSModel(StochSSBase):
         except KeyError as err:
             message = "Reactants or products are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
 
     def __read_model_file(self):
@@ -250,7 +250,7 @@ class StochSSModel(StochSSBase):
                 self.model = json.load(mdl_file)
         except FileNotFoundError as err:
             message = f"Could not find the model file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The model is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -355,7 +355,7 @@ class StochSSModel(StochSSBase):
             except KeyError as err:
                 message = "Model properties are not properly formatted or "
                 message += f"are referenced incorrectly: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
             self.__convert_species(model=g_model)
             self.__convert_parameters(model=g_model)
             self.__convert_reactions(model=g_model)
@@ -366,7 +366,7 @@ class StochSSModel(StochSSBase):
             return g_model
         except Exception as err:
             message = f"An un-expected error occured: {str(err)}"
-            raise StochSSAPIError(500, "Server Error", message, traceback.format_exc()) from err
+            raise GillesPy3DAPIError(500, "Server Error", message, traceback.format_exc()) from err
 
 
     def convert_to_sbml(self):
@@ -540,7 +540,7 @@ class StochSSModel(StochSSBase):
             return links, data
         except PermissionError as err:
             message = f"You do not have permission to publish this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def save(self, model):
@@ -561,4 +561,4 @@ class StochSSModel(StochSSBase):
             self.log("debug", f"Saved the model: {self.get_name()}")
         else:
             message = f"Could not find the model file: {self.get_path()}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc())
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc())

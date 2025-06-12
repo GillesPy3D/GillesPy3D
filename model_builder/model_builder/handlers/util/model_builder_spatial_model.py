@@ -33,16 +33,16 @@ from spatialpy import Model, Species, Parameter, Reaction, Domain, DomainError, 
                       RotationTransformation, ReflectionTransformation, ScalingTransformation, \
                       ModelError
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError, FileNotJSONFormatError, DomainFormatError, \
-                            StochSSModelFormatError, StochSSPermissionsError, DomainUpdateError, \
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError, FileNotJSONFormatError, DomainFormatError, \
+                            GillesPy3DModelFormatError, GillesPy3DPermissionsError, DomainUpdateError, \
                             DomainActionError, DomainShapeError, DomainTransformationError, \
-                            StochSSAPIError
+                            GillesPy3DAPIError
 
-class StochSSSpatialModel(StochSSBase):
+class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS spatial model object
+    GillesPy3D spatial model object
     ################################################################################################
     '''
     def __init__(self, path, new=False, model=None):
@@ -199,10 +199,10 @@ class StochSSSpatialModel(StochSSBase):
                     else:
                         point = [action['point']['x'], action['point']['y'], action['point']['z']]
                         domain.add_point(point, **kwargs)
-                elif action['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'):
-                    lattices = {'XML Mesh': XMLMeshLattice, 'Mesh IO': MeshIOLattice, 'StochSS Domain': StochSSLattice}
+                elif action['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'):
+                    lattices = {'XML Mesh': XMLMeshLattice, 'Mesh IO': MeshIOLattice, 'GillesPy3D Domain': StochSSLattice}
                     filename = os.path.join(self.user_dir, action['filename'])
-                    if action['type'] == "StochSS Domain" or action['subdomainFile'] == "":
+                    if action['type'] == "GillesPy3D Domain" or action['subdomainFile'] == "":
                         lattice = lattices[action['type']](filename)
                     else:
                         subdomain_file = os.path.join(self.user_dir, action['subdomainFile'])
@@ -252,7 +252,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial actions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain actions are invalid: {err}"
             raise DomainActionError(message, traceback.format_exc()) from err
@@ -265,7 +265,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model boundary conditions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_domain(self, type_ids, model=None, s_domain=None):
         try:
@@ -292,7 +292,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model domain properties are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_initial_conditions(self, model, type_ids):
         try:
@@ -315,7 +315,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model initial conditions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_model_settings(self, model):
         try:
@@ -327,7 +327,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model settings are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_parameters(self, model):
         try:
@@ -337,7 +337,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model parameters are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_reactions(self, model, type_ids):
         try:
@@ -365,7 +365,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model reactions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_shapes(self, s_domain):
         try:
@@ -427,7 +427,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial domain shapes are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain shapes are invalid: {err}"
             raise DomainShapeError(message, traceback.format_exc()) from err
@@ -447,7 +447,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model species are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_stoich_species(cls, model, reaction):
@@ -473,7 +473,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model stoich species are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_transformations(cls, s_domain):
@@ -539,7 +539,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial transformations are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         except ModelError as err:
             message = f"One or more domain transformations are invalid: {err}"
             raise DomainTransformationError(message, traceback.format_exc()) from err
@@ -567,11 +567,11 @@ class StochSSSpatialModel(StochSSBase):
         presentation = {'model': self.model, 'files': {}}
         # Check if the domain has lattices
         if len(self.model['domain']['actions']) == 0:
-            raise StochSSAPIError(
+            raise GillesPy3DAPIError(
                 405, "Model Incomplete", "A domain must have action to publish as a presentation.", None
             )
         # Process file based lattices
-        file_based_types = ('XML Mesh', 'Mesh IO', 'StochSS Domain')
+        file_based_types = ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain')
         for action in self.model['domain']['actions']:
             if action['type'] in file_based_types:
                 o_action_id = hashlib.md5(json.dumps(action, sort_keys=True, indent=4).encode('utf-8')).hexdigest()
@@ -644,7 +644,7 @@ class StochSSSpatialModel(StochSSBase):
             return self.__build_model_builder_domain(s_domain=s_domain)
         except FileNotFoundError as err:
             message = f"Could not find the domain file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The domain file is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -658,7 +658,7 @@ class StochSSSpatialModel(StochSSBase):
                 self.model = json.load(smdl_file)
         except FileNotFoundError as err:
             message = f"Could not find the spatial model file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except json.decoder.JSONDecodeError as err:
             message = f"The spatial model is not JSON decobable: {str(err)}"
             raise FileNotJSONFormatError(message, traceback.format_exc()) from err
@@ -734,7 +734,7 @@ class StochSSSpatialModel(StochSSBase):
                     'length': 0, 'name': f"shape{len(shapes) + 1}", 'radius': 0, 'type': 'Standard'
                 })
         domain['actions'] = [{
-            'type': 'StochSS Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
+            'type': 'GillesPy3D Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
             'transformation': '', 'filename': filename.replace(f'{self.user_dir}/', ''), 'subdomainFile': '',
             'point': {'x': 0, 'y': 0, 'z': 0}, 'newPoint': {'x': 0, 'y': 0, 'z': 0},
             'c': 10, 'fixed': False, 'mass': 1.0, 'nu': 0.0, 'rho': 1.0, 'typeID': 0, 'vol': 0.0
@@ -864,7 +864,7 @@ class StochSSSpatialModel(StochSSBase):
         if domains is None:
             if new:
                 path = '/model_builder/model_builder_templates/modelTemplate.json'
-                s_domain = StochSSSpatialModel(path).load()['domain']
+                s_domain = GillesPy3DSpatialModel(path).load()['domain']
             elif path is None:
                 path = self.path
                 s_domain = self.load()['domain']
@@ -994,11 +994,11 @@ class StochSSSpatialModel(StochSSBase):
             return links, data
         except PermissionError as err:
             message = f"You do not have permission to publish this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
     def save_domain(self, domain):
         '''
-        Writes a StochSS Domain to a .domn file
+        Writes a GillesPy3D Domain to a .domn file
 
         Attributes
         ----------

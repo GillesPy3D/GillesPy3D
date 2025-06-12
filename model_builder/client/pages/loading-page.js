@@ -108,17 +108,17 @@ let LoadingPage = PageView.extend({
             errorCB(err, response, body);
           }else if(body.done) {
             if(body.file_path.endsWith(".proj")){
-              this.openStochSSPage("model_builder/project/manager", body.file_path);
+              this.openGillesPy3DPage("model_builder/project/manager", body.file_path);
             }else if(body.file_path.endsWith(".wkfl")){
-              this.openStochSSPage("model_builder/workflow/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/workflow/edit", body.file_path);
             }else if(body.file_path.endsWith(".mdl")){
-              this.openStochSSPage("model_builder/models/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/models/edit", body.file_path);
             }else if(body.file_path.endsWith(".domn")){
-              this.openStochSSPage("model_builder/domain/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/domain/edit", body.file_path);
             }else if(body.file_path.endsWith(".ipynb")){
               this.openNotebookFile(body.file_path);
             }else{
-              this.openStochSSPage('model_builder/files');
+              this.openGillesPy3DPage('model_builder/files');
             }
           }else{
             this.getUploadResponse();
@@ -132,7 +132,7 @@ let LoadingPage = PageView.extend({
     window.open(path.join(app.getBasePath(), "notebooks", filePath));
     window.history.back();
   },
-  openStochSSPage: function (identifier, filePath) {
+  openGillesPy3DPage: function (identifier, filePath) {
     var endpoint = path.join(app.getBasePath(), identifier);
     if(filePath) {
       let query = identifier.includes("domain") ? "?domainPath=" : "?path=";
@@ -149,7 +149,7 @@ let LoadingPage = PageView.extend({
     app.getXHR(endpoint, {
       success: (err, response, body) => {
         let dst = target === "workflow" ? body : filePath;
-        this.openStochSSPage(identifier, dst);
+        this.openGillesPy3DPage(identifier, dst);
       }
     });
   },

@@ -27,7 +27,7 @@ def report_error(handler, log, err):
     handler : obj
         Jupyter Notebook API Handler
     log : obj
-        StochSS log
+        GillesPy3D log
     '''
     handler.set_status(err.status_code)
     error = {"Reason":err.reason, "Message":err.message}
@@ -48,7 +48,7 @@ def report_critical_error(handler, log, err):
     handler : obj
         Jupyter Notebook API Handler
     log : obj
-        StochSS log
+        GillesPy3D log
     '''
     handler.set_status(500)
     error = {"Reason":"Uncaught Critical Error", "Message":str(err)}
@@ -57,10 +57,10 @@ def report_critical_error(handler, log, err):
     error['Traceback'] = trace
     handler.write(error)
 
-class StochSSAPIError(Exception):
+class GillesPy3DAPIError(Exception):
     '''
     ################################################################################################
-    StochSS Base Api Handler Error
+    GillesPy3D Base Api Handler Error
     ################################################################################################
     '''
 
@@ -95,10 +95,10 @@ class StochSSAPIError(Exception):
 # File System Errors
 ####################################################################################################
 
-class StochSSFileExistsError(StochSSAPIError):
+class GillesPy3DFileExistsError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS File/Folder Exists API Handler Error
+    GillesPy3D File/Folder Exists API Handler Error
     ################################################################################################
     '''
 
@@ -116,10 +116,10 @@ class StochSSFileExistsError(StochSSAPIError):
         super().__init__(406, "File Already Exists", msg, trace)
 
 
-class StochSSFileNotFoundError(StochSSAPIError):
+class GillesPy3DFileNotFoundError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS File/Folder Not Found API Handler Error
+    GillesPy3D File/Folder Not Found API Handler Error
     ################################################################################################
     '''
 
@@ -134,13 +134,13 @@ class StochSSFileNotFoundError(StochSSAPIError):
         trace : str
             Error traceback for the error
         '''
-        super().__init__(404, "StochSS File or Directory Not Found", msg, trace)
+        super().__init__(404, "GillesPy3D File or Directory Not Found", msg, trace)
 
 
-class StochSSPermissionsError(StochSSAPIError):
+class GillesPy3DPermissionsError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS File/Folder Not Found API Handler Error
+    GillesPy3D File/Folder Not Found API Handler Error
     ################################################################################################
     '''
 
@@ -158,10 +158,10 @@ class StochSSPermissionsError(StochSSAPIError):
         super().__init__(403, "Permission Denied", msg, trace)
 
 
-class StochSSUnzipError(StochSSAPIError):
+class GillesPy3DUnzipError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Un-Zip Zip Archive API Handler Error
+    GillesPy3D Un-Zip Zip Archive API Handler Error
     ################################################################################################
     '''
 
@@ -182,10 +182,10 @@ class StochSSUnzipError(StochSSAPIError):
 # Model Errors
 ####################################################################################################
 
-class FileNotJSONFormatError(StochSSAPIError):
+class FileNotJSONFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Model/Template Not In JSON Format
+    GillesPy3D Model/Template Not In JSON Format
     ################################################################################################
     '''
 
@@ -203,10 +203,10 @@ class FileNotJSONFormatError(StochSSAPIError):
         super().__init__(406, "File Data Not JSON Format", msg, trace)
 
 
-class StochSSModelFormatError(StochSSAPIError):
+class GillesPy3DModelFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Model Not In Proper Format
+    GillesPy3D Model Not In Proper Format
     ################################################################################################
     '''
 
@@ -221,10 +221,10 @@ class StochSSModelFormatError(StochSSAPIError):
         trace : str
             Error traceback for the error
         '''
-        super().__init__(406, "StochSS Model Not In Proper Format", msg, trace)
+        super().__init__(406, "GillesPy3D Model Not In Proper Format", msg, trace)
 
 
-class DomainFormatError(StochSSAPIError):
+class DomainFormatError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain File Not In Proper Format
@@ -245,7 +245,7 @@ class DomainFormatError(StochSSAPIError):
         super().__init__(406, "Domain File Not In Proper Format", msg, trace)
 
 
-class DomainUpdateError(StochSSAPIError):
+class DomainUpdateError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain File Can't Be Updated
@@ -267,7 +267,7 @@ class DomainUpdateError(StochSSAPIError):
         super().__init__(405, "Domain File Can't Be Updated.", msg, trace)
 
 
-class DomainActionError(StochSSAPIError):
+class DomainActionError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain Action Failed to Initialize
@@ -288,7 +288,7 @@ class DomainActionError(StochSSAPIError):
         super().__init__(406, "Domain Action Failed", msg, trace)
 
 
-class DomainShapeError(StochSSAPIError):
+class DomainShapeError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain Shape Failed to Initialize
@@ -309,7 +309,7 @@ class DomainShapeError(StochSSAPIError):
         super().__init__(406, "Domain Shape Failed", msg, trace)
 
 
-class DomainTransformationError(StochSSAPIError):
+class DomainTransformationError(GillesPy3DAPIError):
     '''
     ################################################################################################
     Domain Transformation Failed to Initialize
@@ -333,10 +333,10 @@ class DomainTransformationError(StochSSAPIError):
 # Job Errors
 ####################################################################################################
 
-class StochSSJobError(StochSSAPIError):
+class GillesPy3DJobError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Job Errored During Run Time
+    GillesPy3D Job Errored During Run Time
     ################################################################################################
     '''
 
@@ -354,10 +354,10 @@ class StochSSJobError(StochSSAPIError):
         super().__init__(403, "Job Errored on Run", msg, trace)
 
 
-class StochSSJobNotCompleteError(StochSSAPIError):
+class GillesPy3DJobNotCompleteError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Job Has Not Completed
+    GillesPy3D Job Has Not Completed
     ################################################################################################
     '''
 
@@ -375,10 +375,10 @@ class StochSSJobNotCompleteError(StochSSAPIError):
         super().__init__(403, "Job Run Not Complete", msg, trace)
 
 
-class PlotNotAvailableError(StochSSAPIError):
+class PlotNotAvailableError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Result Plot Not Found
+    GillesPy3D Result Plot Not Found
     ################################################################################################
     '''
 
@@ -396,10 +396,10 @@ class PlotNotAvailableError(StochSSAPIError):
         super().__init__(406, "Plot Figure Not Available", msg, trace)
 
 
-class StochSSJobResultsError(StochSSAPIError):
+class GillesPy3DJobResultsError(GillesPy3DAPIError):
     '''
     ################################################################################################
-    StochSS Job Results Error
+    GillesPy3D Job Results Error
     ################################################################################################
     '''
 
@@ -421,7 +421,7 @@ class StochSSJobResultsError(StochSSAPIError):
 # AWS Errors
 ####################################################################################################
 
-class AWSConfigurationError(StochSSAPIError):
+class AWSConfigurationError(GillesPy3DAPIError):
     '''
     ################################################################################################
     AWS Configuration Error
@@ -430,7 +430,7 @@ class AWSConfigurationError(StochSSAPIError):
 
     def __init__(self, msg, trace=None):
         '''
-        Indicates that StochSS Compute configured to run jobs.
+        Indicates that GillesPy3D Compute configured to run jobs.
 
         Attributes
         ----------
@@ -441,7 +441,7 @@ class AWSConfigurationError(StochSSAPIError):
         '''
         super().__init__(403, "AWS Configuration Error", msg, trace)
 
-class AWSLauncherError(StochSSAPIError):
+class AWSLauncherError(GillesPy3DAPIError):
     '''
     ################################################################################################
     AWS Launcher Error
@@ -450,7 +450,7 @@ class AWSLauncherError(StochSSAPIError):
 
     def __init__(self, msg, trace=None):
         '''
-        Indicates that the StochSS Compute launcher single node instance failed.
+        Indicates that the GillesPy3D Compute launcher single node instance failed.
 
         Attributes
         ----------
@@ -461,7 +461,7 @@ class AWSLauncherError(StochSSAPIError):
         '''
         super().__init__(403, "AWS Launch Error", msg, trace)
 
-class AWSTerminatorError(StochSSAPIError):
+class AWSTerminatorError(GillesPy3DAPIError):
     '''
     ################################################################################################
     AWS Terminator Error
@@ -470,7 +470,7 @@ class AWSTerminatorError(StochSSAPIError):
 
     def __init__(self, msg, trace=None):
         '''
-        Indicates that the StochSS Compute clean up failed.
+        Indicates that the GillesPy3D Compute clean up failed.
 
         Attributes
         ----------

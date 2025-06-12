@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import traceback
 from nbformat import v4 as nbf
 
-from .model_builder_notebook import StochSSNotebook
-from .model_builder_errors import StochSSModelFormatError
+from .model_builder_notebook import GillesPy3DNotebook
+from .model_builder_errors import GillesPy3DModelFormatError
 
-class StochSSParamSweepNotebook(StochSSNotebook):
+class GillesPy3DParamSweepNotebook(GillesPy3DNotebook):
     '''
     ################################################################################################
-    StochSS parameter sweep notebook object
+    GillesPy3D parameter sweep notebook object
     ################################################################################################
     '''
     def __init__(self, path, new=False, models=None, settings=None):
@@ -274,7 +274,7 @@ class StochSSParamSweepNotebook(StochSSNotebook):
             except KeyError as err:
                 message = "Parameters are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         else:
             tmp = "psweep.add_parameter('__NAME__', values=__VALUE__)"
             try:
@@ -289,7 +289,7 @@ class StochSSParamSweepNotebook(StochSSNotebook):
             except KeyError as err:
                 message = "Parameter sweep settings are not properly formatted or "
                 message += f"are referenced incorrectly for notebooks: {str(err)}"
-                raise StochSSModelFormatError(message, traceback.format_exc()) from err
+                raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
         return index + 1
 
     def __create_visualization(self, results):
@@ -313,8 +313,8 @@ class StochSSParamSweepNotebook(StochSSNotebook):
         nb_run = "\n".join(nb_run)
         return nbf.new_code_cell(nb_run)
 
-    def create_1d_notebook(self, results=None, compute="StochSS"):
-        '''Create a 1D parameter sweep jupiter notebook for a StochSS model/workflow'''
+    def create_1d_notebook(self, results=None ): 
+        '''Create a 1D parameter sweep jupiter notebook for a GillesPy3D model/workflow'''
         self.nb_type = self.PARAMETER_SWEEP_1D
         cells = self.create_common_cells()
         self.__create_import_cells(cells, results)
@@ -327,17 +327,13 @@ class StochSSParamSweepNotebook(StochSSNotebook):
         index = self.__create_parameter_sweep_config(cells, 19, 1, results)
         cells.insert(index, self.__create_run(results))
         cells.append(self.__create_visualization(results))
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by 1D parameter sweep workflows."
-            )
+    
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}
 
-    def create_2d_notebook(self, results=None, compute="StochSS"):
-        '''Create a 2D parameter sweep jupiter notebook for a StochSS model/workflow'''
+    def create_2d_notebook(self, results=None):
+        '''Create a 2D parameter sweep jupiter notebook for a GillesPy3D model/workflow'''
         self.nb_type = self.PARAMETER_SWEEP_2D
         cells = self.create_common_cells()
         self.__create_import_cells(cells, results)
@@ -350,11 +346,7 @@ class StochSSParamSweepNotebook(StochSSNotebook):
         index = self.__create_parameter_sweep_config(cells, 19, 2, results)
         cells.insert(index, self.__create_run(results))
         cells.append(self.__create_visualization(results))
-        if compute != "StochSS":
-            self.log(
-                "warning",
-                "AWS Cloud compute environment is not supported by 2D parameter sweep workflows."
-            )
+        
 
         message = self.write_notebook_file(cells=cells)
         return {"Message":message, "FilePath":self.get_path(), "File":self.get_file()}

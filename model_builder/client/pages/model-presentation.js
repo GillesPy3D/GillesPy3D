@@ -88,7 +88,7 @@ let ModelPresentationPage = PageView.extend({
     $(this.queryByHook("loading-header")).html(`Loading ${this.fileType}`);
     $(this.queryByHook("loading-target")).css("display", "none");
     $(this.queryByHook("loading-spinner")).css("display", "block");
-    let message = `This ${this.fileType} can be downloaded or opened in your own StochSS Live! account using the buttons at the bottom of the page.`;
+    let message = `This ${this.fileType} can be downloaded or opened in your own GillesPy3D Live! account using the buttons at the bottom of the page.`;
     $(this.queryByHook("loading-message")).html(message);
   },
   renderSubviews: function (notFound, domainPlot) {

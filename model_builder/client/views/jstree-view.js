@@ -513,7 +513,7 @@ module.exports = View.extend({
       bSep: true,
       submenu: {
         model: this.buildContextBase({
-          label: "StochSS Model",
+          label: "GillesPy3D Model",
           action: (data) => {
             this.uploadFile(node, dirname, "model", inProject);
           }

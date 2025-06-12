@@ -24,11 +24,11 @@ from nbviewer.render import render_notebook
 from nbconvert.exporters import HTMLExporter
 
 from presentation_base import get_presentation_from_user
-from presentation_error import StochSSAPIError, report_error
+from presentation_error import GillesPy3DAPIError, report_error
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -54,7 +54,7 @@ class NotebookAPIHandler(BaseHandler):
             html = get_presentation_from_user(owner=owner, file=file,
                                               process_func=process_notebook_presentation)
             self.write(html)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -83,7 +83,7 @@ class DownNotebookPresentationAPIHandler(BaseHandler):
                             f'attachment; filename="{nb_presentation["file"]}"')
             log.debug(f"Contents of the json file: {nb_presentation['notebook']}")
             self.write(nb_presentation['notebook'])
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 

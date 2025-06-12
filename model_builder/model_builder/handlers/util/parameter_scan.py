@@ -20,12 +20,12 @@ import copy
 import logging
 import traceback
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class ParameterScan():
     '''
     ################################################################################################
-    StochSS parameter scan job object
+    GillesPy3D parameter scan job object
     ################################################################################################
     '''
     name = "ParameterScan"

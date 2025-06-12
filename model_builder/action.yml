@@ -1,6 +1,6 @@
 # action.yml
-name: 'StochSS Continuous Testing'
-description: 'StochSS Continuous Testing'
+name: 'GillesPy3D Continuous Testing'
+description: 'GillesPy3D Continuous Testing'
 inputs:
   testin:
     required: true

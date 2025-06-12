@@ -27,13 +27,13 @@ import numpy
 
 from gillespy2 import TimeSpan
 
-from .model_builder_job import StochSSJob
+from .model_builder_job import GillesPy3DJob
 from .parameter_sweep_1d import ParameterSweep1D
 from .parameter_sweep_2d import ParameterSweep2D
 from .parameter_scan import ParameterScan
-from .model_builder_errors import StochSSJobResultsError, StochSSJobError
+from .model_builder_errors import GillesPy3DJobResultsError, GillesPy3DJobError
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class NumpyEncoder(json.JSONEncoder):
     '''
@@ -47,10 +47,10 @@ class NumpyEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, o)
 
 
-class ParameterSweep(StochSSJob):
+class ParameterSweep(GillesPy3DJob):
     '''
     ################################################################################################
-    StochSS parameter sweep job object
+    GillesPy3D parameter sweep job object
     ################################################################################################
     '''
 
@@ -92,7 +92,7 @@ class ParameterSweep(StochSSJob):
     @classmethod
     def __report_result_error(cls, trace):
         message = "An unexpected error occured with the result object"
-        raise StochSSJobResultsError(message, trace)
+        raise GillesPy3DJobResultsError(message, trace)
 
 
     @classmethod
@@ -159,7 +159,7 @@ class ParameterSweep(StochSSJob):
         job.run(job_id=self.get_file(), verbose=verbose)
         if not job.ts_results:
             message = "All simulations failed to complete."
-            raise StochSSJobError(message)
+            raise GillesPy3DJobError(message)
         if verbose:
             log.info(f"The {sim_type} has completed")
             log.info("Storing the results as pickle.")

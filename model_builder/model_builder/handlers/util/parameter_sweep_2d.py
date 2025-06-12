@@ -28,12 +28,12 @@ import plotly
 # import matplotlib
 # import mpl_toolkits
 
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class ParameterSweep2D():
     '''
     ################################################################################################
-    StochSS 2D parameter sweep job object
+    GillesPy3D 2D parameter sweep job object
     ################################################################################################
     '''
     name = "ParameterSweep2D"
@@ -50,7 +50,7 @@ class ParameterSweep2D():
         model : obj
             GillesPy2 Model
         settings : dict
-            StochSS simulation settings dictionary
+            GillesPy3D simulation settings dictionary
         params : list
             list containing dictionaries of settings for the parameters
         '''
@@ -114,7 +114,7 @@ class ParameterSweep2D():
         species : str
             Species of interest name.
         params : list
-            List of StochSS sweep parameter dictionaries.
+            List of GillesPy3D sweep parameter dictionaries.
         mapper : str
             Key indicating the feature extraction function to use.
         reducer : str

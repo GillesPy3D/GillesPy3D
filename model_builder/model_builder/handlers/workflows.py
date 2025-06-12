@@ -27,11 +27,11 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSFolder, StochSSJob, StochSSModel, StochSSSpatialModel, StochSSNotebook, \
-                  StochSSWorkflow, StochSSParamSweepNotebook, StochSSSciopeNotebook, \
-                  StochSSAPIError, report_error, report_critical_error, ModelInference
+from .util import GillesPy3DFolder, GillesPy3DJob, GillesPy3DModel, GillesPy3DSpatialModel, GillesPy3DNotebook, \
+                  GillesPy3DWorkflow, GillesPy3DParamSweepNotebook, GillesPy3DSciopeNotebook, \
+                  GillesPy3DAPIError, report_error, report_critical_error, ModelInference
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 
 # pylint: disable=abstract-method
@@ -59,11 +59,11 @@ class NewWorkflowAPIHandler(APIHandler):
         log.debug(f"Type of the workflow: {wkfl_type}")
         try:
             log.info(f"Creating {path.split('/').pop()} workflow")
-            wkfl = StochSSWorkflow(path=path, new=True, mdl_path=mdl_path, wkfl_type=wkfl_type)
+            wkfl = GillesPy3DWorkflow(path=path, new=True, mdl_path=mdl_path, wkfl_type=wkfl_type)
             resp = {"path": wkfl.path}
             log.info(f"Successfully created {wkfl.get_file()} workflow")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -89,10 +89,10 @@ class LoadWorkflowAPIHandler(APIHandler):
         log.debug(f"The path to the workflow/model: {path}")
         try:
             log.info("Loading workflow data")
-            resp = StochSSWorkflow(path=path).load()
+            resp = GillesPy3DWorkflow(path=path).load()
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -114,13 +114,13 @@ class LoadWorkflowAPIHandler(APIHandler):
         log.debug(f"Workflow Data: {data}")
         log.debug(f"Path to the model: {data['model']}")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             log.info(f"Saving {wkfl.get_file()}")
             resp = wkfl.save(new_settings=data['settings'], mdl_path=data['model'])
             log.debug(f"Response: {resp}")
             log.info(f"Successfully saved {wkfl.get_file()}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -146,7 +146,7 @@ class InitializeJobAPIHandler(APIHandler):
         data = json.loads(self.get_query_argument(name="data"))
         log.debug(f"Handler query string: {data}")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             resp = wkfl.initialize_job(
                 settings=data['settings'], mdl_path=data['mdl_path'], wkfl_type=data['type'],
                 time_stamp=data['time_stamp'], compute=data['compute']
@@ -154,7 +154,7 @@ class InitializeJobAPIHandler(APIHandler):
             wkfl.print_logs(log)
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -193,7 +193,7 @@ class RunWorkflowAPIHandler(APIHandler):
             with open(os.path.join(path, "RUNNING"), "w", encoding="utf-8") as file:
                 file.write(f"Subprocess id: {job.pid}")
             log.debug('The workflow has started')
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -218,11 +218,11 @@ class WorkflowStatusAPIHandler(APIHandler):
         log.debug(f'path to the workflow: {path}')
         log.debug('Getting the status of the workflow')
         try:
-            wkfl = StochSSJob(path=path)
+            wkfl = GillesPy3DJob(path=path)
             status = wkfl.get_status()
             log.debug(f'The status of the workflow is: {status}')
             self.write(status)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -259,7 +259,7 @@ class PlotWorkflowResultsAPIHandler(APIHandler):
                 log.debug(f"Histogram figure: {fig}, PDF figure: {fig2}")
                 self.write({'histogram': fig, 'pdf': fig2})
             else:
-                job = StochSSJob(path=path)
+                job = GillesPy3DJob(path=path)
                 if body['sim_type'] in  ("GillesPy2", "GillesPy2_PS"):
                     fig = job.get_plot_from_results(data_keys=body['data_keys'],
                                                     plt_key=body['plt_key'], add_config=True)
@@ -276,7 +276,7 @@ class PlotWorkflowResultsAPIHandler(APIHandler):
                     fig = job.update_fig_layout(fig=fig, plt_data=body['plt_data'])
                 log.debug(f"Plot figure: {fig}")
                 self.write(fig)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -306,11 +306,11 @@ class WorkflowNotebookHandler(APIHandler):
         log.debug(f"Compute Environment: {compute}")
         try:
             if path.endswith(".mdl"):
-                file_obj = StochSSModel(path=path)
+                file_obj = GillesPy3DModel(path=path)
             elif path.endswith(".smdl"):
-                file_obj = StochSSSpatialModel(path=path)
+                file_obj = GillesPy3DSpatialModel(path=path)
             else:
-                file_obj = StochSSJob(path=path)
+                file_obj = GillesPy3DJob(path=path)
             log.info(f"Loading data for {file_obj.get_file()}")
             kwargs = file_obj.get_notebook_data()
             if "type" in kwargs:
@@ -324,16 +324,16 @@ class WorkflowNotebookHandler(APIHandler):
                 log.info(f"Creating notebook workflow for {file_obj.get_file()}")
             log.debug(f"Type of workflow to be run: {wkfl_type}")
             if wkfl_type in ("1d_parameter_sweep", "2d_parameter_sweep"):
-                notebook = StochSSParamSweepNotebook(**kwargs)
+                notebook = GillesPy3DParamSweepNotebook(**kwargs)
                 notebooks = {"1d_parameter_sweep":notebook.create_1d_notebook,
                              "2d_parameter_sweep":notebook.create_2d_notebook}
             elif wkfl_type in ("sciope_model_exploration", "model_inference", "inference"):
-                notebook = StochSSSciopeNotebook(**kwargs)
+                notebook = GillesPy3DSciopeNotebook(**kwargs)
                 notebooks = {"sciope_model_exploration":notebook.create_me_notebook,
                              "model_inference":notebook.create_mi_notebook,
                              "inference":notebook.create_mi_notebook}
             else:
-                notebook = StochSSNotebook(**kwargs)
+                notebook = GillesPy3DNotebook(**kwargs)
                 notebooks = {"gillespy":notebook.create_es_notebook,
                              "spatial":notebook.create_ses_notebook}
             resp = notebooks[wkfl_type](results=results, compute=compute)
@@ -341,7 +341,7 @@ class WorkflowNotebookHandler(APIHandler):
             log.debug(f"Response: {resp}")
             log.info(f"Successfully created the notebook for {file_obj.get_file()}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -369,12 +369,12 @@ class SavePlotAPIHandler(APIHandler):
         plot = json.loads(self.request.body.decode())
         log.debug(f"The plot to be saved: {plot}")
         try:
-            wkfl = StochSSJob(path=path)
+            wkfl = GillesPy3DJob(path=path)
             resp = wkfl.save_plot(plot=plot)
             wkfl.print_logs(log)
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -402,18 +402,18 @@ class SaveAnnotationAPIHandler(APIHandler):
         log.debug(f"The annotation to be saved: {info['annotation']}")
         try:
             log.info(f"Saving annotation for {path.split('/').pop()}")
-            if StochSSWorkflow.check_workflow_format(path=path):
-                wkfl = StochSSWorkflow(path=path)
+            if GillesPy3DWorkflow.check_workflow_format(path=path):
+                wkfl = GillesPy3DWorkflow(path=path)
                 wkfl.save_annotation(info['annotation'])
             else:
-                wkfl = StochSSJob(path=path)
+                wkfl = GillesPy3DJob(path=path)
                 wkfl.update_info(new_info=info)
                 wkfl.print_logs(log)
             resp = {"message":"The annotation was successfully saved", "data":info['annotation']}
             log.info("Successfully saved the annotation")
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -437,11 +437,11 @@ class UpadteWorkflowAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the workflow: {path}")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             resp = wkfl.update_wkfl_format()
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -468,7 +468,7 @@ class JobPresentationAPIHandler(APIHandler):
         name = self.get_query_argument(name="name")
         log.debug(f"Name of the job presentation: {name}")
         try:
-            job = StochSSJob(path=path)
+            job = GillesPy3DJob(path=path)
             log.info(f"Publishing the {job.get_name()} presentation")
             links, exists = job.publish_presentation(name=name)
             if exists:
@@ -479,7 +479,7 @@ class JobPresentationAPIHandler(APIHandler):
             log.info(resp['message'])
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -510,7 +510,7 @@ class DownloadCSVZipAPIHandler(APIHandler):
             if csv_type == "inference":
                 job = ModelInference(path=path)
             else:
-                job = StochSSJob(path=path)
+                job = GillesPy3DJob(path=path)
             name = job.get_name()
             self.set_header('Content-Disposition', f'attachment; filename="{name}.zip"')
             if csv_type == "time series":
@@ -522,7 +522,7 @@ class DownloadCSVZipAPIHandler(APIHandler):
             else:
                 csv_data = job.get_full_csvzip_from_results(name=name)
             self.write(csv_data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -552,7 +552,7 @@ class ImportObsDataAPIHandler(APIHandler):
         data_file = self.request.files['datafile'][0]
         log.info(f"Importing observed data: {data_file['filename']}")
         try:
-            folder = StochSSFolder(path=dirname)
+            folder = GillesPy3DFolder(path=dirname)
             if data_file['filename'].endswith(".zip"):
                 new_name = data_file['filename'].replace(".zip", ".odf")
             else:
@@ -563,7 +563,7 @@ class ImportObsDataAPIHandler(APIHandler):
             resp = {'obsDataPath': data_resp['path'], 'obsDataFile': data_resp['file']}
             log.info("Successfully uploaded observed data")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -587,7 +587,7 @@ class LoadObsDataFiles(APIHandler):
         self.set_header('Content-Type', 'application/json')
         target_ext = self.get_query_argument(name="ext").split(',')
         try:
-            folder = StochSSFolder(path="")
+            folder = GillesPy3DFolder(path="")
             test = lambda ext, root, file: bool(
                 "trash" in root.split("/") or file.startswith('.') or \
                 'wkfl' in root or root.startswith('.') or root.endswith("obsd")
@@ -596,7 +596,7 @@ class LoadObsDataFiles(APIHandler):
             resp = {'obsDataFiles': data_files}
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -619,12 +619,12 @@ class PreviewOBSDataAPIHandler(APIHandler):
         self.set_header('Content-Type', 'application/json')
         path = self.get_query_argument(name="path")
         try:
-            wkfl = StochSSWorkflow(path="")
+            wkfl = GillesPy3DWorkflow(path="")
             resp = {"figure": wkfl.preview_obs_data(path)}
             wkfl.print_logs(log)
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -657,13 +657,13 @@ class ExportInferredModelAPIHandler(APIHandler):
                 dst = os.path.join(dirname, f"{inf_model['name']}.wkgp", f"{inf_model['name']}.mdl")
             else:
                 dst = os.path.join(dirname, f"{inf_model['name']}.mdl")
-            model = StochSSModel(path=dst, new=True, model=inf_model)
+            model = GillesPy3DModel(path=dst, new=True, model=inf_model)
 
             resp = {"path": model.get_path()}
             log.debug(f"Response: {resp}")
             self.write(resp)
             job.update_export_links(round, dst)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)

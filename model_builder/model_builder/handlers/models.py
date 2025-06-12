@@ -27,11 +27,11 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSFolder, StochSSModel, StochSSSpatialModel, StochSSNotebook, \
-                  StochSSAPIError, report_error, report_critical_error
+from .util import GillesPy3DFolder, GillesPy3DModel, GillesPy3DSpatialModel, GillesPy3DNotebook, \
+                  GillesPy3DAPIError, report_error, report_critical_error
 
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -57,7 +57,7 @@ class JsonFileAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the file: {path}")
         self.set_header('Content-Type', 'application/json')
-        file_objs = {"ipynb":StochSSNotebook, "mdl":StochSSModel, "smdl":StochSSSpatialModel}
+        file_objs = {"ipynb":GillesPy3DNotebook, "mdl":GillesPy3DModel, "smdl":GillesPy3DSpatialModel}
         ext = path.split(".").pop()
         if ext == "ipynb":
             log.info("Getting notebook data for download")
@@ -71,7 +71,7 @@ class JsonFileAPIHandler(APIHandler):
             log.debug(f"Contents of the json file: {data}")
             file.print_logs(log)
             self.write(data)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             if purpose == "edit" and ext != "ipynb":
                 try:
                     model = file_objs[ext](path=path, new=True)
@@ -79,7 +79,7 @@ class JsonFileAPIHandler(APIHandler):
                     log.debug(f"Contents of the model template: {data}")
                     model.print_logs(log)
                     self.write(data)
-                except StochSSAPIError as new_model_err:
+                except GillesPy3DAPIError as new_model_err:
                     report_error(self, log, new_model_err)
             else:
                 report_error(self, log, load_err)
@@ -102,16 +102,16 @@ class JsonFileAPIHandler(APIHandler):
         log.debug(f"Model data to be saved: {data}")
         try:
             if path.endswith(".domn"):
-                model = StochSSSpatialModel(path=path)
+                model = GillesPy3DSpatialModel(path=path)
                 log.info(f"Saving {model.get_file(path=path)}")
                 model.save_domain(domain=data)
             else:
-                model = StochSSModel(path=path)
+                model = GillesPy3DModel(path=path)
                 log.info(f"Saving {model.get_file(path=path)}")
                 model.save(model=data)
                 model.print_logs(log)
             log.info(f"Successfully saved {model.get_file(path=path)}")
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -142,13 +142,13 @@ class LoadDomainEditorAPIHandler(APIHandler):
         log.debug(f"The domain is new: {new}")
         log.info("Loading the domain data")
         try:
-            model = StochSSSpatialModel(path=path)
+            model = GillesPy3DSpatialModel(path=path)
             domain = model.get_domain(path=d_path, new=new)
             s_model = None if path is None else model.load()
             resp = {"model":s_model, "domain":domain}
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -173,7 +173,7 @@ class LoadDomainAPIHandler(APIHandler):
         domain = json.loads(self.request.body.decode())
         log.info("Generating the domain plot")
         try:
-            model = StochSSSpatialModel(path="")
+            model = GillesPy3DSpatialModel(path="")
             fig, limits = model.load_action_preview(domain)
             log.info("Loading the domain plot")
             if isinstance(fig, str):
@@ -181,7 +181,7 @@ class LoadDomainAPIHandler(APIHandler):
             resp = {"fig":fig, "particles": domain['particles'], "limits": limits}
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -217,7 +217,7 @@ class RunModelAPIHandler(APIHandler):
         resp = {"Running":False, "Outfile":outfile, "Results":""}
         if run_cmd == "start":
             try:
-                model = StochSSModel(path=path)
+                model = GillesPy3DModel(path=path)
                 if os.path.exists(f".{model.get_name()}-preview.json"):
                     os.remove(f".{model.get_name()}-preview.json")
                 exec_cmd = ['/model_builder/model_builder/handlers/util/scripts/run_preview.py',
@@ -234,7 +234,7 @@ class RunModelAPIHandler(APIHandler):
                 report_critical_error(self, log, err)
         else:
             try:
-                model = StochSSModel(path=path)
+                model = GillesPy3DModel(path=path)
                 log.info("Check for preview results ...")
                 results = model.get_preview_results(outfile=outfile)
                 log.debug(f"Results for the model preview: {results}")
@@ -270,7 +270,7 @@ class ModelExistsAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the file: {path}")
         try:
-            model = StochSSModel(path=path)
+            model = GillesPy3DModel(path=path)
             resp = {"exists":os.path.exists(model.get_path(full=True))}
             log.debug(f"Response: {resp}")
             self.write(resp)
@@ -307,7 +307,7 @@ class ImportMeshAPIHandler(APIHandler):
         else:
             type_file = None
         try:
-            folder = StochSSFolder(path=dirname)
+            folder = GillesPy3DFolder(path=dirname)
             mesh_resp = folder.upload('file', mesh_file['filename'], mesh_file['body'])
             resp = {'meshPath': mesh_resp['path'], 'meshFile': mesh_resp['file']}
             if type_file is not None:
@@ -316,7 +316,7 @@ class ImportMeshAPIHandler(APIHandler):
                 resp['typesFile'] = types_resp['file']
             log.info("Successfully uploaded files")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -339,12 +339,12 @@ class LoadExternalDomains(APIHandler):
         '''
         self.set_header('Content-Type', 'application/json')
         try:
-            folder = StochSSFolder(path="")
+            folder = GillesPy3DFolder(path="")
             test = lambda ext, root, file: bool("trash" in root.split("/"))
             resp = folder.get_file_list(ext=".domn", test=test)
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -369,7 +369,7 @@ class LoadLatticeFiles(APIHandler):
         target_ext = self.get_query_argument(name="ext")
         include_types = bool(self.get_query_argument(name="includeTypes", default=False))
         try:
-            folder = StochSSFolder(path="")
+            folder = GillesPy3DFolder(path="")
             test = lambda ext, root, file: bool(
                 "trash" in root.split("/") or file.startswith('.') or \
                 'wkfl' in root or root.startswith('.')
@@ -381,7 +381,7 @@ class LoadLatticeFiles(APIHandler):
                 resp['typeFiles'] = type_files
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -404,7 +404,7 @@ class ModelPresentationAPIHandler(APIHandler):
         self.set_header('Content-Type', 'application/json')
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the file: {path}")
-        file_objs = {"mdl":StochSSModel, "smdl":StochSSSpatialModel}
+        file_objs = {"mdl":GillesPy3DModel, "smdl":GillesPy3DSpatialModel}
         ext = path.split(".").pop()
         try:
             model = file_objs[ext](path=path)
@@ -420,7 +420,7 @@ class ModelPresentationAPIHandler(APIHandler):
             log.info(resp['message'])
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -448,12 +448,12 @@ class CreateNewBoundCondAPIHandler(APIHandler):
         log.debug(f"Args passed to the boundary condition constructor: {kwargs}")
         try:
             log.info("Creating the new boundary condition")
-            model = StochSSSpatialModel(path=path)
+            model = GillesPy3DSpatialModel(path=path)
             resp = model.create_boundary_condition(kwargs)
             log.info("Successfully created the new boundary condition")
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)

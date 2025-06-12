@@ -27,16 +27,16 @@ import numpy
 import plotly
 import plotly.graph_objs as go
 
-from .model_builder_base import StochSSBase
-from .model_builder_folder import StochSSFolder
-from .model_builder_model import StochSSModel
-from .model_builder_job import StochSSJob
-from .model_builder_errors import StochSSFileNotFoundError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_folder import GillesPy3DFolder
+from .model_builder_model import GillesPy3DModel
+from .model_builder_job import GillesPy3DJob
+from .model_builder_errors import GillesPy3DFileNotFoundError
 
-class StochSSWorkflow(StochSSBase):
+class GillesPy3DWorkflow(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS workflow object
+    GillesPy3D workflow object
     ################################################################################################
     '''
 
@@ -131,11 +131,11 @@ class StochSSWorkflow(StochSSBase):
         return traces
 
     def __get_old_wkfl_data(self):
-        job = StochSSJob(path=self.path)
+        job = GillesPy3DJob(path=self.path)
         wkfl = job.load()
         if wkfl['model'] is None:
             mdl_path = job.get_model_path()
-            wkfl['model'] = StochSSModel(path=mdl_path).load()
+            wkfl['model'] = GillesPy3DModel(path=mdl_path).load()
         wkfl['settings']['timespanSettings'] = wkfl['model']['modelSettings']
         info = job.load_info()
         settings = {"settings":wkfl['settings'], "model":info['source_model'],
@@ -170,7 +170,7 @@ class StochSSWorkflow(StochSSBase):
         for file_obj in os.listdir(self.get_path(full=True)):
             if file_obj.startswith("job_"):
                 path = os.path.join(self.path, file_obj)
-                job = StochSSJob(path=path).load()
+                job = GillesPy3DJob(path=path).load()
                 self.workflow['jobs'].append(job)
                 if os.path.getmtime(path) > time and job['status'] != "running":
                     time = os.path.getmtime(path)
@@ -195,7 +195,7 @@ class StochSSWorkflow(StochSSBase):
                     self.workflow['settings']['inferenceSettings']['customCalculators'] = feature_calculators
         except FileNotFoundError as err:
             message = f"Could not find the settings file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc) from err
 
 
     @classmethod
@@ -260,7 +260,7 @@ class StochSSWorkflow(StochSSBase):
             if self.check_workflow_format(path=self.path):
                 path = self.get_model_path()
             else:
-                job = StochSSJob(path=self.path)
+                job = GillesPy3DJob(path=self.path)
                 path = job.get_model_path(full=True, external=True)
         self.log("debug", f"Path to the job's model: {path}")
         resp = {"file":path.replace(self.user_dir + '/', '')}
@@ -307,13 +307,13 @@ class StochSSWorkflow(StochSSBase):
             if len(files) <= 0:
                 os.chdir(self.user_dir)
                 message = "There are no jobs to extract a model from."
-                raise StochSSFileNotFoundError(message)
+                raise GillesPy3DFileNotFoundError(message)
             files.sort(reverse=True, key=os.path.getctime)
             os.chdir(self.user_dir)
             path = os.path.join(self.path, files[0])
         else:
             path = self.path
-        job = StochSSJob(path=path)
+        job = GillesPy3DJob(path=path)
         return job.extract_model()
 
 
@@ -337,7 +337,7 @@ class StochSSWorkflow(StochSSBase):
             return os.path.join(proj_path, file)
         except FileNotFoundError as err:
             message = f"Could not find settings file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def initialize_job(self, settings, mdl_path, time_stamp, wkfl_type, compute):
@@ -369,10 +369,10 @@ class StochSSWorkflow(StochSSBase):
                 "mdl_path": mdl_path, "settings": settings,
                 "type": wkfl_type, "compute_env": compute
             }
-            job = StochSSJob(path=path, new=True, data=data)
+            job = GillesPy3DJob(path=path, new=True, data=data)
             self.log("info", f"Successfully created {job.get_file()} job")
         else:
-            job = StochSSJob(path=self.path)
+            job = GillesPy3DJob(path=self.path)
         self.log("info", f"Initializing {job.get_file()}")
         job.save(mdl_path=mdl_path, settings=settings, initialize=True)
         return job.path
@@ -380,7 +380,7 @@ class StochSSWorkflow(StochSSBase):
 
     def load(self):
         '''
-        Load a StochSS Workflow object.
+        Load a GillesPy3D Workflow object.
 
         Attributes
         ----------
@@ -396,7 +396,7 @@ class StochSSWorkflow(StochSSBase):
             oldfmtrdy = False
         else:
             self.workflow['jobs'] = []
-            job = StochSSJob(path=self.path)
+            job = GillesPy3DJob(path=self.path)
             jobdata = job.load()
             self.workflow['activeJob'] = jobdata
             self.workflow['model'] = job.get_model_path(external=True)
@@ -410,11 +410,11 @@ class StochSSWorkflow(StochSSBase):
                                                     and (oldfmtrdy or self.workflow['newFormat']):
             if ".proj" in self.path:
                 if "WorkflowGroup1.wkgp" in self.path:
-                    proj = StochSSFolder(path=os.path.dirname(self.get_dir_name(full=True)))
+                    proj = GillesPy3DFolder(path=os.path.dirname(self.get_dir_name(full=True)))
                     test = lambda ext, root, file: ".wkfl" in root or "trash" in root.split("/")
                     models = proj.get_file_list(ext=[".mdl"], test=test)
                 else:
-                    wkgp = StochSSFolder(path=self.get_dir_name(full=True))
+                    wkgp = GillesPy3DFolder(path=self.get_dir_name(full=True))
                     test = lambda ext, root, file: ".wkfl" in root
                     models = wkgp.get_file_list(ext=[".mdl"], test=test)
                     if models['files']:
@@ -423,7 +423,7 @@ class StochSSWorkflow(StochSSBase):
                     else:
                         self.workflow['model'] = None
             else:
-                root = StochSSFolder(path="")
+                root = GillesPy3DFolder(path="")
                 test = lambda ext, root, file: ".wkfl" in root or ".proj" in root or \
                                                "trash" in root.split("/")
                 models = root.get_file_list(ext=[".mdl"], test=test)
@@ -470,7 +470,7 @@ class StochSSWorkflow(StochSSBase):
             with open(path, "w", encoding="utf-8") as settings_file:
                 json.dump(settings, settings_file, indent=4, sort_keys=True)
             return f"Successfully saved the workflow: {self.path}"
-        job = StochSSJob(path=self.path)
+        job = GillesPy3DJob(path=self.path)
         return job.save(mdl_path=mdl_path, settings=new_settings)
 
 

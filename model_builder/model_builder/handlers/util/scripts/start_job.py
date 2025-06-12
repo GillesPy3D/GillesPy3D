@@ -36,7 +36,7 @@ from util.model_inference import ModelInference
 from handlers.log import init_log
 
 init_log()
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 def get_parsed_args():
     '''

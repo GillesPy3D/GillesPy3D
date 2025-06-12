@@ -24,7 +24,7 @@ import json
 import argparse
 
 sys.path.append("/model_builder/model_builder/handlers/") # pylint: disable=wrong-import-position
-from util.model_builder_folder import StochSSFolder
+from util.model_builder_folder import GillesPy3DFolder
 
 def get_parsed_args():
     '''
@@ -44,7 +44,7 @@ def get_parsed_args():
 if __name__ == "__main__":
     args = get_parsed_args()
     if args.file_path != 'None':
-        folder = StochSSFolder(path="/")
+        folder = GillesPy3DFolder(path="/")
         resp = folder.upload_from_link(remote_path=args.file_path, overwrite=args.overwrite)
         with open(args.outfile, "w") as fd:
             json.dump(resp, fd)

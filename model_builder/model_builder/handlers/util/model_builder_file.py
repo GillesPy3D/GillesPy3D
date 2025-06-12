@@ -21,14 +21,14 @@ import shutil
 import zipfile
 import traceback
 
-from .model_builder_base import StochSSBase
-from .model_builder_errors import StochSSFileNotFoundError, StochSSPermissionsError, \
-                            StochSSFileExistsError, StochSSUnzipError
+from .model_builder_base import GillesPy3DBase
+from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DPermissionsError, \
+                            GillesPy3DFileExistsError, GillesPy3DUnzipError
 
-class StochSSFile(StochSSBase):
+class GillesPy3DFile(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS file object
+    GillesPy3D file object
     ################################################################################################
     '''
     def __init__(self, path, new=False, body=""):
@@ -66,10 +66,10 @@ class StochSSFile(StochSSBase):
             return "The file {0} was successfully deleted.".format(self.get_file())
         except FileNotFoundError as err:
             message = f"Could not find the file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to delete this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def duplicate(self):
@@ -95,10 +95,10 @@ class StochSSFile(StochSSBase):
             return {"Message":message, "File":cp_name}
         except FileNotFoundError as err:
             message = f"Could not find the file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
         except PermissionError as err:
             message = f"You do not have permission to copy this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def move(self, location):
@@ -120,10 +120,10 @@ class StochSSFile(StochSSBase):
             return f"Success! {self.get_file()} was moved to {self.get_dir_name()}."
         except FileNotFoundError as err:
             message = f"Could not find the file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc) from err
         except PermissionError as err:
             message = f"You do not have permission to move this file: {str(err)}"
-            raise StochSSPermissionsError(message, traceback.format_exc()) from err
+            raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
 
     def read(self):
@@ -141,7 +141,7 @@ class StochSSFile(StochSSBase):
             return resp
         except FileNotFoundError as err:
             message = f"Could not find the file: {str(err)}"
-            raise StochSSFileNotFoundError(message, traceback.format_exc()) from err
+            raise GillesPy3DFileNotFoundError(message, traceback.format_exc()) from err
 
 
     def unzip(self, from_upload=True):
@@ -164,7 +164,7 @@ class StochSSFile(StochSSBase):
                     file = self.get_file()
                     message = f"Unable to upload {file} "
                     message += f"as the parent directory in {file} already exists."
-                    raise StochSSFileExistsError(message, traceback.format_exc())
+                    raise GillesPy3DFileExistsError(message, traceback.format_exc())
                 zip_file.extractall(dirname)
             if "__MACOSX" in os.listdir(dirname):
                 shutil.rmtree(os.path.join(dirname, "__MACOSX"))
@@ -175,5 +175,5 @@ class StochSSFile(StochSSBase):
         except zipfile.BadZipFile as err:
             message = f"{str(err)} so it could not be unzipped."
             if not from_upload:
-                raise StochSSUnzipError(message, traceback.format_exc()) from err
+                raise GillesPy3DUnzipError(message, traceback.format_exc()) from err
             return [message]

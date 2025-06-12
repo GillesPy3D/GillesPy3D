@@ -529,7 +529,7 @@ module.exports = {
     }else{
       var target = "workflow";
     }
-    let message = `StochSS ${fileType}s have a new format.  Would you like to update this ${target} to the new format?`;
+    let message = `GillesPy3D ${fileType}s have a new format.  Would you like to update this ${target} to the new format?`;
 
     return templates.confirmation_with_message(modalID, title, message);
   },

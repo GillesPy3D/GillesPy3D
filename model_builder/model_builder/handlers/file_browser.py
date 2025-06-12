@@ -28,12 +28,12 @@ from notebook.base.handlers import APIHandler
 # Note APIHandler.finish() sets Content-Type handler to 'application/json'
 # Use finish() for json, write() for text
 
-from .util import StochSSBase, StochSSFolder, StochSSFile, StochSSModel, StochSSSpatialModel, \
-                  StochSSSBMLModel, StochSSNotebook, StochSSWorkflow, StochSSJob, StochSSProject, \
-                  StochSSAPIError, report_error, report_critical_error
+from .util import GillesPy3DBase, GillesPy3DFolder, GillesPy3DFile, GillesPy3DModel, GillesPy3DSpatialModel, \
+                  GillesPy3DSBMLModel, GillesPy3DNotebook, GillesPy3DWorkflow, GillesPy3DJob, GillesPy3DProject, \
+                  GillesPy3DAPIError, report_error, report_critical_error
 
 
-log = logging.getLogger('model_builder')
+log = logging.getLogger('gillespy3d')
 
 
 # pylint: disable=abstract-method
@@ -56,11 +56,11 @@ class ModelBrowserFileList(APIHandler):
         is_root = self.get_query_argument(name="isRoot", default=False)
         log.debug(f"Path to the directory: {path}")
         try:
-            folder = StochSSFolder(path=path)
+            folder = GillesPy3DFolder(path=path)
             node = folder.get_jstree_node(is_root=is_root)
             log.debug(f"Contents of the directory: {node}")
             self.write(node)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -86,12 +86,12 @@ class EmptyTrashAPIHandler(APIHandler):
         log.debug(f"Path to the trash directory: {path}")
         try:
             log.info("Emptying the trash")
-            folder = StochSSFolder(path=path)
+            folder = GillesPy3DFolder(path=path)
             resp = folder.empty()
             log.debug(f"Response message: {resp}")
             log.info("Successfully emptied the trash")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -117,11 +117,11 @@ class DeleteFileAPIHandler(APIHandler):
         try:
             log.info(f"Deleting {path.split('/').pop()}")
             is_dir = os.path.isdir(path)
-            file_obj = StochSSFolder(path=path) if is_dir else StochSSFile(path=path)
+            file_obj = GillesPy3DFolder(path=path) if is_dir else GillesPy3DFile(path=path)
             resp = file_obj.delete()
             log.info(f"Successfully deleted {path.split('/').pop()}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -152,12 +152,12 @@ class MoveFileAPIHandler(APIHandler):
                 dst = "/"
             log.info(f"Moving {src_path.split('/').pop()} to {dst}")
             is_dir = os.path.isdir(src_path)
-            file_obj = StochSSFolder(path=src_path) if is_dir else StochSSFile(path=src_path)
+            file_obj = GillesPy3DFolder(path=src_path) if is_dir else GillesPy3DFile(path=src_path)
             resp = file_obj.move(location=dst_path)
             file_obj.print_logs(log)
             log.info(f"Successfully moved {src_path.split('/').pop()} to {dst}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -184,13 +184,13 @@ class DuplicateModelHandler(APIHandler):
         log.debug(f"Path to the file: {path}")
         try:
             log.info(f"Coping {path.split('/').pop()}")
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             resp = file.duplicate()
             file.print_logs(log)
             log.info(f"Successfully copied {path.split('/').pop()}")
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -217,13 +217,13 @@ class DuplicateDirectoryHandler(APIHandler):
         log.debug(f"Path to the directory: {path}")
         try:
             log.info(f"Coping {path.split('/').pop()}")
-            folder = StochSSFolder(path=path)
+            folder = GillesPy3DFolder(path=path)
             resp = folder.duplicate()
             folder.print_logs(log)
             log.info(f"Successfully copied {path.split('/').pop()}")
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -255,19 +255,19 @@ class RenameAPIHandler(APIHandler):
             log.info(f"Renaming {path.split('/').pop()} to {new_name}")
             is_model = path.endswith(".mdl") or path.endswith(".smdl")
             if ".proj" in path and ".wkgp" in path and is_model:
-                wkgp = StochSSBase(path=os.path.dirname(path))
+                wkgp = GillesPy3DBase(path=os.path.dirname(path))
                 new_path, _ = wkgp.get_unique_path(name=f"{wkgp.get_name(path=new_name)}.wkgp")
                 wkgp.rename(name=wkgp.get_file(path=new_path))
-                file_obj = StochSSBase(path=os.path.join(wkgp.path, wkgp.get_file(path=path)))
+                file_obj = GillesPy3DBase(path=os.path.join(wkgp.path, wkgp.get_file(path=path)))
                 file_name = f"{wkgp.get_name(path=new_path)}.{path.split('.').pop()}"
                 resp = file_obj.rename(name=file_name)
             else:
-                file_obj = StochSSBase(path=path)
+                file_obj = GillesPy3DBase(path=path)
                 resp = file_obj.rename(name=new_name)
             log.info(f"Successfully renamed {path.split('/').pop()} to {file_obj.get_file()}")
             log.debug(f"Response message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -294,14 +294,14 @@ class ConvertToSpatialAPIHandler(APIHandler):
         log.debug(f"Converting non-spatial model to spatial model: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a spatial model")
-            model = StochSSModel(path=path)
+            model = GillesPy3DModel(path=path)
             log.info("Getting spatial model data")
             resp, data = model.convert_to_spatial()
-            _ = StochSSModel(path=data['path'], new=True, model=data['spatial'])
+            _ = GillesPy3DModel(path=data['path'], new=True, model=data['spatial'])
             log.info(f"Successfully converted {path.split('/').pop()} to a spatial model")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -328,14 +328,14 @@ class ConvertToModelAPIHandler(APIHandler):
         log.debug(f"Converting spatial model to non-spatial model: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a model")
-            model = StochSSSpatialModel(path=path)
+            model = GillesPy3DSpatialModel(path=path)
             log.info("Getting model data")
             resp, data = model.convert_to_model()
-            _ = StochSSModel(path=data['path'], new=True, model=data['model'])
+            _ = GillesPy3DModel(path=data['path'], new=True, model=data['model'])
             log.info(f"Successfully converted {path.split('/').pop()} to a model")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -345,7 +345,7 @@ class ConvertToModelAPIHandler(APIHandler):
 class ModelToSBMLAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for converting a StochSS model to a SBML model.
+    Handler for converting a GillesPy3D model to a SBML model.
     ################################################################################################
     '''
     @web.authenticated
@@ -362,16 +362,16 @@ class ModelToSBMLAPIHandler(APIHandler):
         log.debug(f"Converting to SBML: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to sbml")
-            model = StochSSModel(path=path)
+            model = GillesPy3DModel(path=path)
             log.info("Getting sbml data")
             resp, data = model.convert_to_sbml()
             model.print_logs(log)
-            sbml = StochSSSBMLModel(path=data['path'], new=True, document=data['document'])
+            sbml = GillesPy3DSBMLModel(path=data['path'], new=True, document=data['document'])
             resp["File"] = sbml.get_file()
             log.info(f"Successfully converted {path.split('/').pop()} to sbml")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -381,14 +381,14 @@ class ModelToSBMLAPIHandler(APIHandler):
 class SBMLToModelAPIHandler(APIHandler):
     '''
     ################################################################################################
-    Handler for converting a SBML model to a StochSS model.
+    Handler for converting a SBML model to a GillesPy3D model.
     ################################################################################################
     '''
 
     @web.authenticated
     async def get(self):
         '''
-        Creates a StochSS model with a unique name from an sbml model and
+        Creates a GillesPy3D model with a unique name from an sbml model and
         store it in the same directory as the original.
 
         Attributes
@@ -399,10 +399,10 @@ class SBMLToModelAPIHandler(APIHandler):
         log.debug(f"Converting SBML: {path}")
         try:
             log.info(f"Convert {path.split('/').pop()} to a model")
-            sbml = StochSSSBMLModel(path=path)
+            sbml = GillesPy3DSBMLModel(path=path)
             log.info("Getting model data")
             if ".proj" in path:
-                proj = StochSSProject(path=sbml.get_dir_name())
+                proj = GillesPy3DProject(path=sbml.get_dir_name())
                 wkgp = proj.check_project_format(path=proj.path)
             else:
                 wkgp = False
@@ -410,13 +410,13 @@ class SBMLToModelAPIHandler(APIHandler):
             sbml.print_logs(log)
             resp = {"message":convert_resp['message'], "errors":convert_resp['errors'], "File":""}
             if convert_resp['model'] is not None:
-                model = StochSSModel(path=convert_resp['path'], new=True,
+                model = GillesPy3DModel(path=convert_resp['path'], new=True,
                                      model=convert_resp['model'])
                 resp['File'] = model.get_file()
                 log.info(f"Successfully converted {path.split('/').pop()} to a model")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -441,11 +441,11 @@ class DownloadAPIHandler(APIHandler):
         log.debug(f"Path to the model: {path}")
         try:
             log.info("Getting the file contents for download")
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             data = file.read()
             file.print_logs(log)
             self.write(data)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -476,15 +476,15 @@ class DownloadZipFileAPIHandler(APIHandler):
         try:
             if action == "generate":
                 log.info("Zipping the directory for download")
-                folder = StochSSFolder(path=path)
+                folder = GillesPy3DFolder(path=path)
                 resp = folder.generate_zip_file()
             else:
                 log.info("Zipping the csv files for download")
-                wkfl = StochSSJob(path=path)
+                wkfl = GillesPy3DJob(path=path)
                 resp = wkfl.generate_csv_zip()
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -510,11 +510,11 @@ class CreateDirectoryHandler(APIHandler):
         log.debug(f"Path of directories: {directories}")
         try:
             log.info(f"Creating {directories.split('/').pop()} directory")
-            folder = StochSSFolder(path=directories, new=True)
+            folder = GillesPy3DFolder(path=directories, new=True)
             folder.print_logs(log)
             log.info(f"Successfully created {directories.split('/').pop()} directory")
             self.write(f"{directories} was successfully created!")
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -531,7 +531,7 @@ class UploadFileAPIHandler(APIHandler):
     async def post(self):
         '''
         Uploads the target file to the target directory.  If the intended file
-        type is a StochSS Model or SBML Model, the original file is uploaded
+        type is a GillesPy3D Model or SBML Model, the original file is uploaded
         with a converted model.  If the file can't be uploaded to the intended
         type no conversion is made and errors are sent to the user.
 
@@ -558,13 +558,13 @@ class UploadFileAPIHandler(APIHandler):
             log.info(f"Uploading {file_data['filename']} to {dst}")
             log.debug(f"No name given: {name}")
         try:
-            folder = StochSSFolder(path=file_info['path'])
+            folder = GillesPy3DFolder(path=file_info['path'])
             resp = folder.upload(file_type=file_info['type'], file=file_data['filename'],
                                  body=file_data['body'], new_name=name)
             log.info(f"Successfully uploaded {resp['file']} to {dst}")
             log.debug(f"Response: {resp}")
             self.write(json.dumps(resp))
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -592,11 +592,11 @@ class DuplicateWorkflowAsNewHandler(APIHandler):
         target = self.get_query_argument(name="target")
         log.debug(f"The {target} is being copied")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             if target == "wkfl_model":
                 log.info(f"Extracting the model from {wkfl.get_file()}")
                 resp, kwargs = wkfl.extract_model()
-                model = StochSSModel(**kwargs)
+                model = GillesPy3DModel(**kwargs)
                 resp['mdlPath'] = model.path
                 resp['File'] = model.get_file()
                 log.info(f"Successfully extracted the model from {wkfl.get_file()}")
@@ -605,16 +605,16 @@ class DuplicateWorkflowAsNewHandler(APIHandler):
                 if wkfl.check_workflow_format(path=path):
                     log.info("Getting the workflow data")
                     resp, kwargs = wkfl.duplicate_as_new()
-                    new_wkfl = StochSSWorkflow(**kwargs)
+                    new_wkfl = GillesPy3DWorkflow(**kwargs)
                 else:
                     time_stamp = self.get_query_argument(name="stamp")
                     if time_stamp == "None":
                         time_stamp = None
                     log.debug(f"The time stamp for the new workflow: {time_stamp}")
-                    job = StochSSJob(path=path)
+                    job = GillesPy3DJob(path=path)
                     log.info("Getting the workflow data")
                     resp, kwargs = job.duplicate_as_new(stamp=time_stamp)
-                    new_wkfl = StochSSJob(**kwargs)
+                    new_wkfl = GillesPy3DJob(**kwargs)
                     new_wkfl.update_info(new_info={"source_model":resp['mdlPath']})
                     c_resp = wkfl.check_for_external_model(path=resp['mdlPath'])
                     if "error" in c_resp.keys():
@@ -624,7 +624,7 @@ class DuplicateWorkflowAsNewHandler(APIHandler):
                 log.info(f"Successfully duplicated {wkfl.get_file()} as new")
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -650,12 +650,12 @@ class GetWorkflowModelPathAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the workflow: {path}")
         try:
-            wkfl = StochSSWorkflow(path=path)
+            wkfl = GillesPy3DWorkflow(path=path)
             resp = wkfl.check_for_external_model()
             wkfl.print_logs(log)
             log.debug(f"Response: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -684,11 +684,11 @@ class UploadFileFromLinkAPIHandler(APIHandler):
         script = '/model_builder/model_builder/handlers/util/scripts/upload_remote_file.py'
         if cmd == "validate":
             try:
-                folder = StochSSFolder(path="")
+                folder = GillesPy3DFolder(path="")
                 resp = {'exists': folder.validate_upload_link(remote_path=path)}
                 log.debug(f"Response: {resp}")
                 self.write(resp)
-            except StochSSAPIError as err:
+            except GillesPy3DAPIError as err:
                 report_error(self, log, err)
             except Exception as err:
                 report_critical_error(self, log, err)
@@ -741,11 +741,11 @@ class UnzipFileAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"The path to the zip archive: {path}")
         try:
-            file = StochSSFile(path=path)
+            file = GillesPy3DFile(path=path)
             resp = file.unzip(from_upload=False)
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -770,7 +770,7 @@ class NotebookPresentationAPIHandler(APIHandler):
         path = self.get_query_argument(name="path")
         log.debug(f"Path to the file: {path}")
         try:
-            notebook = StochSSNotebook(path=path)
+            notebook = GillesPy3DNotebook(path=path)
             log.info(f"Publishing the {notebook.get_name()} presentation")
             links, exists = notebook.publish_presentation()
             if exists:
@@ -781,7 +781,7 @@ class NotebookPresentationAPIHandler(APIHandler):
             log.info(resp['message'])
             log.debug(f"Response Message: {resp}")
             self.write(resp)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -805,11 +805,11 @@ class PresentationListAPIHandler(APIHandler):
         self.set_header('Content-Type', 'application/json')
         try:
             log.info("Loading presentations...")
-            presentations = StochSSFolder.get_presentations()
+            presentations = GillesPy3DFolder.get_presentations()
             log.debug(f"List of presentations: {presentations}")
             log.info("Loading complete.")
             self.write({"presentations": presentations})
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)
@@ -818,7 +818,7 @@ class PresentationListAPIHandler(APIHandler):
 class ImportFromLibrary(APIHandler):
     '''
     ################################################################################################
-    Handler for getting the list of examples from StochSS Example Library.
+    Handler for getting the list of examples from GillesPy3D Example Library.
     ################################################################################################
     '''
     @web.authenticated
@@ -836,10 +836,10 @@ class ImportFromLibrary(APIHandler):
             home = "model_builder/home"
 
         try:
-            system = StochSSBase(path=".example-library.json")
+            system = GillesPy3DBase(path=".example-library.json")
             examples = system.load_example_library(home)
             self.write(examples)
-        except StochSSAPIError as err:
+        except GillesPy3DAPIError as err:
             report_error(self, log, err)
         except Exception as err:
             report_critical_error(self, log, err)

@@ -44,7 +44,7 @@ from .lattice import (
     CylindricalLattice,
     XMLMeshLattice,
     MeshIOLattice,
-    StochSSLattice
+    GillesPy3DLattice
 )
 from .model import Model
 from .parameter import Parameter
@@ -65,7 +65,7 @@ from .vtkreader import *
 
 version = __version__
 
-log = logging.getLogger("GillesPy3D")
+log = logging.getLogger("gillespy3d")
 log.setLevel(logging.WARNING)
 log.propagate = False
 

@@ -28,7 +28,7 @@ from gillespy3d.core.geometry import (
 )
 from gillespy3d.core.lattice import (
     Lattice, CartesianLattice, SphericalLattice, CylindricalLattice,
-    XMLMeshLattice, MeshIOLattice, StochSSLattice
+    XMLMeshLattice, MeshIOLattice, GillesPy3DLattice
 )
 from gillespy3d.core.transformation import Transformation
 from gillespy3d.core.visualization import Visualization
@@ -869,7 +869,7 @@ class Domain():
         :param mesh_obj: MeshIO object to import
         :type mesh_obj: meshio.Mesh
 
-        :param subdomain_file: StochSS v1.x subdomain description filename.
+        :param subdomain_file: GillesPy3D v1.x subdomain description filename.
         :type subdomain_file: str
 
         :param type_ids: Mapping of type indecies to type names.
@@ -1067,7 +1067,7 @@ class Domain():
         :param filename: Filename of gmsh file
         :type filename: str
 
-        :param subdomain_file: StochSS v1.x subdomain description filename.
+        :param subdomain_file: GillesPy3D v1.x subdomain description filename.
         :type subdomain_file: str
 
         :param type_ids: Mapping of type indecies to type names.
@@ -1095,9 +1095,9 @@ class Domain():
         return obj
 
     @classmethod
-    def read_stochss_domain(cls, filename, enable=True, apply_action=True):
+    def read_GillesPy3D_domain(cls, filename, enable=True, apply_action=True):
         """
-        Read a StochSS Domain (.domn) file or pull a StochSS Domain from a StochSS Spatial Model (.smdl) file.
+        Read a GillesPy3D Domain (.domn) file or pull a GillesPy3D Domain from a GillesPy3D Spatial Model (.smdl) file.
 
         :param filename: Name of file to read.
         :type filename: str
@@ -1108,20 +1108,20 @@ class Domain():
         :param apply_action: If true, apply the action, else, add the action to Domain.actions
         :type apply_action: bool
 
-        :returns: GillesPy3d Domain object created from StochSS domain.
+        :returns: GillesPy3d Domain object created from GillesPy3D domain.
         :rtype: gillespy3d.core.domain.Domain
         """
-        action = {'type': "fill", 'lattice': StochSSLattice(filename), 'enable': enable}
+        action = {'type': "fill", 'lattice': GillesPy3DLattice(filename), 'enable': enable}
         obj = Domain(0, (0, 0), (0, 0), (0, 0), actions=[action])
         if apply_action:
             obj.apply_actions()
         return obj
 
-    def read_stochss_subdomain_file(self, filename, type_ids=None):
+    def read_GillesPy3D_subdomain_file(self, filename, type_ids=None):
         """
-        Read a .txt file that conains the StochSS v1.x spatial subdomain descriptions.
+        Read a .txt file that conains the GillesPy3D v1.x spatial subdomain descriptions.
 
-        :param filename: StochSS v1.x subdomain description filename.
+        :param filename: GillesPy3D v1.x subdomain description filename.
         :type filename: str
 
         :param type_ids: Mapping of type indecies to type names.
@@ -1152,7 +1152,7 @@ class Domain():
         :param filename: Name of file to read.
         :type filename: str
 
-        :param subdomain_file: StochSS v1.x subdomain description filename.
+        :param subdomain_file: GillesPy3D v1.x subdomain description filename.
         :type subdomain_file: str
 
         :param type_ids: Mapping of type indecies to type names.

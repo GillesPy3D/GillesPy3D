@@ -26,11 +26,11 @@ import fcntl
 
 sys.path.append("/model_builder/model_builder/") # pylint: disable=wrong-import-position
 sys.path.append("/model_builder/model_builder/handlers/") # pylint: disable=wrong-import-position
-from util.model_builder_base import StochSSBase
+from util.model_builder_base import GillesPy3DBase
 from handlers.log import init_log
 
 init_log()
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 class OpenAndLock:
     '''
@@ -91,7 +91,7 @@ def interact(launch=False, status=False, terminate=False):
     termimate : bool
         Indicates a terminate interaction.
     '''
-    base = StochSSBase(path="")
+    base = GillesPy3DBase(path="")
     l_path = os.path.join(base.user_dir, '.aws/awsec2.lock')
 
     try:

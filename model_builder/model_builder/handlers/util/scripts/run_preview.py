@@ -33,14 +33,14 @@ from gillespy2 import ModelError, SimulationError
 
 sys.path.append("/model_builder/model_builder/handlers/") # pylint: disable=wrong-import-position
 sys.path.append("/model_builder/model_builder/") # pylint: disable=wrong-import-position
-from util.model_builder_model import StochSSModel
-from util.model_builder_spatial_model import StochSSSpatialModel
+from util.model_builder_model import GillesPy3DModel
+from util.model_builder_spatial_model import GillesPy3DSpatialModel
 from util.ensemble_simulation import EnsembleSimulation
 from util.spatial_simulation import SpatialSimulation
 from handlers.log import init_log
 
 init_log()
-log = logging.getLogger("model_builder")
+log = logging.getLogger("gillespy3d")
 
 def setup_logger():
     '''
@@ -88,7 +88,7 @@ def run_spatialpy_preview(args):
     args : argparse object
         Command line args passed to the script
     '''
-    model = StochSSSpatialModel(path=args.path)
+    model = GillesPy3DSpatialModel(path=args.path)
     job = SpatialSimulation(path="", preview=True, target=args.target)
     job.s_py_model = model.convert_to_spatialpy(include_model_settings=True)
     job.s_model = model.model
@@ -105,7 +105,7 @@ def run_gillespy2_preview(args):
         Command line args passed to the script
     '''
     log_stm, f_handler = setup_logger()
-    model = StochSSModel(path=args.path)
+    model = GillesPy3DModel(path=args.path)
     job = EnsembleSimulation(path="", preview=True)
     job.g_model = model.convert_to_gillespy2()
     plot = job.run(preview=True)
@@ -145,7 +145,7 @@ def run_preview(args):
 
 
 if __name__ == "__main__":
-    user_dir = StochSSModel.user_dir
+    user_dir = GillesPy3DModel.user_dir
     log.info("Initializing the preview simulation")
     cargs = get_parsed_args()
     resp = run_preview(cargs)

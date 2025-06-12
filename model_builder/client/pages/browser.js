@@ -37,7 +37,7 @@ let template = require('../templates/pages/browser.pug');
 import initPage from './page.js';
 
 let FileBrowser = PageView.extend({
-  pageTitle: 'StochSS | File Browser',
+  pageTitle: 'GillesPy3D | File Browser',
   template: template,
   events: {
     'click [data-hook=file-browser-help]' : function () {
