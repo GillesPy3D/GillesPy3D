@@ -89,7 +89,7 @@ Example oauth file:
 ```bash
 OAUTH_CALLBACK=https://Your.URL/hub/oauth_callback
 CLIENT_ID=8432438242-32432ada3ff23f248sf7ds.apps.googleusercontent.com
-CLIENT_SECRET=adfsaf2327f2f7taafdsa34
+CLIENT_SECRET=XXXXXXXXXXXXXXXXXX
 ```
 
 After your oauth credentials are setup, run these commands:
