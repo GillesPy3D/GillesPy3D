@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ let LoadingPage = PageView.extend({
     let urlParams = new URLSearchParams(window.location.search)
     this.filePath = urlParams.get("path");
     this.action = urlParams.get("action");
-    this.homeLink = path.join(app.getBasePath(), 'stochss/home');
+    this.homeLink = path.join(app.getBasePath(), 'model_builder/home');
   },
   render: function (attrs, options) {
     PageView.prototype.render.apply(this, arguments);
@@ -108,17 +108,17 @@ let LoadingPage = PageView.extend({
             errorCB(err, response, body);
           }else if(body.done) {
             if(body.file_path.endsWith(".proj")){
-              this.openStochSSPage("stochss/project/manager", body.file_path);
+              this.openGillesPy3DPage("model_builder/project/manager", body.file_path);
             }else if(body.file_path.endsWith(".wkfl")){
-              this.openStochSSPage("stochss/workflow/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/workflow/edit", body.file_path);
             }else if(body.file_path.endsWith(".mdl")){
-              this.openStochSSPage("stochss/models/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/models/edit", body.file_path);
             }else if(body.file_path.endsWith(".domn")){
-              this.openStochSSPage("stochss/domain/edit", body.file_path);
+              this.openGillesPy3DPage("model_builder/domain/edit", body.file_path);
             }else if(body.file_path.endsWith(".ipynb")){
               this.openNotebookFile(body.file_path);
             }else{
-              this.openStochSSPage('stochss/files');
+              this.openGillesPy3DPage('model_builder/files');
             }
           }else{
             this.getUploadResponse();
@@ -132,7 +132,7 @@ let LoadingPage = PageView.extend({
     window.open(path.join(app.getBasePath(), "notebooks", filePath));
     window.history.back();
   },
-  openStochSSPage: function (identifier, filePath) {
+  openGillesPy3DPage: function (identifier, filePath) {
     var endpoint = path.join(app.getBasePath(), identifier);
     if(filePath) {
       let query = identifier.includes("domain") ? "?domainPath=" : "?path=";
@@ -149,18 +149,18 @@ let LoadingPage = PageView.extend({
     app.getXHR(endpoint, {
       success: (err, response, body) => {
         let dst = target === "workflow" ? body : filePath;
-        this.openStochSSPage(identifier, dst);
+        this.openGillesPy3DPage(identifier, dst);
       }
     });
   },
   updateProjectFormat: function (filePath) {
     let message = `You can update the format of any project and its workflows by opening the project and clicking yes when prompted to update the format.`;
-    let identifier = "stochss/project/manager"
+    let identifier = "model_builder/project/manager"
     this.updateFormat(filePath, message, "project", identifier);
   },
   updateWorkflowFormat: function (filePath) {
     let message = `You can update the format of any workflow by opening the workflow and clicking yes when prompted to update the format.`;
-    let identifier = "stochss/workflow/edit"
+    let identifier = "model_builder/workflow/edit"
     this.updateFormat(filePath, message, "workflow", identifier);
   },
   uploadFileFromLink: function (filePath, overwrite) {

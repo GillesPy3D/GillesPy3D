@@ -1,6 +1,6 @@
 '''
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class HomeHandler(BaseHandler):
         Attributes
         ----------
         '''
-        html = self.render_template("stochss-home.html", sync=True)
+        html = self.render_template("model_builder-home.html", sync=True)
         self.finish(html)
 
 
@@ -52,7 +52,7 @@ class JobPresentationHandler(BaseHandler):
         Attributes
         ----------
         '''
-        html = self.render_template("stochss-job-presentation.html", sync=True)
+        html = self.render_template("model_builder-job-presentation.html", sync=True)
         self.finish(html)
 
 
@@ -69,7 +69,7 @@ class ModelPresentationHandler(BaseHandler):
         Attributes
         ----------
         '''
-        html = self.render_template("stochss-model-presentation.html", sync=True)
+        html = self.render_template("model_builder-model-presentation.html", sync=True)
         self.finish(html)
 
 
@@ -86,7 +86,7 @@ class NotebookPresentationHandler(BaseHandler):
         Attributes
         ----------
         '''
-        html = self.render_template("stochss-notebook-presentation.html", sync=True)
+        html = self.render_template("model_builder-notebook-presentation.html", sync=True)
         self.finish(html)
 
 

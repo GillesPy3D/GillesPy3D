@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -42,8 +42,8 @@ let ModelEditor = PageView.extend({
     'click [data-hook=project-breadcrumb-link]' : 'clickReturnToProjectHandler',
     'click [data-hook=save]' : 'clickSaveHandler',
     'click [data-hook=run]'  : 'handleSimulateClick',
-    "click [data-hook=stochss-es]" : "handleSimulateClick",
-    "click [data-hook=stochss-ps]" : "handleSimulateClick",
+    "click [data-hook=model_builder-es]" : "handleSimulateClick",
+    "click [data-hook=model_builder-ps]" : "handleSimulateClick",
     'click [data-hook=new-workflow]' : 'handleSimulateClick',
     'click [data-hook=return-to-project-btn]' : 'clickReturnToProjectHandler',
     'click [data-hook=presentation]' : 'handlePresentationClick',
@@ -91,7 +91,7 @@ let ModelEditor = PageView.extend({
   clickReturnToProjectHandler: function () {
     this.saveModel((e) => {
       let queryStr = `?path=${this.projectPath}`;
-      let endpoint = path.join(app.getBasePath(), "stochss/project/manager") + queryStr;
+      let endpoint = path.join(app.getBasePath(), "model_builder/project/manager") + queryStr;
       window.location.href = endpoint;
     });
   },
@@ -285,7 +285,7 @@ let ModelEditor = PageView.extend({
         let parentPath = path.join(path.dirname(this.model.directory), wkgp);
         queryString += `&parentPath=${parentPath}`;
       }
-      window.location.href = path.join(app.getBasePath(), "stochss/workflow/selection") + queryString;
+      window.location.href = path.join(app.getBasePath(), "model_builder/workflow/selection") + queryString;
     });
   },
   openDomainPlot: function () {
@@ -355,15 +355,18 @@ let ModelEditor = PageView.extend({
     if(this.model.is_spatial) {
       $(this.queryByHook("toggle-preview-domain")).css("display", "inline-block");
       this.openDomainPlot();
-      $(this.queryByHook("stochss-ps")).addClass("disabled");
+      $(this.queryByHook("model_builder-ps")).addClass("disabled");
     }
     if(app.getBasePath() === "/") {
       $(this.queryByHook("presentation")).css("display", "none");
     }
-    let infLink = this.model.refLinks.filter((refLink) => { return refLink.job; })[0] || null;
+    let infLink = null;
+    if("refLinks" in this.model && this.model.refLinks !== undefined){
+        this.model.refLinks.filter((refLink) => { return refLink.job; })[0];
+    }
     if(infLink) {
       $(this.queryByHook('return-to-inf-btn')).css("display", "inline-block");
-      $(this.queryByHook('return-to-inf-btn')).prop("href", `stochss/workflow/edit?path=${infLink.path}&type=none`);
+      $(this.queryByHook('return-to-inf-btn')).prop("href", `model_builder/workflow/edit?path=${infLink.path}&type=none`);
     }
     this.renderModelView();
     this.modelSettings = new TimespanSettingsView({

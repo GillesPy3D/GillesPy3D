@@ -87,25 +87,25 @@ c.JupyterHub.log_level = 'DEBUG'
 ## The default URL for users when they arrive (e.g. when user directs to "/")
 #
 #  By default, redirects users to their own server.
-c.JupyterHub.default_url = '/stochss'
+c.JupyterHub.default_url = '/model_builder'
 
-# StochSS request handlers
+# GillesPy3D request handlers
 c.JupyterHub.extra_handlers = [
-        (r"/stochss\/?", HomeHandler),
-        (r"/stochss/api/message\/?", MessageAPIHandler),
-        (r"/stochss/present-job\/?", JobPresentationHandler),
-        (r"/stochss/present-model\/?", ModelPresentationHandler),
-        (r"/stochss/present-notebook\/?", NotebookPresentationHandler),
-        (r"/stochss/multiple-plots\/?", MultiplePlotsHandler),
-        (r"/stochss/api/file/json-data\/?", JsonFileAPIHandler),
-        (r"/stochss/download_presentation/(\w+)/(.+)\/?", DownModelPresentationAPIHandler),
-        (r"/stochss/api/notebook/load\/?", NotebookAPIHandler),
-        (r"/stochss/notebook/download_presentation/(\w+)/(.+)\/?",
+        (r"/model_builder\/?", HomeHandler),
+        (r"/model_builder/api/message\/?", MessageAPIHandler),
+        (r"/model_builder/present-job\/?", JobPresentationHandler),
+        (r"/model_builder/present-model\/?", ModelPresentationHandler),
+        (r"/model_builder/present-notebook\/?", NotebookPresentationHandler),
+        (r"/model_builder/multiple-plots\/?", MultiplePlotsHandler),
+        (r"/model_builder/api/file/json-data\/?", JsonFileAPIHandler),
+        (r"/model_builder/download_presentation/(\w+)/(.+)\/?", DownModelPresentationAPIHandler),
+        (r"/model_builder/api/notebook/load\/?", NotebookAPIHandler),
+        (r"/model_builder/notebook/download_presentation/(\w+)/(.+)\/?",
          DownNotebookPresentationAPIHandler),
-        (r"/stochss/api/job/load\/?", JobAPIHandler),
-        (r"/stochss/job/download_presentation/(\w+)/(.+)\/?", DownJobPresentationAPIHandler),
-        (r"/stochss/api/workflow/plot-results\/?", PlotJobResultsAPIHandler),
-        (r"/stochss/api/job/csv\/?", DownloadCSVAPIHandler)
+        (r"/model_builder/api/job/load\/?", JobAPIHandler),
+        (r"/model_builder/job/download_presentation/(\w+)/(.+)\/?", DownJobPresentationAPIHandler),
+        (r"/model_builder/api/workflow/plot-results\/?", PlotJobResultsAPIHandler),
+        (r"/model_builder/api/job/csv\/?", DownloadCSVAPIHandler)
 ]
 
 ## Paths to search for jinja templates, before using the default templates.
@@ -162,7 +162,7 @@ c.JupyterHub.services = [
 # Dockerspawner configuration
 #---------------------------------------------------------------------------------------------------
 
-c.DockerSpawner.image = os.environ['DOCKER_STOCHSS_IMAGE']
+c.DockerSpawner.image = os.environ['DOCKER_GILLESPY3D_IMAGE']
 # JupyterHub requires a single-user instance of the Notebook server, so we
 # default to using the `start-singleuser.sh` script included in the
 # jupyter/docker-stacks *-notebook images as the Docker run command when
@@ -208,8 +208,8 @@ def update_users_sets():
     Update the admin, power_users, and blacklist user sets.
     """
     c.Authenticator.admin_users = admin = set([])
-    c.StochSS.power_users = power_users = set([])
-    c.StochSS.blacklist = blacklist = set([])
+    c.GillesPy3D.power_users = power_users = set([])
+    c.GillesPy3D.blacklist = blacklist = set([])
 
     pwd = "/srv/userlist"
     path = os.path.join(pwd, 'userlist')
@@ -236,7 +236,7 @@ def get_user_cpu_count_or_fail():
     # Round up to an even number of reserved cpus
     total_cpus = os.cpu_count()
     if total_cpus <= 2:
-        c.StochSS.reserved_cpu_count = 0
+        c.GillesPy3D.reserved_cpu_count = 0
         return 0
     if reserve_count % 2 > 0:
         message = "Increasing reserved cpu count by one so it's an even number."
@@ -251,11 +251,11 @@ def get_user_cpu_count_or_fail():
     # use one less logical cpu for allocating user cpus
     if user_cpu_count % 2 > 0 and user_cpu_count > 1:
         user_cpu_count -= 1
-    c.StochSS.reserved_cpu_count = reserve_count
+    c.GillesPy3D.reserved_cpu_count = reserve_count
     return user_cpu_count
 
-c.StochSS.user_cpu_count = get_user_cpu_count_or_fail()
-c.StochSS.user_cpu_alloc = [0] * c.StochSS.user_cpu_count
+c.GillesPy3D.user_cpu_count = get_user_cpu_count_or_fail()
+c.GillesPy3D.user_cpu_alloc = [0] * c.GillesPy3D.user_cpu_count
 
 def pre_spawn_hook(spawner):
     '''
@@ -268,7 +268,7 @@ def pre_spawn_hook(spawner):
     # Update admins, power users, and blacklist users
     update_users_sets()
     # Remove the memory limit for power users
-    if c.StochSS.user_cpu_count == 0:
+    if c.GillesPy3D.user_cpu_count == 0:
         spawner.mem_limit = None
         msg = 'Skipping resource limitations since the host machine has a limited number of cpus.'
         log.info(msg)
@@ -279,11 +279,11 @@ def pre_spawn_hook(spawner):
     if spawner.user.name in c.Authenticator.admin_users:
         log.info(f"Setting usertype for {spawner.user.name} to 'admin'")
         user_type = 'admin'
-    elif spawner.user.name in c.StochSS.power_users:
+    elif spawner.user.name in c.GillesPy3D.power_users:
         log.info(f"Setting usertype for {spawner.user.name} to 'power'")
         user_type = 'power'
     else:
-        for elem in c.StochSS.blacklist:
+        for elem in c.GillesPy3D.blacklist:
             if elem.startswith('@'):
                 log.info(f"Checking for domain affiliation: {elem}")
                 if elem in spawner.user.name:
@@ -312,9 +312,9 @@ def pre_spawn_hook(spawner):
         spawner.mem_limit = None
         log.info(f'Skipping resource limitation for {user_type} user: {spawner.user.name}')
         return
-    palloc = c.StochSS.user_cpu_alloc
+    palloc = c.GillesPy3D.user_cpu_alloc
     div = len(palloc) // 2
-    reserved = c.StochSS.reserved_cpu_count
+    reserved = c.GillesPy3D.reserved_cpu_count
     log.debug(f'Reserved CPUs: {reserved}')
     log.debug(f'Number of user containers using each logical core: {palloc}')
     # We want to allocate logical cores that are on the same physical core
@@ -364,10 +364,10 @@ def post_stop_hook(spawner):
     Post stop hook
     '''
     log = spawner.log
-    reserved = c.StochSS.reserved_cpu_count
+    reserved = c.GillesPy3D.reserved_cpu_count
     if reserved == 0:
         return
-    palloc = c.StochSS.user_cpu_alloc
+    palloc = c.GillesPy3D.user_cpu_alloc
     try:
         cpu1_index, cpu2_index = spawner.extra_host_config['cpuset_cpus'].split(',')
         palloc[int(cpu1_index)] -= 1
@@ -393,7 +393,7 @@ c.Spawner.post_stop_hook = post_stop_hook
 #  - Start with `/notebooks` instead of `/tree` if `default_url` points to a notebook instead of a
 #    directory.
 #  - You can set this to `/lab` to have JupyterLab start by default, rather than Jupyter Notebook.
-c.Spawner.default_url = '/stochss/models'
+c.Spawner.default_url = '/model_builder/models'
 
 ## Maximum number of bytes a single-user notebook server is allowed to use.
 #
@@ -499,8 +499,8 @@ update_users_sets()
 
 # Slack integration
 # slack access bot token
-slack_user_name = "StochSS Live Bot"
-slack_channel = "#stochss-live"
+slack_user_name = "GillesPy3D Live Bot"
+slack_channel = "#model_builder-live"
 slack_icon_emoji = ':red_circle:'
 slack_token = None
 try:
@@ -511,7 +511,7 @@ except:
 
 def post_message_to_slack(text, blocks = None):
     """
-    Post messages to the StochSS Live! slack channel.
+    Post messages to the GillesPy3D Live! slack channel.
 
     Attributes
     ----------

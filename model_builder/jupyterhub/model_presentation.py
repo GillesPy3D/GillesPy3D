@@ -1,6 +1,6 @@
 '''
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,13 +27,13 @@ import plotly
 
 import spatialpy
 
-from presentation_base import StochSSBase, get_presentation_from_user
-from presentation_error import StochSSAPIError, DomainUpdateError, StochSSModelFormatError, \
+from presentation_base import GillesPy3DBase, get_presentation_from_user
+from presentation_error import GillesPy3DAPIError, DomainUpdateError, GillesPy3DModelFormatError, \
                                report_error
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('stochss')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -65,7 +65,7 @@ class JsonFileAPIHandler(BaseHandler):
             )
             log.debug(f"Contents of the json file: {model['model']}")
             self.write(model)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -102,7 +102,7 @@ class DownModelPresentationAPIHandler(BaseHandler):
             self.set_header('Content-Disposition', f'attachment; filename="{filename}"')
             log.debug(f"Contents of the json file: {data}")
             self.write(data)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -122,7 +122,7 @@ def process_wmmodel_presentation(path, for_download=False, **kwargs):
         model = json.load(mdl_file)
     if for_download:
         return model
-    file_obj = StochSSModel(model=model)
+    file_obj = GillesPy3DModel(model=model)
     model_pres = file_obj.load()
     file_obj.print_logs(log)
     return model_pres
@@ -141,15 +141,15 @@ def process_smodel_presentation(path, for_download=False, **kwargs):
     with open(path, "r", encoding="utf-8") as mdl_file:
         body = json.load(mdl_file)
     if "files" not in body:
-        body = StochSSSpatialModel(model=body).load(v1_domain=True)
+        body = GillesPy3DSpatialModel(model=body).load(v1_domain=True)
     if for_download:
-        return StochSSSpatialModel.get_presentation(**body)
+        return GillesPy3DSpatialModel.get_presentation(**body)
     for entry in body['files'].values():
         if not os.path.exists(os.path.dirname(entry['pres_path'])):
             os.makedirs(os.path.dirname(entry['pres_path']))
         with open(entry['pres_path'], "w", encoding="utf-8") as entry_fd:
             entry_fd.write(entry['body'])
-    file_obj = StochSSSpatialModel(model=body['model'])
+    file_obj = GillesPy3DSpatialModel(model=body['model'])
     model_pres = file_obj.load()
     file_obj.print_logs(log)
     return model_pres
@@ -172,10 +172,10 @@ template = {
     "eventsCollection": [], "functionDefinitions": [], "boundaryConditions": []
 }
 
-class StochSSModel(StochSSBase):
+class GillesPy3DModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS model object
+    GillesPy3D model object
     ################################################################################################
     '''
 
@@ -290,10 +290,10 @@ class StochSSModel(StochSSBase):
         return {"model": self.model, "diff": self.diff}
 
 
-class StochSSSpatialModel(StochSSBase):
+class GillesPy3DSpatialModel(GillesPy3DBase):
     '''
     ################################################################################################
-    StochSS spatial model object
+    GillesPy3D spatial model object
     ################################################################################################
     '''
     def __init__(self, model):
@@ -332,7 +332,7 @@ class StochSSSpatialModel(StochSSBase):
         return NewGeometry()
 
     @classmethod
-    def __build_stochss_domain_particles(cls, domain):
+    def __build_model_builder_domain_particles(cls, domain):
         particles = []
         for i, vertex in enumerate(domain.vertices):
             viscosity = domain.nu[i]
@@ -379,13 +379,13 @@ class StochSSSpatialModel(StochSSBase):
                     else:
                         point = [action['point']['x'], action['point']['y'], action['point']['z']]
                         domain.add_point(point, **kwargs)
-                elif action['type'] in ('XML Mesh', 'Mesh IO', 'StochSS Domain'):
+                elif action['type'] in ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain'):
                     lattices = {
                         'XML Mesh': spatialpy.XMLMeshLattice, 'Mesh IO': spatialpy.MeshIOLattice,
-                        'StochSS Domain': spatialpy.StochSSLattice
+                        'GillesPy3D Domain': spatialpy.StochSSLattice
                     }
                     filename = os.path.join(self.user_dir, action['filename'])
-                    if action['type'] == "StochSS Domain" or action['subdomainFile'] == "":
+                    if action['type'] == "GillesPy3D Domain" or action['subdomainFile'] == "":
                         lattice = lattices[action['type']](filename)
                     else:
                         subdomain_file = os.path.join(self.user_dir, action['subdomainFile'])
@@ -435,7 +435,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial actions are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_domain(self, type_ids, s_domain):
         try:
@@ -455,7 +455,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial model domain properties are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     def __convert_shapes(self, s_domain):
         try:
@@ -517,7 +517,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial domain shapes are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __convert_types(cls, domain, type_ids):
@@ -604,7 +604,7 @@ class StochSSSpatialModel(StochSSBase):
         except KeyError as err:
             message = "Spatial transformations are not properly formatted or "
             message += f"are referenced incorrectly: {str(err)}"
-            raise StochSSModelFormatError(message, traceback.format_exc()) from err
+            raise GillesPy3DModelFormatError(message, traceback.format_exc()) from err
 
     @classmethod
     def __get_trace_data(cls, particles, name="", index=None, dimensions=3):
@@ -680,7 +680,7 @@ class StochSSSpatialModel(StochSSBase):
                     'length': 0, 'name': f"shape{len(shapes) + 1}", 'radius': 0, 'type': 'Standard'
                 })
         domain['actions'] = [{
-            'type': 'StochSS Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
+            'type': 'GillesPy3D Domain', 'scope': 'Multi Particle', 'priority': 1, 'enable': True, 'shape': '',
             'transformation': '', 'filename': filename.replace(f'{self.user_dir}/', ''), 'subdomainFile': '',
             'point': {'x': 0, 'y': 0, 'z': 0}, 'newPoint': {'x': 0, 'y': 0, 'z': 0},
             'c': 10, 'fixed': False, 'mass': 1.0, 'nu': 0.0, 'rho': 1.0, 'typeID': 0, 'vol': 0.0
@@ -751,7 +751,7 @@ class StochSSSpatialModel(StochSSBase):
     def get_presentation(cls, model=None, files=None):
         ''' Get the presentation for download. '''
         # Process file based lattices
-        file_based_types = ('XML Mesh', 'Mesh IO', 'StochSS Domain')
+        file_based_types = ('XML Mesh', 'Mesh IO', 'GillesPy3D Domain')
         for action in model['domain']['actions']:
             if action['type'] in file_based_types:
                 action_id = hashlib.md5(json.dumps(action, sort_keys=True, indent=4).encode('utf-8')).hexdigest()
@@ -769,8 +769,8 @@ class StochSSSpatialModel(StochSSBase):
         ----------
         domain : spatialpy.Domain
             SpatialPy domain object used to generate plot data.
-        s_domain : stochss.Domain
-            StochSS domain object used to generate plot data.
+        s_domain : model_builder.Domain
+            GillesPy3D domain object used to generate plot data.
         '''
         fig = domain.plot_types(return_plotly_figure=True)
         # Case #3: 1 or more particles and one type
@@ -830,6 +830,6 @@ class StochSSSpatialModel(StochSSBase):
         domain = self.__convert_domain(type_ids, s_domain=s_domain)
         xlim, ylim, zlim = domain.get_bounding_box()
         limits = [list(xlim), list(ylim), list(zlim)]
-        s_domain['particles'] = self.__build_stochss_domain_particles(domain)
+        s_domain['particles'] = self.__build_model_builder_domain_particles(domain)
         plot = self.get_domain_plot(domain, s_domain)
         return plot, limits

@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -137,7 +137,7 @@ let ProjectManager = PageView.extend({
     });
   },
   addModel: function (parentPath, modelName, message) {
-    var endpoint = path.join(app.getBasePath(), "stochss/models/edit");
+    var endpoint = path.join(app.getBasePath(), "model_builder/models/edit");
     if(parentPath.endsWith(".proj")) {
       let queryString = "?path=" + parentPath + "&mdlFile=" + modelName;
       let newMdlEP = path.join(app.getApiPath(), "project/new-model") + queryString;
@@ -294,7 +294,7 @@ let ProjectManager = PageView.extend({
         if(type === "Jupyter Notebook") {
           let parentPath = path.join(path.dirname(mdl.directory), "WorkflowGroup1.wkgp");
           let queryString = "?path=" + mdl.directory + "&parentPath=" + parentPath;
-          let endpoint = path.join(app.getBasePath(), 'stochss/workflow/selection') + queryString;
+          let endpoint = path.join(app.getBasePath(), 'model_builder/workflow/selection') + queryString;
           window.location.href = endpoint;
         }else {
           app.newWorkflow(self, mdl.directory, mdl.is_spatial, type);
@@ -365,7 +365,7 @@ let ProjectManager = PageView.extend({
       yesBtn.addEventListener("click", function (e) {
         modal.modal("hide");
         let queryStr = "?path=" + self.model.directory + "&action=update-project";
-        let endpoint = path.join(app.getBasePath(), "stochss/loading-page") + queryStr;
+        let endpoint = path.join(app.getBasePath(), "model_builder/loading-page") + queryStr;
         window.location.href = endpoint;
       });
     }

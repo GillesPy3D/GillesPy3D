@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -204,7 +204,7 @@ module.exports = View.extend({
   },
   createDomain: function (dirname) {
     let queryStr = `?domainPath=${dirname}&new`;
-    window.location.href = path.join(app.getBasePath(), "stochss/domain/edit") + queryStr;
+    window.location.href = path.join(app.getBasePath(), "model_builder/domain/edit") + queryStr;
   },
   createModel: function (node, dirname, isSpatial, inProject) {
     if(document.querySelector('#newModelModal')) {
@@ -513,7 +513,7 @@ module.exports = View.extend({
       bSep: true,
       submenu: {
         model: this.buildContextBase({
-          label: "StochSS Model",
+          label: "GillesPy3D Model",
           action: (data) => {
             this.uploadFile(node, dirname, "model", inProject);
           }
@@ -638,7 +638,7 @@ module.exports = View.extend({
       label: "Jupyter Notebook",
       action: (data) => {
         let queryStr = `?path=${node.original._path}`;
-        window.location.href = path.join(app.getBasePath(), "stochss/workflow/selection") + queryStr;
+        window.location.href = path.join(app.getBasePath(), "model_builder/workflow/selection") + queryStr;
       }
     });
   },
@@ -856,7 +856,7 @@ module.exports = View.extend({
             document.querySelector("#errorModal").remove();
           }
           let title = "Model Errors Detected";
-          let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + '?path=' + model.directory + '&validate';
+          let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + '?path=' + model.directory + '&validate';
           let message = `Errors were detected in you model <a href="${endpoint}">click here to fix your model<a/>`;
           $(modals.errorHtml(title, message)).modal();
         }
@@ -865,14 +865,14 @@ module.exports = View.extend({
   },
   openDomain: function (domainPath) {
     let queryStr = `?domainPath=${domainPath}`;
-    window.location.href = path.join(app.getBasePath(), "stochss/domain/edit") + queryStr
+    window.location.href = path.join(app.getBasePath(), "model_builder/domain/edit") + queryStr
   },
   openFile: function (filePath) {
     window.open(path.join(app.getBasePath(), "view", filePath), "_blank");
   },
   openModel: function (modelPath) {
     let queryStr = `?path=${modelPath}`;
-    window.location.href = path.join(app.getBasePath(), "stochss/models/edit") + queryStr;
+    window.location.href = path.join(app.getBasePath(), "model_builder/models/edit") + queryStr;
   },
   openNotebook: function (notebookPath) {
     window.open(path.join(app.getBasePath(), "notebooks", notebookPath), '_blank');
@@ -882,11 +882,11 @@ module.exports = View.extend({
   },
   openProject: function (projectPath) {
     let queryStr = `?path=${projectPath}`;
-    window.location.href = path.join(app.getBasePath(), "stochss/project/manager") + queryStr;
+    window.location.href = path.join(app.getBasePath(), "model_builder/project/manager") + queryStr;
   },
   openWorkflow: function (workflowPath) {
     let queryStr = `?path=${workflowPath}&type=none`;
-    window.location.href = path.join(app.getBasePath(), "stochss/workflow/edit") + queryStr;
+    window.location.href = path.join(app.getBasePath(), "model_builder/workflow/edit") + queryStr;
   },
   openWorkflowModel: function (node) {
     let queryStr = `?path=${node.original._path}`;

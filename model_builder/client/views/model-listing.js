@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ module.exports = View.extend({
     View.prototype.render.apply(this, arguments);
     let parentPath = path.join(path.dirname(this.model.directory), "WorkflowGroup1.wkgp");
     let queryString = "?path=" + this.model.directory + "&parentPath=" + parentPath;
-    let endpoint = path.join(app.getBasePath(), 'stochss/workflow/selection') + queryString;
+    let endpoint = path.join(app.getBasePath(), 'model_builder/workflow/selection') + queryString;
     $(this.queryByHook(this.model.elementID + "-jupyter-notebook")).prop("href", endpoint);
     if(!this.model.annotation){
       $(this.queryByHook(this.model.elementID + '-notes-btn')).text('Add Notes')
@@ -116,7 +116,7 @@ module.exports = View.extend({
             document.querySelector("#errorModal").remove();
           }
           let title = "Model Errors Detected";
-          let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + '?path=' + model.directory + '&validate';
+          let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + '?path=' + model.directory + '&validate';
           let message = 'Errors were detected in you model <a href="' + endpoint + '">click here to fix your model<a/>';
           $(modals.errorHtml(title, message)).modal();
         }

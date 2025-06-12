@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -44,18 +44,21 @@ module.exports = View.extend({
   initialize: function (attrs, options) {
     View.prototype.initialize.apply(this, arguments);
     let links = [];
-    this.model.model.refLinks.forEach((link) => {
-      links.push(
-        `<a class="text-break" href='stochss/workflow/edit?path=${link.path}&type=none'>${link.name}</a>`
-      );
-    });
+ 
+    if("refLinks" in this.model.model && this.model.model.refLinks !== undefined){
+        this.model.model.refLinks.forEach((link) => {
+          links.push(
+            `<a class="text-break" href='model_builder/workflow/edit?path=${link.path}&type=none'>${link.name}</a>`
+          );
+        });
+    }
     this.htmlLinks = links.join('')
   },
   render: function (attrs, options) {
     View.prototype.render.apply(this, arguments);
     let parentPath = path.dirname(this.model.model.directory);
     let queryString = "?path=" + this.model.model.directory + "&parentPath=" + parentPath;
-    let endpoint = path.join(app.getBasePath(), 'stochss/workflow/selection') + queryString;
+    let endpoint = path.join(app.getBasePath(), 'model_builder/workflow/selection') + queryString;
     $(this.queryByHook(this.model.elementID + "-jupyter-notebook")).prop("href", endpoint);
     this.renderWorkflowCollection();
     if(this.htmlLinks) {
@@ -112,7 +115,7 @@ module.exports = View.extend({
             document.querySelector("#errorModal").remove();
           }
           let title = "Model Errors Detected";
-          let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + '?path=' + model.directory + '&validate';
+          let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + '?path=' + model.directory + '&validate';
           let message = 'Errors were detected in you model <a href="' + endpoint + '">click here to fix your model<a/>';
           $(modals.errorHtml(title, message)).modal();
         }

@@ -1,6 +1,6 @@
 '''
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -24,11 +24,11 @@ from nbviewer.render import render_notebook
 from nbconvert.exporters import HTMLExporter
 
 from presentation_base import get_presentation_from_user
-from presentation_error import StochSSAPIError, report_error
+from presentation_error import GillesPy3DAPIError, report_error
 
 from jupyterhub.handlers.base import BaseHandler
 
-log = logging.getLogger('stochss')
+log = logging.getLogger('gillespy3d')
 
 # pylint: disable=abstract-method
 # pylint: disable=too-few-public-methods
@@ -54,7 +54,7 @@ class NotebookAPIHandler(BaseHandler):
             html = get_presentation_from_user(owner=owner, file=file,
                                               process_func=process_notebook_presentation)
             self.write(html)
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 
@@ -83,7 +83,7 @@ class DownNotebookPresentationAPIHandler(BaseHandler):
                             f'attachment; filename="{nb_presentation["file"]}"')
             log.debug(f"Contents of the json file: {nb_presentation['notebook']}")
             self.write(nb_presentation['notebook'])
-        except StochSSAPIError as load_err:
+        except GillesPy3DAPIError as load_err:
             report_error(self, log, load_err)
         self.finish()
 

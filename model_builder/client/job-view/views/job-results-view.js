@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -241,7 +241,7 @@ module.exports = View.extend({
       app.getXHR(endpoint, {
         success: (err, response, body) => {
           if(cb === null) {
-            let editEP = `${path.join(app.getBasePath(), "stochss/models/edit")}?path=${body.path}`;
+            let editEP = `${path.join(app.getBasePath(), "model_builder/models/edit")}?path=${body.path}`;
             window.location.href = editEP;
           }else {
             cb(err, response, body);
@@ -250,7 +250,7 @@ module.exports = View.extend({
       });
     }else if(cb === null){
       let mdPath = this.model.exportLinks[round];
-      let editEP = `${path.join(app.getBasePath(), "stochss/models/edit")}?path=${mdPath}`;
+      let editEP = `${path.join(app.getBasePath(), "model_builder/models/edit")}?path=${mdPath}`;
       window.location.href = editEP;
     }else {
       cb();
@@ -642,7 +642,7 @@ module.exports = View.extend({
             document.querySelector("#errorModal").remove();
           }
           let title = "Model Errors Detected";
-          let endpoint = `${path.join(app.getBasePath(), "stochss/models/edit")}?path=${model.directory}&validate`;
+          let endpoint = `${path.join(app.getBasePath(), "model_builder/models/edit")}?path=${model.directory}&validate`;
           let message = `Errors were detected in you model <a href="${endpoint}">click here to fix your model<a/>`;
           $(modals.errorHtml(title, message)).modal();
         }
@@ -712,7 +712,7 @@ module.exports = View.extend({
     let data = this.getPlotData(type);
     var queryStr = "?path=" + this.model.directory + "&wkfl=" + this.wkflName;
     queryStr += "&job=" + this.model.name + "&data=" + JSON.stringify(data);
-    let endpoint = path.join(app.getBasePath(), "stochss/multiple-plots") + queryStr;
+    let endpoint = path.join(app.getBasePath(), "model_builder/multiple-plots") + queryStr;
     window.open(endpoint);
   },
   renderEnsembleAggragatorView: function () {

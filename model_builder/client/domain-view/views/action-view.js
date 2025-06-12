@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2022 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -84,9 +84,9 @@ module.exports = View.extend({
         </svg>
       `
     }
-    this.accepts = {"XML Mesh": ".xml", "Mesh IO": ".msh", "StochSS Domain": ".domn"};
+    this.accepts = {"XML Mesh": ".xml", "Mesh IO": ".msh", "GillesPy3D Domain": ".domn"};
     this.accept = Object.keys(this.accepts).includes(this.model.type) ? this.accepts[this.model.type] : null;
-    this.filetype = this.model.type === "StochSS Domain" ? 'domain' : 'mesh';
+    this.filetype = this.model.type === "GillesPy3D Domain" ? 'domain' : 'mesh';
     this.meshFile = null;
     this.typeFile = null;
   },
@@ -140,7 +140,7 @@ module.exports = View.extend({
         $(this.queryByHook('import-properties')),
         $(this.queryByHook('type-descriptions-prop'))
       ],
-      'StochSS Domain': [
+      'GillesPy3D Domain': [
         $(this.queryByHook('multi-particle-transformation')),
         $(this.queryByHook('import-properties'))
       ]
@@ -173,7 +173,7 @@ module.exports = View.extend({
     }, 5000);
   },
   displayDetails: function () {
-    let importTypes = ['XML Mesh', 'Mesh IO', 'StochSS Domain']
+    let importTypes = ['XML Mesh', 'Mesh IO', 'GillesPy3D Domain']
     let elements = importTypes.includes(this.model.type) ? 
                    this.details[this.model.type] : this.details[this.model.scope][this.model.type];
     elements.forEach((element) => {
@@ -239,7 +239,7 @@ module.exports = View.extend({
     }, false);
   },
   hideDetails: function () {
-    let importTypes = ['XML Mesh', 'Mesh IO', 'StochSS Domain']
+    let importTypes = ['XML Mesh', 'Mesh IO', 'GillesPy3D Domain']
     let elements = importTypes.includes(this.model.type) ? 
                    this.details[this.model.type] : this.details[this.model.scope][this.model.type];
     elements.forEach((element) => {
@@ -542,12 +542,12 @@ module.exports = View.extend({
     this.model.type = e.target.value;
     this.displayDetails();
     let types = {
-      'XML Mesh': '.xml', 'Mesh IO': '.msh', 'StochSS Domain': '.domn'
+      'XML Mesh': '.xml', 'Mesh IO': '.msh', 'GillesPy3D Domain': '.domn'
     };
     if(Object.keys(types).includes(this.model.type)) {
       this.accept = types[this.model.type]
       $(this.queryByHook('mesh-file')).prop('accept', this.accept);
-      this.filetype = this.model.type === "StochSS Domain" ? 'domain' : 'mesh';
+      this.filetype = this.model.type === "GillesPy3D Domain" ? 'domain' : 'mesh';
       $(this.queryByHook('meshfile-label')).text(`Please specify a ${this.filetype} to import: `);
       $(this.queryByHook('action-filename-label')).text(`Please specify a ${this.filetype} to import: `);
       $(this.queryByHook('mesh-location-message')).text(
@@ -745,7 +745,7 @@ module.exports = View.extend({
       prepareView: function (el) {
         let groupOptions = [
           {groupName: "Shape Actions", options: ['Fill Action', 'Set Action', 'Remove Action']},
-          {groupName: "Import Actions", options: ['XML Mesh', 'Mesh IO', 'StochSS Domain']}
+          {groupName: "Import Actions", options: ['XML Mesh', 'Mesh IO', 'GillesPy3D Domain']}
         ]
         return new SelectView({
           name: 'type',

@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -80,7 +80,7 @@ let WorkflowManager = PageView.extend({
           yesBtn.addEventListener("click", function (e) {
             modal.modal("hide");
             let queryStr = "?path=" + this.model.directory + "&action=update-workflow";
-            let endpoint = path.join(app.getBasePath(), "stochss/loading-page") + queryStr;
+            let endpoint = path.join(app.getBasePath(), "model_builder/loading-page") + queryStr;
             window.location.href = endpoint;
           });
         }
@@ -93,7 +93,7 @@ let WorkflowManager = PageView.extend({
   clickEditModelHandler: function (e) {
     this.handleSaveWorkflow(_.bind(function () {
       let queryStr = "?path=" + this.model.model;
-      let endpoint = path.join(app.getBasePath(), "stochss/models/edit") + queryStr;
+      let endpoint = path.join(app.getBasePath(), "model_builder/models/edit") + queryStr;
       window.location.href = endpoint;
     }, this));
   },
@@ -114,8 +114,8 @@ let WorkflowManager = PageView.extend({
         error: (err, response, body) => {
           this.handleSaveWorkflow(() => {
             this.saved();
-            let contEndpoint = `${path.join(app.getBasePath(), 'stochss/workflow/edit')}${window.location.search}`;
-            let endpoint = `${path.join(app.getBasePath(), 'stochss/settings')}?continue=${contEndpoint}`;
+            let contEndpoint = `${path.join(app.getBasePath(), 'model_builder/workflow/edit')}${window.location.search}`;
+            let endpoint = `${path.join(app.getBasePath(), 'model_builder/settings')}?continue=${contEndpoint}`;
             window.location.href = endpoint;
           });
         }
@@ -175,12 +175,12 @@ let WorkflowManager = PageView.extend({
     if(this.model.activeJob.model.directory){
       this.handleSaveWorkflow(_.bind(function () {
         let queryStr = "?path=" + this.projectPath;
-        let endpoint = path.join(app.getBasePath(), "stochss/project/manager") + queryStr;
+        let endpoint = path.join(app.getBasePath(), "model_builder/project/manager") + queryStr;
         window.location.href = endpoint;
       }, this));
     }else{
       let queryStr = "?path=" + this.projectPath;
-      let endpoint = path.join(app.getBasePath(), "stochss/project/manager") + queryStr;
+      let endpoint = path.join(app.getBasePath(), "model_builder/project/manager") + queryStr;
       window.location.href = endpoint;
     }
   },
@@ -341,12 +341,12 @@ let WorkflowManager = PageView.extend({
       type: this.model.type
     }
     if(["Parameter Sweep", "Model Inference"].includes(this.model.type)) {
-      options['stochssModel'] = new Model({
+      options['model_builderModel'] = new Model({
         directory: this.model.model
       });
-      app.getXHR(options.stochssModel.url(), {
+      app.getXHR(options.model_builderModel.url(), {
         success: (err, response, body) => {
-          options.stochssModel.set(body);
+          options.model_builderModel.set(body);
           this.renderSettingsView(options);
         }
       });

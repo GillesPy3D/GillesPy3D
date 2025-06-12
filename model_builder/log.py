@@ -1,6 +1,6 @@
 '''
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2022 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@ import logging
 
 def init_log():
     ''' Initialize the user container logger '''
-    log = logging.getLogger('tornado.log.stochss')
+    log = logging.getLogger('tornado.log.gillespy3d')
     # Create console handler and set level to debug
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('[%(asctime)s StochSS][%(levelname)s] %(message)s')
+    formatter = logging.Formatter('[%(asctime)s GillesPy3D][%(levelname)s] %(message)s')
     handler.setFormatter(formatter)
-    # add ch to StochSS logger
+    # add ch to GillesPy3D logger
     log.addHandler(log)
 
 def get_log():
     ''' Get the user container logger. '''
-    logging.getLogger('tornado.log.stochss')
+    logging.getLogger('tornado.log.gillespy3d')

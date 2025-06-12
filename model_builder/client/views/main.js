@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ module.exports = View.extend({
   },
   initialize: function () {
     this.listenTo(App, 'page', this.handleNewPage);
-    this.homePath = window.location.pathname.startsWith("/user") ? "/hub/spawn" : "stochss/home";
+    this.homePath = window.location.pathname.startsWith("/user") ? "/hub/spawn" : "model_builder/home";
     this.ulClosed = false;
   },
   render: function () {
@@ -60,7 +60,7 @@ module.exports = View.extend({
     this.pageSwitcher = new ViewSwitcher({
       el: this.pageContainer,
       show: (newView, oldView) => {
-        document.title = _.result(newView, 'pageTitle') || 'StochSS';
+        document.title = _.result(newView, 'pageTitle') || 'GillesPy3D';
         document.scrollTop = 0;
         App.currentPage = newView;
       }
@@ -211,7 +211,7 @@ module.exports = View.extend({
     window.location = url;
   },
   setupUserLogs: function ({getLogs = true}={}) {
-    let message = app.getBasePath() === "/" ? "Welcome to StochSS!" : "Welcome to StochSS Live!";
+    let message = "Welcome to GillesPy3D!";
     $("#user-logs").html(message);
     this.logBlock = [];
     this.logs = [];

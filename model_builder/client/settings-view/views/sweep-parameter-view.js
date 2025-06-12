@@ -1,6 +1,6 @@
 /*
-StochSS is a platform for simulating biochemical systems
-Copyright (C) 2019-2023 StochSS developers.
+GillesPy3D is a platform for simulating biochemical systems
+Copyright (C) 2025 GillesPy3D developers.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ module.exports = View.extend({
     View.prototype.initialize.apply(this, arguments);
     let self = this;
     this.viewMode = attrs.viewMode ? attrs.viewMode : false;
-    this.parameters = attrs.stochssParams;
+    this.parameters = attrs.model_builderParams;
     this.parameter = this.parameters.filter(function (param) {
       return param.compID === self.model.paramID;
     })[0];
