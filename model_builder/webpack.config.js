@@ -3,20 +3,20 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: {
-    home: './client/pages/users-home.js',
-    userSettings: './client/pages/user-settings.js',
-    quickstart: './client/pages/quickstart.js',
-    exampleLibrary: './client/pages/example-library.js',
-    browser: './client/pages/browser.js',
-    editor: './client/pages/model-editor.js',
-    domainEditor: './client/pages/domain-editor.js',
-    workflowSelection: './client/pages/workflow-selection.js',
-    workflowEditor: './client/pages/workflow-manager.js',
-    projectManager: './client/pages/project-manager.js',
-    loadingPage: './client/pages/loading-page.js',
-    multiplePlots: './client/pages/multiple-plots.js'
-  },
+    entry: {
+        home: './client/pages/users-home.js',
+        userSettings: './client/pages/user-settings.js',
+        quickstart: './client/pages/quickstart.js',
+        exampleLibrary: './client/pages/example-library.js',
+        browser: './client/pages/browser.js',
+        editor: './client/pages/model-editor.js',
+        domainEditor: './client/pages/domain-editor.js',
+        workflowSelection: './client/pages/workflow-selection.js',
+        workflowEditor: './client/pages/workflow-manager.js',
+        projectManager: './client/pages/project-manager.js',
+        loadingPage: './client/pages/loading-page.js',
+        multiplePlots: './client/pages/multiple-plots.js'
+    },
   output: {
     filename: 'model_builder-[name].bundle.js',
     path: path.resolve(__dirname, "model_builder/dist")
