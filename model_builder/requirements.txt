@@ -6,4 +6,5 @@ escapism==1.0.1
 gillespy2==1.8.2
 spatialpy==1.2.2
 stochss-compute[AWS]==1.0.2
+# the aws right above will break the website if removed
 git+https://github.com/StochSS/sciope.git@master

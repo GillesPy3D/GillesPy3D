@@ -54,10 +54,6 @@ def get_page_handlers(route_start):
         (r'/model_builder/api/user-logs\/?', UserLogsAPIHandler),
         (r'/model_builder/api/clear-user-logs\/?', ClearUserLogsAPIHandler),
         (r'/model_builder/api/load-user-settings\/?', LoadUserSettings),
-        (r'/model_builder/api/aws/job-config-check\/?', ConfirmAWSConfigHandler),
-        (r'/model_builder/api/aws/launch-cluster\/?', LaunchAWSClusterHandler),
-        (r'/model_builder/api/aws/cluster-status\/?', AWSClusterStatusHandler),
-        (r'/model_builder/api/aws/terminate-cluster\/?', TerminateAWSClusterHandler),
         ##############################################################################
         # File Browser API Handlers                                                  #
         ##############################################################################
