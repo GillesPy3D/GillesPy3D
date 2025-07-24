@@ -208,44 +208,11 @@ let userSettings = PageView.extend({
     $(this.queryByHook("usa-error")).css("display", "none");
     $(this.queryByHook("usa-in-progress")).css("display", "inline-block");
   },
-  terminateAWSCluster: function () {
-    let endpoint = path.join(app.getApiPath(), 'aws/terminate-cluster');
-    app.getXHR(endpoint, {
-      success: (err, response, body) => {
-        this.model.awsHeadNodeStatus = body.settings.awsHeadNodeStatus;
-        this.updateAWSStatus();
-      }
-    });
-  },
-  toggleAWSComputeNodeSection: function () {
-    let regionSet = this.model.awsRegion !== "";
-    let accessKeySet = this.model.awsAccessKeyID !== "";
-    let secretKeySet = this.model.awsSecretKey !== null;
-    let display = regionSet && accessKeySet && secretKeySet ? "block" : "none";
-    $(this.queryByHook('aws-compute-node-section')).css('display', display);
-    if(display === "block") {
-      this.updateAWSStatus();
-    }
-  },
   toggleUserLogs: function (e) {
     this.model.userLogs = e.target.checked;
   },
   update: function () {},
-  updateAWSStatus: function () {
-    let awsStatus = this.model.headNode === "" ? "not configured" : this.model.awsHeadNodeStatus;
-    $(this.queryByHook('aws-instancetype-container').firstChild.children[1]).prop(
-      'disabled', this.disables('instance', awsStatus)
-    );
-    if(this.awsType !== "") {
-      $(this.queryByHook('aws-instancesize-container').firstChild.children[1]).prop(
-        'disabled', this.disables('instance', awsStatus)
-      );
-    }
-    $(this.queryByHook('refresh-user-settings')).prop('disabled', this.disables('refresh', awsStatus));
-    $(this.queryByHook('aws-headnode-status')).text(awsStatus);
-    $(this.queryByHook('launch-aws-cluster')).prop('disabled', this.disables('launch', awsStatus));
-    $(this.queryByHook('terminate-aws-cluster')).prop('disabled', this.disables('terminate', awsStatus));
-  },
+    //functions below are tied to webpack
   updateValid: function () {},
   subviews: {
     awsRegionInputView: {
