@@ -261,28 +261,6 @@ class GillesPy3DBase():
             json.dump(names, names_file)
 
 
-    def get_aws_cluster(self, instance=None):
-        '''
-        Get the AWS cluster.
-
-        Attributes
-        ----------
-        instance : str
-            AWS EC2 instance.
-        '''
-        key_dir = os.path.join(self.user_dir, ".aws")
-        if instance is None:
-            path = os.path.join(self.user_dir, ".user-settings.json")
-            settings = self.load_user_settings(path=path)
-            instance = settings['headNode']
-        s_path = os.path.join(key_dir, f"{instance.replace('.', '-')}-status.txt")
-        # Setup the AWS environment
-        env_path = os.path.join(key_dir, "awsec2.env")
-        dotenv.load_dotenv(dotenv_path=env_path)
-        # Configure the AWS cluster
-        local_config = EC2LocalConfig(key_dir=key_dir, status_file=s_path)
-        cluster = EC2Cluster(local_config=local_config)
-        return cluster
 
     @classmethod
     def get_new_path(cls, dst_path):
@@ -505,20 +483,6 @@ class GillesPy3DBase():
 
         return os.path.join(dirname, cp_file)
 
-    def launch_aws_cluster(self):
-        '''
-        Launch an AWS instance.
-        '''
-        settings = self.load_user_settings(path='.user-settings.json')
-        instance = settings['headNode']
-
-        try:
-            cluster = self.get_aws_cluster(instance=instance)
-            cluster.launch_single_node_instance(instance)
-        except EC2Exception:
-            pass
-        except Exception:
-            cluster.clean_up()
 
     def load_example_library(self, home):
         '''
@@ -642,27 +606,4 @@ class GillesPy3DBase():
             message = f"You do not have permission to rename this file or directory: {str(err)}"
             raise GillesPy3DPermissionsError(message, traceback.format_exc()) from err
 
-    def terminate_aws_cluster(self):
-        '''
-        Terminate an AWS instance.
-        '''
-        cluster = self.get_aws_cluster()
-        cluster.clean_up()
 
-    def update_aws_status(self, instance):
-        '''
-        Updated the status of the aws instance.
-
-        Attributes
-        ----------
-        instance : str
-            The AWS instance.
-        '''
-        s_path = os.path.join(self.user_dir, f".aws/{instance.replace('.', '-')}-status.txt")
-        if not os.path.exists(s_path):
-            return
-
-        script = "/model_builder/model_builder/handlers/util/scripts/aws_compute.py"
-        exec_cmd = [f"{script}", "-sv"]
-        print("Updating the status of AWS")
-        process = subprocess.Popen(exec_cmd)

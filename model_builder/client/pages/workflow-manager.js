@@ -105,21 +105,6 @@ let WorkflowManager = PageView.extend({
     this.saving();
     if(e.target.dataset['computeenv'] === "local") {
       this.startJob()
-    }else if(e.target.dataset['computeenv'] === "aws") { // this block if removed destroys the run webpack for the make build
-      let endpoint = path.join(app.getApiPath(), 'aws/job-config-check');
-      app.getXHR(endpoint, {
-        success: (err, response, body) => {
-          this.startJob({compute: "AWS"});
-        },
-        error: (err, response, body) => {
-          this.handleSaveWorkflow(() => {
-            this.saved();
-            let contEndpoint = `${path.join(app.getBasePath(), 'model_builder/workflow/edit')}${window.location.search}`;
-            let endpoint = `${path.join(app.getBasePath(), 'model_builder/settings')}?continue=${contEndpoint}`;
-            window.location.href = endpoint;
-          });
-        }
-      });
     }
   },
   getTimeStamp: function () {
