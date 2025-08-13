@@ -16,24 +16,25 @@
 
 #This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
 
+import numpy
 
-# from gillespy3d.core.domain import Domain
-# from gillespy3d.core.species import Species
-# from gillespy3d.core.initialcondition import (
-#     InitialCondition,
-#     PlaceInitialCondition,
-#     ScatterInitialCondition,
-#     UniformInitialCondition
-# )
-# from gillespy3d.core.parameter import Parameter
-# from gillespy3d.core.reaction import Reaction
-# from gillespy3d.core.boundarycondition import BoundaryCondition
-# from gillespy3d.core.datafunction import DataFunction
-# from gillespy3d.core.timespan import TimeSpan
-# from gillespy3d.solvers.build_expression import BuildExpression
-# from gillespy3d.core.error import ModelError
-
-# from libcgillespy3d import libcgillespy3d
+from gillespy3d.core.domain import Domain
+from gillespy3d.core.species import Species
+from gillespy3d.core.initialcondition import (
+    InitialCondition,
+    PlaceInitialCondition,
+    ScatterInitialCondition,
+    UniformInitialCondition
+)
+from gillespy3d.core.parameter import Parameter
+from gillespy3d.core.reaction import Reaction
+from gillespy3d.core.boundarycondition import BoundaryCondition
+from gillespy3d.core.datafunction import DataFunction
+from gillespy3d.core.timespan import TimeSpan
+from gillespy3d.solvers.build_expression import BuildExpression
+from gillespy3d.core.error import ModelError
+from gillespy3d.core.result import Result
+from random import randint
 
 
 class Model():
@@ -45,10 +46,19 @@ class Model():
     """
 
     def __init__(self, name="gillespy3d"):
-        super().__init__(name)
+        self.name = name
+        self.species = []
+        self.parameters = []
+        self.reactions = []
+        self.initial_condition = []
+        self.boundary_condition = []
+        self.data_functions = []
+        self.domain = None
+        self.timespan = None
+        
 
     def __str__(self):
-        return ""
+        return f"Model(name={self.name}, species={self.species}, parameters={self.parameters}, reactions={self.reactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -112,7 +122,7 @@ class Model():
         elif isinstance(components, Species) or type(components).__name__ == Species.__name__:
             self.add_species(components)
         elif isinstance(components, TimeSpan) or type(components).__name__ == TimeSpan.__name__:
-            self.timespan(components)
+            self.add_timespan(components)
         else:
             raise ModelError(f"Unsupported component: {type(components)} is not a valid component.")
         return components
@@ -127,23 +137,28 @@ class Model():
 
         :raises ModelError: Invalid Domain object
         """
-        raise Exception('TODO')
+        if not (isinstance(domain, Domain) or type(domain).__name__ == "Domain"):
+            raise ModelError(Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
+        
+        self.domain = domain
 
     def add_species(self, species):
         """
         Adds a species, or list of species to the model.
 
         :param species: The species or list of species to be added to the model object.
-        :type species: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species
+        :type species: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
 
         :returns: The species or list of species that were added to the model.
         :rtype: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
-
-        raise Exception('TODO')
-
+        if not ((isinstance(species, Species) or type(species).__name__ == "Species") and Species.validate(species)):
+            raise ModelError(f"Invalid Species object, invalid input of type: {type(species)}")
+       
+        self.species.append(species)
+        return species
 
     def add_initial_condition(self, init_cond):
         """
@@ -167,7 +182,7 @@ class Model():
             for initial_condition in init_cond:
                 self.add_initial_condition(initial_condition)
         elif isinstance(init_cond, InitialCondition) or type(init_cond).__name__ in names:
-            raise Exception('TODO')
+            self.initial_condition.append(init_cond)  
         else:
             errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {type(init_cond)}"
             raise ModelError(errmsg)
@@ -186,9 +201,12 @@ class Model():
 
         :raises ModelError: If an invalid parameter is provided or if Parameter.validate fails.
         """
-        raise Exception('TODO')
-
-
+        if not ((isinstance(parameters, Parameter) or type(parameters).__name__ == "Parameter") and Parameter.validate(parameters)):
+            raise ModelError(f"Invalid Parameter object, invalid input of type: {type(parameters)}")
+       
+        self.parameters.append(parameters)
+        return parameters
+        
     def add_reaction(self, reactions):
         """
         Adds a reaction, or list of reactions to the model.
@@ -201,7 +219,11 @@ class Model():
 
         :raises ModelError: If an invalid reaction is provided or if Reaction.validate fails.
         """
-        raise Exception('TODO')
+        if not ((isinstance(reactions, Reaction) or type(reactions).__name__ == "Reaction") and Reaction.validate(reactions)):
+            raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions)}")
+        
+        self.reactions.append(reactions)
+        return reactions
 
     def add_boundary_condition(self, bound_cond):
         """
@@ -219,8 +241,8 @@ class Model():
         if isinstance(bound_cond, list):
             for boundary_condition in bound_cond:
                 self.add_boundary_condition(boundary_condition)
-        elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ in "BoundaryCondition":
-            raise Exception('TODO')
+        elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ == "BoundaryCondition":
+            self.boundary_condition.append(bound_cond)  # Actually add it
         else:
             errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {type(bound_cond)}"
             raise ModelError(errmsg)
@@ -245,7 +267,7 @@ class Model():
             for data_fn in data_function:
                 self.add_data_function(data_fn)
         elif isinstance(data_function, DataFunction) or type(data_function).__name__ == 'DataFunction':
-            raise Exception('TODO')
+            self.data_functions.append(data_function) 
         else:
             errmsg = f"data_function must be of type DataFunction or list of DataFunction not {type(data_function)}"
             raise ModelError(errmsg)
@@ -261,19 +283,20 @@ class Model():
         """
         Set the time span of simulation. 
 
-        :param tspan: Evenly-spaced list of times at which to sample the species populations during the simulation.
-        :type tspan: numpy.ndarray
+        :param time_span: Evenly-spaced list of times at which to sample the species populations during the simulation.
+        :type time_span: numpy.ndarray
 
         :param timestep_size: Size of each timestep in seconds
         :type timestep_size: float
+        
+        :raises ModelError: Invalid TimeSpan
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            #super().add_timespan(time_span.num_timesteps,time_span.timestep_size,time_span.output_freq)
-            raise Exception('TODO')
+            self.timespan = time_span  
+        elif isinstance(time_span, list): 
+            self.timespan = TimeSpan(time_span, timestep_size)
         else:
-            tspan = TimeSpan(time_span, timestep_size)
-            #super().add_timespan(tspan.num_timesteps,tspan.timestep_size,tspan.output_freq)
-            raise Exception('TODO')
+            raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {type(time_span)}")
 
     def run(self, number_of_trajectories=1, seed=None):
         """
@@ -288,7 +311,9 @@ class Model():
         :returns: A GillesPy3D Result object containing simulation data.
         :rtype: gillespy3d.core.result.Result
         """
+        if seed is None: 
+            seed = randint(1, 100000000)
+        
+        # For now, just return a single result
+        return Result(self, seed)
 
-
-        #return Result(super().run(number_of_trajectories,seed))
-        raise Exception('TODO')      
