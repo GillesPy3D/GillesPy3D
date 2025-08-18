@@ -24,7 +24,6 @@ import logging
 import traceback
 
 import gillespy2
-from stochss_compute import RemoteSimulation
 
 from .model_builder_job import GillesPy3DJob
 from .model_builder_errors import GillesPy3DAPIError, GillesPy3DFileNotFoundError, GillesPy3DJobResultsError
@@ -149,7 +148,4 @@ class EnsembleSimulation(GillesPy3DJob):
             compute_env = self.load_info()['compute_env']
         except GillesPy3DFileNotFoundError:
             compute_env = "local"
-        if compute_env == 'AWS':
-            results = self.__run(self.__run_in_aws, preview=preview, verbose=verbose)
-            return results
         return self.__run(self.__run_local, preview=preview, verbose=verbose)

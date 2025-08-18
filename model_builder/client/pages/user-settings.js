@@ -86,7 +86,6 @@ let userSettings = PageView.extend({
       if(this.path === null) {
         cb = () => {
           this.completeAction();
-          this.refreshAWSStatus(); // look into later, breaks entire webpage
         }
       }else{
         cb = () => {
