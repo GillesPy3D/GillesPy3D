@@ -24,11 +24,8 @@ import datetime
 import traceback
 import subprocess
 
-import dotenv
 import requests
 
-from stochss_compute.cloud import EC2Cluster, EC2LocalConfig
-from stochss_compute.cloud.exceptions import EC2Exception
 
 from .model_builder_errors import GillesPy3DFileNotFoundError, GillesPy3DPermissionsError, \
                             FileNotJSONFormatError

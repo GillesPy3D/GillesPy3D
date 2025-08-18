@@ -145,9 +145,6 @@ class GillesPy3DNotebook(GillesPy3DBase):
 
     def __create_compute_imports(self, cells, compute):
         cells.insert(1, nbf.new_code_cell("import os\nimport dotenv"))
-        cells.insert(3, nbf.new_code_cell(
-            "import stochss_compute\nfrom stochss_compute.cloud import EC2Cluster, EC2LocalConfig"
-        ))
 
     def __create_compute_launch(self, cells, compute):
         instance = self.load_user_settings(path='.user-settings.json')['headNode']

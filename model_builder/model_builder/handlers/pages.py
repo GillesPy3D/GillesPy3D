@@ -29,7 +29,6 @@ from notebook.base.handlers import IPythonHandler, APIHandler
 # Use finish() for json, write() for text
 
 from .util import GillesPy3DBase, report_error
-from .util.model_builder_errors import AWSConfigurationError
 
 log = logging.getLogger('gillespy3d')
 
