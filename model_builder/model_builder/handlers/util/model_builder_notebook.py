@@ -127,7 +127,6 @@ class GillesPy3DNotebook(GillesPy3DBase):
         ]
 
     def __create_compute_cells(self, cells, compute):
-        self.__create_compute_headers(cells, compute)
         self.__create_compute_imports(cells, compute)
         self.__create_compute_credentials(cells, compute)
         self.__create_compute_launch(cells, compute)
@@ -143,18 +142,9 @@ class GillesPy3DNotebook(GillesPy3DBase):
         ]
         cells.insert(5, nbf.new_code_cell("\n".join(nb_creds)))
 
-    def __create_compute_headers(self, cells, compute):
-        cells.insert(2, nbf.new_markdown_cell(
-            "***\n## AWS Credentials\n***\nAWS Credentials for GillesPy3D can be set [here](/model_builder/settings)"
-        ))
-        cells.insert(3, nbf.new_markdown_cell("***\n## Launch AWS Cluster\n***"))
-        cells.append(nbf.new_markdown_cell('***\n## Clean Up AWS Cluster\n***'))
 
     def __create_compute_imports(self, cells, compute):
         cells.insert(1, nbf.new_code_cell("import os\nimport dotenv"))
-        cells.insert(3, nbf.new_code_cell(
-            "import stochss_compute\nfrom stochss_compute.cloud import EC2Cluster, EC2LocalConfig"
-        ))
 
     def __create_compute_launch(self, cells, compute):
         instance = self.load_user_settings(path='.user-settings.json')['headNode']
