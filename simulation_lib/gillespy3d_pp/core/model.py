@@ -18,22 +18,22 @@
 
 import numpy
 
-from gillespy3d.core.domain import Domain
-from gillespy3d.core.species import Species
-from gillespy3d.core.initialcondition import (
-    InitialCondition,
-    PlaceInitialCondition,
-    ScatterInitialCondition,
-    UniformInitialCondition
-)
-from gillespy3d.core.parameter import Parameter
-from gillespy3d.core.reaction import Reaction
-from gillespy3d.core.boundarycondition import BoundaryCondition
-from gillespy3d.core.datafunction import DataFunction
-from gillespy3d.core.timespan import TimeSpan
-from gillespy3d.solvers.build_expression import BuildExpression
-from gillespy3d.core.error import ModelError
-from gillespy3d.core.result import Result
+#from gillespy3d.core.domain import Domain
+from gillespy3d_pp.core.species import Species
+#from gillespy3d.core.initialcondition import (
+#    InitialCondition,
+ #   PlaceInitialCondition,
+  #  ScatterInitialCondition,
+#    UniformInitialCondition
+#)
+from gillespy3d_pp.core.parameter import Parameter
+from gillespy3d_pp.core.reaction import Reaction
+#from gillespy3d.core.boundarycondition import BoundaryCondition
+#from gillespy3d.core.datafunction import DataFunction
+from gillespy3d_pp.core.timespan import TimeSpan
+#from gillespy3d.solvers.build_expression import BuildExpression
+from gillespy3d_pp.core.error import ModelError
+from gillespy3d_pp.core.result import Result
 from random import randint
 
 
