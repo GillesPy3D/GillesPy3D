@@ -20,55 +20,9 @@ class ModelError(Exception):
     Class for exceptions in the model module.
     """
 
-class ResultError(Exception):
-    """
-    Class for exceptions in the results module.
-    """
-
-class VisualizationError(Exception):
-    """
-    Class for exceptions in the visualization module.
-    """
-
-class VTKReaderError(Exception):
-    """
-    Bass class for exceptions in the vtkreader module.
-    """
-
 class SimulationError(Exception):
     """
     Class for exceptions in the simulation module.
-    """
-
-# Model Component Exceptions
-class BoundaryConditionError(ModelError):
-    """
-    Base class for exceptions in the boundarycondition module.
-    """
-
-class DataFunctionError(ModelError):
-    """
-    Class for exceptions in the datafunction module.
-    """
-
-class DomainError(ModelError):
-    """
-    Class for exceptions in the domain module.
-    """
-
-class GeometryError(ModelError):
-    """
-    Class for exceptions in the geometry module.
-    """
-
-class InitialConditionError(ModelError):
-    """
-    Class for exceptions in initailcondition module.
-    """
-
-class LatticeError(ModelError):
-    """
-    Class for exceptions in lattice module.
     """
 
 class ParameterError(ModelError):
@@ -91,28 +45,3 @@ class TimespanError(ModelError):
     Class for exceptions in the timespan module.
     """
 
-class TransformationError(ModelError):
-    """
-    Class for exceptions in the transformation module.
-    """
-
-# Result Exceptions
-
-
-# Visualization Exceptions
-
-
-# VTKReader Exceptions
-class VTKReaderIOError(VTKReaderError):
-    """
-    Exception raised for I/O errors.
-    """
-    def __init__(self, message):
-        super().__init__(message)
-        self.message = message
-
-# Simulation Exceptions
-class SimulationTimeout(SimulationError):
-    """
-    Exception raised for timeout errors.
-    """
