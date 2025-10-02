@@ -154,10 +154,20 @@ class Model():
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
-        if not ((isinstance(species, Species) or type(species).__name__ == "Species") and Species.validate(species)):
-            raise ModelError(f"Invalid Species object, invalid input of type: {type(species)}")
-       
-        self.species.append(species)
+        if isinstance(species, list):
+            for s in species:
+                self.add_species(s)
+        else:
+#            if not (isinstance(species, Species)):
+#                raise ModelError(f"Instance Invalid Species object, invalid input of type: {type(species).__name__}")
+#            if not type(species).__name__ == "Species":
+#                raise ModelError(f" Type Invalid Species object, invalid input of type: {type(species).__name__}")
+#
+            if not ((isinstance(species, Species) or type(species).__name__ == "Species")):
+                raise ModelError(f"Invalid Species object, invalid input of type: {type(species).__name__}")
+            if Species.validate(species):
+                raise ModelError("Species.validate failed")
+            self.species.append(species)
         return species
 
     def add_initial_condition(self, init_cond):
