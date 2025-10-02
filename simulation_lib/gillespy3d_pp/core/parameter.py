@@ -34,7 +34,8 @@ class Parameter():
     def __init__(self, name=None, expression=None):
 
         self.name = name
-        super().__init__(self,name)
+        self.expression = "0"
+        super().__init__()
         #self.validate()
 
     def __str__(self):

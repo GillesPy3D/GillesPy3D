@@ -22,8 +22,8 @@ import numpy
 from gillespy3d_pp.core.species import Species
 #from gillespy3d.core.initialcondition import (
 #    InitialCondition,
- #   PlaceInitialCondition,
-  #  ScatterInitialCondition,
+#   PlaceInitialCondition,
+#  ScatterInitialCondition,
 #    UniformInitialCondition
 #)
 from gillespy3d_pp.core.parameter import Parameter
@@ -32,7 +32,7 @@ from gillespy3d_pp.core.reaction import Reaction
 #from gillespy3d.core.datafunction import DataFunction
 from gillespy3d_pp.core.timespan import TimeSpan
 #from gillespy3d.solvers.build_expression import BuildExpression
-from gillespy3d_pp.core.error import ModelError
+from gillespy3d_pp.core.error import ModelError, ParameterError
 from gillespy3d_pp.core.result import Result
 from random import randint
 
@@ -55,7 +55,7 @@ class Model():
         self.data_functions = []
         self.domain = None
         self.timespan = None
-        
+
 
     def __str__(self):
         return f"Model(name={self.name}, species={self.species}, parameters={self.parameters}, reactions={self.reactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
@@ -95,10 +95,10 @@ class Model():
             others = []
             for component in components:
                 if isinstance(component, Species) or \
-                   type(component).__name__ in Species.__name__:
+                    type(component).__name__ in Species.__name__:
                     self.add_species(component)
                 elif isinstance(component, Parameter) or \
-                     type(component).__name__ in Parameter.__name__:
+                    type(component).__name__ in Parameter.__name__:
                     params.append(component)
                 else:
                     others.append(component)
@@ -139,7 +139,7 @@ class Model():
         """
         if not (isinstance(domain, Domain) or type(domain).__name__ == "Domain"):
             raise ModelError(Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
-        
+
         self.domain = domain
 
     def add_species(self, species):
@@ -158,11 +158,11 @@ class Model():
             for s in species:
                 self.add_species(s)
         else:
-#            if not (isinstance(species, Species)):
-#                raise ModelError(f"Instance Invalid Species object, invalid input of type: {type(species).__name__}")
-#            if not type(species).__name__ == "Species":
-#                raise ModelError(f" Type Invalid Species object, invalid input of type: {type(species).__name__}")
-#
+            #            if not (isinstance(species, Species)):
+            #                raise ModelError(f"Instance Invalid Species object, invalid input of type: {type(species).__name__}")
+            #            if not type(species).__name__ == "Species":
+            #                raise ModelError(f" Type Invalid Species object, invalid input of type: {type(species).__name__}")
+            #
             if not ((isinstance(species, Species) or type(species).__name__ == "Species")):
                 raise ModelError(f"Invalid Species object, invalid input of type: {type(species).__name__}")
             if Species.validate(species):
@@ -211,12 +211,17 @@ class Model():
 
         :raises ModelError: If an invalid parameter is provided or if Parameter.validate fails.
         """
-        if not ((isinstance(parameters, Parameter) or type(parameters).__name__ == "Parameter") and Parameter.validate(parameters)):
-            raise ModelError(f"Invalid Parameter object, invalid input of type: {type(parameters)}")
-       
-        self.parameters.append(parameters)
+        if isinstance(parameters, list):
+            for s in parameters:
+                self.add_parameter(s)
+        else:
+            if not ((isinstance(parameters,Parameter)) or type(parameters).__name__ == "Parameter"):
+                raise ModelError(f"Invalid Parameter object, invalid input of type: {type(parameters).__name__}")
+            if Parameter.validate(parameters):
+                raise ModelError("Species.validate failed")
+            self.parameters.append(parameters)
         return parameters
-        
+
     def add_reaction(self, reactions):
         """
         Adds a reaction, or list of reactions to the model.
@@ -231,7 +236,7 @@ class Model():
         """
         if not ((isinstance(reactions, Reaction) or type(reactions).__name__ == "Reaction") and Reaction.validate(reactions)):
             raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions)}")
-        
+
         self.reactions.append(reactions)
         return reactions
 
@@ -298,7 +303,7 @@ class Model():
 
         :param timestep_size: Size of each timestep in seconds
         :type timestep_size: float
-        
+
         :raises ModelError: Invalid TimeSpan
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
@@ -323,7 +328,7 @@ class Model():
         """
         if seed is None: 
             seed = randint(1, 100000000)
-        
+
         # For now, just return a single result
         return Result(self, seed)
 
