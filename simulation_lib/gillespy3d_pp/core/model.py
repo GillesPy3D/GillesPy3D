@@ -234,10 +234,16 @@ class Model():
 
         :raises ModelError: If an invalid reaction is provided or if Reaction.validate fails.
         """
-        if not ((isinstance(reactions, Reaction) or type(reactions).__name__ == "Reaction") and Reaction.validate(reactions)):
-            raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions)}")
-
-        self.reactions.append(reactions)
+        if isinstance(reactions, list):
+            for s in reactions:
+                self.add_reaction(s)
+        else:
+            if not ((isinstance(reactions,Reaction)) or type(reactions).__name__ == "Reaction"):
+                raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions).__name__}")
+            if Reaction.validate(reactions):
+                raise ModelError("Species.validate failed")
+            self.reactions.append(reactions)
+  
         return reactions
 
     def add_boundary_condition(self, bound_cond):

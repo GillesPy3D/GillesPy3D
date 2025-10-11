@@ -139,7 +139,6 @@ class Reaction():
                 self.restrict_to.append(f"type_{type_id}")
 
         #self.validate(coverage="initialized")
-        super().__init__(name)
 
     def __str__(self):
         print_string = self.name
