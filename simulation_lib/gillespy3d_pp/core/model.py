@@ -54,7 +54,7 @@ class Model():
         self.boundary_condition = []
         self.data_functions = []
         self.domain = None
-        self.timespan = None
+        #self.timespan = timespan
 
 
     def __str__(self):
