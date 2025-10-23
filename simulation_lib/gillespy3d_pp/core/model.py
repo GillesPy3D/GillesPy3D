@@ -27,6 +27,7 @@ from gillespy3d_pp.core.species import Species
 #    UniformInitialCondition
 #)
 from gillespy3d_pp.core.parameter import Parameter
+from gillespy3d_pp.core.simulation_ssa import Simulation
 from gillespy3d_pp.core.reaction import Reaction
 #from gillespy3d.core.boundarycondition import BoundaryCondition
 #from gillespy3d.core.datafunction import DataFunction
