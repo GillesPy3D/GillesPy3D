@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #from numba import jit
+import inspect
 
 class Simulation():
     """
@@ -31,9 +32,16 @@ class Simulation():
 
     t =0
     sum =0
-    def __init__(self, model, mode):
+    def __init__(self, model, solver):
+        
         self.model = model
-        self.mode = mode 
+        self.solver = solver
+        if isinstance(solver,str):
+            print("str")
+        elif inspect.isclass(solver):
+            print("class")
+        else:
+            raise TypeError(f"Argument two must be either a valid string or a solver class")
 
     def testStuffs(self):
         print(self.model.parameters[1].__str__())
