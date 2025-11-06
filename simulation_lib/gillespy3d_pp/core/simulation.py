@@ -16,6 +16,7 @@
 
 #from numba import jit
 import inspect
+from gillespy3d_pp.core.solvers.NumPySSASolver import NumPySSASolver
 
 class Simulation():
     """
@@ -30,8 +31,6 @@ class Simulation():
     global vars: t : time... sum: sum of current simulation run
     """
 
-    t =0
-    sum =0
     def __init__(self, model, solver):
         
         self.model = model
@@ -53,8 +52,11 @@ class Simulation():
         self.t =0 
         self.sum =0
 
-    def run_until():
-        #main function for algo?
+    def run_until(self):
+        if self.solver == NumPySSASolver():
+            self.run_SSA();
         return None
+    def run_SSA(self):
+
 
 

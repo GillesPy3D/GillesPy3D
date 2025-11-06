@@ -44,4 +44,8 @@ class TimespanError(ModelError):
     """
     Class for exceptions in the timespan module.
     """
+class NumPySSASolverError(ModelError):
+    """
+    Class for exceptions in the NumPySSASolver module.
+    """
 

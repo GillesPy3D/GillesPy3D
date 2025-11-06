@@ -50,7 +50,7 @@ from .model import Model
 from .parameter import Parameter
 from .reaction import Reaction
 from .result import Result
-from .simulation_ssa import Simulation
+from .simulation import Simulation
 # from .error import *
 from .species import Species
 from .timespan import TimeSpan
