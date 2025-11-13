@@ -13,6 +13,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import collections
 from gillespy3d_pp.core.error import ParameterError
 
 
@@ -66,6 +67,9 @@ class Parameter():
             raise ParameterError(
                 f"Could not evaluate expression: '{self.expression}'. Reason given: {err}."
             ) from err
+
+
+
 
     def validate(self, expression=None, coverage="all"):
         """

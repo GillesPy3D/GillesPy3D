@@ -18,6 +18,7 @@
 import inspect
 from gillespy3d_pp.core.solvers.NumPySSASolver import NumPySSASolver
 
+
 class Simulation():
     """
     A simulation in this class follows the stochastic simulation algorithim.
@@ -54,9 +55,26 @@ class Simulation():
 
     def run_until(self):
         if self.solver == NumPySSASolver():
-            self.run_SSA();
-        return None
-    def run_SSA(self):
+            self.solver.NumPySSASolver.reset()
+            self.solver.NumPySSASolver.run_until()
+
+    def get_species(self,name):
+        """
+        Returns a species object by name.
+
+        :param name: Name of the species object to be returned.
+        :type name: str
+
+        :returns: The specified species object.
+        :rtype: gillespy2.Species
+
+        :raises ModelError: If the species is not part of the model.
+        """
+        if name not in self.model.species:
+            raise self.model.ModelError(f"{self.model.name} does not contain a species named {name}.")
+        return self.model.species[name]
+
+
 
 
 

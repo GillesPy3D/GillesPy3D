@@ -36,6 +36,7 @@ from gillespy3d_pp.core.timespan import TimeSpan
 from gillespy3d_pp.core.error import ModelError, ParameterError
 from gillespy3d_pp.core.result import Result
 from random import randint
+from collections import OrderedDict
 
 
 class Model():
@@ -319,6 +320,32 @@ class Model():
             self.timespan = TimeSpan(time_span, timestep_size)
         else:
             raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {type(time_span)}")
+
+    def sanitized_species_names(self):
+        """
+        Generate a dictionary mapping user chosen species names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
+
+        :returns: the dictionary mapping user species names to their internal GillesPy notation.
+        """
+        species_name_mapping = OrderedDict([])
+        for i, name in enumerate(self.species):
+            species_name_mapping[name] = f'S[{i}]'
+        return species_name_mapping 
+    def sanitized_parameter_names(self):
+        """
+        Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
+
+        :returns: the dictionary mapping user parameter names to their internal GillesPy notation.
+        """
+        parameter_name_mapping = OrderedDict()
+        parameter_name_mapping['vol'] = 'V'
+        for i, name in enumerate(self.parameters):
+            if name not in parameter_name_mapping:
+                parameter_name_mapping[name] = f'P{i}'
+        return parameter_name_mapping
+
 
     def run(self, number_of_trajectories=1, seed=None):
         """
