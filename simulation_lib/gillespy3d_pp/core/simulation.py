@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#from numba import jit
 import inspect
 from gillespy3d_pp.core.solvers.NumPySSASolver import NumPySSASolver
+from gillespy3d_pp.core.error import SimulationError
 
 
 class Simulation():
@@ -53,7 +53,7 @@ class Simulation():
         self.t =0 
         self.sum =0
 
-    def run_until(self):
+    def run_until(self, time):
         if self.solver == NumPySSASolver():
             self.solver.NumPySSASolver.reset()
             self.solver.NumPySSASolver.run_until()
@@ -70,9 +70,16 @@ class Simulation():
 
         :raises ModelError: If the species is not part of the model.
         """
-        if name not in self.model.species:
-            raise self.model.ModelError(f"{self.model.name} does not contain a species named {name}.")
-        return self.model.species[name]
+        found = False
+        index = 0
+        for spec in self.model.species:
+            if name in spec.name:
+                found = True
+                break
+            index += 1
+        if found == False:
+            raise SimulationError(f"{self.model.name} does not contain a species named {name}.")
+        return self.model.species[index]
 
 
 

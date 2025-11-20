@@ -160,11 +160,6 @@ class Model():
             for s in species:
                 self.add_species(s)
         else:
-            #            if not (isinstance(species, Species)):
-            #                raise ModelError(f"Instance Invalid Species object, invalid input of type: {type(species).__name__}")
-            #            if not type(species).__name__ == "Species":
-            #                raise ModelError(f" Type Invalid Species object, invalid input of type: {type(species).__name__}")
-            #
             if not ((isinstance(species, Species) or type(species).__name__ == "Species")):
                 raise ModelError(f"Invalid Species object, invalid input of type: {type(species).__name__}")
             if Species.validate(species):
