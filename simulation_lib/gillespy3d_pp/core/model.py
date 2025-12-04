@@ -316,7 +316,7 @@ class Model():
         else:
             raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {type(time_span)}")
 
-    def sanitized_species_names(self):
+    def _sanitized_species_names(self):
         """
         Generate a dictionary mapping user chosen species names to simplified formats which will be used
         later on by GillesPySolvers evaluating reaction propensity functions.
@@ -327,7 +327,7 @@ class Model():
         for i, name in enumerate(self.species):
             species_name_mapping[name] = f'S[{i}]'
         return species_name_mapping 
-    def sanitized_parameter_names(self):
+    def _sanitized_parameter_names(self):
         """
         Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
         later on by GillesPySolvers evaluating reaction propensity functions.

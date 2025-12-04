@@ -36,52 +36,29 @@ class Simulation():
         
         self.model = model
         self.solver = solver
-        if isinstance(solver,str):
-            print("str")
-        elif inspect.isclass(solver):
-            print("class")
-        else:
-            raise TypeError(f"Argument two must be either a valid string or a solver class")
-
-    def testStuffs(self):
-        print(self.model.parameters[1].__str__())
+        if solver == "SSA":
+            self.solver = NumPySSASolver(self.model)
+        #elif inspect.isclass(solver):
+        #    print("class")
+        #else:
+         #   raise TypeError(f"Argument two must be either a valid string or a solver class")
 
     def reset(self):
-        #reset for each new run
-        #grab sum and set to 0?
-        #set .t to 0
-        self.t =0 
-        self.sum =0
+        self.solver.reset()
 
-    def run_until(self, time):
-        if self.solver == NumPySSASolver():
-            self.solver.NumPySSASolver.reset()
-            self.solver.NumPySSASolver.run_until()
+    def get_time(self):
+        return self.solver.get_time()
 
-    def get_species(self,name):
+    def run_until(self, end_t):
+        self.solver.run_until(end_t)
+
+    def get_species(self,species):
         """
-        Returns a species object by name.
 
         :param name: Name of the species object to be returned.
         :type name: str
 
-        :returns: The specified species object.
+        :returns: The specified species value
         :rtype: gillespy2.Species
-
-        :raises ModelError: If the species is not part of the model.
         """
-        found = False
-        index = 0
-        for spec in self.model.species:
-            if name in spec.name:
-                found = True
-                break
-            index += 1
-        if found == False:
-            raise SimulationError(f"{self.model.name} does not contain a species named {name}.")
-        return self.model.species[index]
-
-
-
-
-
+        return self.solver.get_species(species)
