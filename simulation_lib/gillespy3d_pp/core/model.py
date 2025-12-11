@@ -49,9 +49,9 @@ class Model():
 
     def __init__(self, name="gillespy3d"):
         self.name = name
-        self.species = []
-        self.parameters = []
-        self.reactions = []
+        self.listOfSpecies = OrderedDict()
+        self.listOfParameters = OrderedDict()
+        self.listOfReactions = OrderedDict()
         self.initial_condition = []
         self.boundary_condition = []
         self.data_functions = []
@@ -60,7 +60,7 @@ class Model():
 
 
     def __str__(self):
-        return f"Model(name={self.name}, species={self.species}, parameters={self.parameters}, reactions={self.reactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
+        return f"Model(name={self.name}, species={self.listOfSpecies}, parameters={self.listOfParameters}, reactions={self.listOfReactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -164,7 +164,7 @@ class Model():
                 raise ModelError(f"Invalid Species object, invalid input of type: {type(species).__name__}")
             if Species.validate(species):
                 raise ModelError("Species.validate failed")
-            self.species.append(species)
+            self.listOfSpecies[species.name] =species
         return species
 
     def add_initial_condition(self, init_cond):
@@ -216,7 +216,7 @@ class Model():
                 raise ModelError(f"Invalid Parameter object, invalid input of type: {type(parameters).__name__}")
             if Parameter.validate(parameters):
                 raise ModelError("Species.validate failed")
-            self.parameters.append(parameters)
+            self.listOfParameters[parameters.name] = parameters
         return parameters
 
     def add_reaction(self, reactions):
@@ -239,7 +239,7 @@ class Model():
                 raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions).__name__}")
             if Reaction.validate(reactions):
                 raise ModelError("Species.validate failed")
-            self.reactions.append(reactions)
+            self.listOfReactions[reactions.name] = reactions
   
         return reactions
 
@@ -324,7 +324,7 @@ class Model():
         :returns: the dictionary mapping user species names to their internal GillesPy notation.
         """
         species_name_mapping = OrderedDict([])
-        for i, name in enumerate(self.species):
+        for i, name in enumerate(self.listOfSpecies.keys()):
             species_name_mapping[name] = f'S[{i}]'
         return species_name_mapping 
     def _sanitized_parameter_names(self):
@@ -336,7 +336,7 @@ class Model():
         """
         parameter_name_mapping = OrderedDict()
         parameter_name_mapping['vol'] = 'V'
-        for i, name in enumerate(self.parameters):
+        for i, name in enumerate(self.listOfParameters.keys()):
             if name not in parameter_name_mapping:
                 parameter_name_mapping[name] = f'P{i}'
         return parameter_name_mapping

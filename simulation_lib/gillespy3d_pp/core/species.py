@@ -30,7 +30,7 @@ class Species():
             This effectively restricts the movement of 'species' to the types specified in 'listOfTypes'.
     :type restrict_to: int, str, list of ints or list of strs
     """
-    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=None):
+    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0):
         if not (restrict_to is None or isinstance(restrict_to, (str, int, list))):
             raise SpeciesError("Restrict_to must be an int, str or list of ints or strs.")
         if restrict_to is not None and isinstance(restrict_to, (int, str)):
@@ -64,18 +64,7 @@ class Species():
 
         self.diffusion_coefficient = diffusion_coefficient
 
-    def sanitized_species_names(self):
-        """
-        Generate a dictionary mapping user chosen species names to simplified formats which will be used
-        later on by GillesPySolvers evaluating reaction propensity functions.
-
-        :returns: the dictionary mapping user species names to their internal GillesPy notation.
-        """
-        species_name_mapping = OrderedDict()
-        for i, name in enumerate(self.listOfSpecies.keys()):
-            species_name_mapping[name] = f'S[{i}]'
-        return species_name_mapping 
-
+   
     def validate(self, diffusion_coefficient=None, coverage="all"):
         """
         Validate the species.

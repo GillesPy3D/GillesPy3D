@@ -30,7 +30,7 @@ class NumPySSASolver():
     def reset(self):
         self.curr_time = 0
         self.curr_state = {}
-        for spec in self.model.species:
+        for spec in self.model.listOfSpecies:
             self.curr_state[spec] = spec.initial_value
 
     def get_species(self,species):
@@ -43,12 +43,12 @@ class NumPySSASolver():
         if model is None:
             raise NumPySSASolverError("A model is required to run the simulation.")
         self.model = copy.deepcopy(model)
-        self.species = self.model.species
-        self.reactions = list(self.model.reactions)
+        self.species = self.model.listOfSpecies
+        self.reactions = list(self.model.listOfReactions)
         self.number_reactions = len(self.reactions)
         self.dependent_rxns = {}
         self.is_instantiated = True
-        self.number_species = len(self.model.species)
+        self.number_species = len(self.model.listOfSpecies)
         self.species_changes = np.zeros((self.number_reactions,self.number_species))
         self.propensity_functions = {}
         self.volume = getattr(self.model, "volume", 1.0)
@@ -57,8 +57,8 @@ class NumPySSASolver():
         self.parameter_mappings = self.model._sanitized_parameter_names()
         for i, reaction in enumerate(self.reactions):
             for j, spec in enumerate(self.species):
-                self.species_changes[i][j] = self.model.reactions[reaction].products.get(self.model.species[spec], 0) \
-                                        - self.model.reactions[reaction].reactants.get(self.model.species[spec], 0)
+                self.species_changes[i][j] = self.model.listOfReactions[reaction].products.get(self.model.listOfSpecies[spec], 0) \
+                                        - self.model.listOfReactions[reaction].reactants.get(self.model.listOfSpecies[spec], 0)
 
             self.propensity_functions[reaction] = [eval('lambda S:' + self.model.listOfReactions[reaction].
                                                    sanitized_propensity_function(self.species_mappings, self.parameter_mappings),
