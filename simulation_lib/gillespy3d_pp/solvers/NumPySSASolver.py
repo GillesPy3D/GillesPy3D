@@ -21,6 +21,7 @@ import random
 import math
 import numpy as np
 from gillespy3d_pp.core.error import NumPySSASolverError
+from gillespy3d_pp.utils import solverutils as nputils
 
 class NumPySSASolver():
     name = "NumPySSASolver"
@@ -30,8 +31,8 @@ class NumPySSASolver():
     def reset(self):
         self.curr_time = 0
         self.curr_state = {}
-        for spec in self.model.listOfSpecies:
-            self.curr_state[spec] = spec.initial_value
+        for s, spec in self.model.listOfSpecies.items():
+            self.curr_state[s] = spec.initial_value
 
     def get_species(self,species):
         """
@@ -43,26 +44,30 @@ class NumPySSASolver():
         if model is None:
             raise NumPySSASolverError("A model is required to run the simulation.")
         self.model = copy.deepcopy(model)
-        self.species = self.model.listOfSpecies
-        self.reactions = list(self.model.listOfReactions)
+        self.species, self.species_mappings, self.parameter_mappings, self.number_species = nputils.numpy_initialization(self.model)
+        #second line possible dupe?
+        #self.species = self.model.listOfSpecies
+        self.reactions = list(self.model.listOfReactions.keys())
         self.number_reactions = len(self.reactions)
-        self.dependent_rxns = {}
+        self.dependent_rxns = nputils.dependency_grapher(self.model, self.reactions)
         self.is_instantiated = True
         self.number_species = len(self.model.listOfSpecies)
         self.species_changes = np.zeros((self.number_reactions,self.number_species))
         self.propensity_functions = {}
         self.volume = getattr(self.model, "volume", 1.0)
         self.parameters = {'V': self.volume}
-        self.species_mappings  = self.model._sanitized_species_names()
+        self.species_mappings  = self.model._sanitized_species_names()#solver utils
         self.parameter_mappings = self.model._sanitized_parameter_names()
-        for i, reaction in enumerate(self.reactions):
-            for j, spec in enumerate(self.species):
-                self.species_changes[i][j] = self.model.listOfReactions[reaction].products.get(self.model.listOfSpecies[spec], 0) \
-                                        - self.model.listOfReactions[reaction].reactants.get(self.model.listOfSpecies[spec], 0)
+        for i, (r_name, reaction) in enumerate(self.reactions):
+            for j,(s_name, spec) in enumerate(self.species.items()):
+                self.species_changes[i][j] = self.model.listOfReactions[r_name].products.get(self.model.listOfSpecies[s_name], 0) \
+                                        - self.model.listOfReactions[r_name].reactants.get(self.model.listOfSpecies[s_name], 0)
 
-            self.propensity_functions[reaction] = [eval('lambda S:' + self.model.listOfReactions[reaction].
+            self.propensity_functions[r_name] = [eval('lambda S:' + self.model.listOfReactions[r_name].
                                                    sanitized_propensity_function(self.species_mappings, self.parameter_mappings),
                                                    self.parameters), i]
+        print("everything initalized")
+        print("props is ",self.propensity_functions[0])
 
     def get_time(self):
         return self.curr_time
@@ -74,9 +79,18 @@ class NumPySSASolver():
 
         while self.curr_time < stop_time:
             #if past stop time, dont update
+            print("species state in full: ",list(self.curr_state.values()))
+            # line below breaks due to no [0] exisiting, pending removal on curr_state finalization
+            #print("species state in 0: ",list(self.curr_state[0].values()))
             species_states = list(self.curr_state.values())
-            for i in range(self.number_reactions):
-                propensity_values[i] = self.propensity_functions[self.reactions[i]][0](species_states)
+            for i, (r_name, reaction) in enumerate(self.reactions.items()):
+                print("raw propensity:", self.propensity_functions[r_name])
+
+                print("props to ",propensity_values[i])
+                print("species states is ",species_states)
+                print("and now for ", self.propensity_functions[r_name][0](species_states))
+                propensity_values[i] = self.propensity_functions[r_name][0](species_states)
+
 
             propensity_sum = np.sum(propensity_values)
             if propensity_sum <= 0:
@@ -98,5 +112,6 @@ class NumPySSASolver():
 
                         reacName = self.reactions[potential_reaction]
                         species_states = list(self.curr_state.values())
+                        #what is i, is i r_name
                         for i in self.dependent_rxns[reacName]['dependencies']:
                             propensity_sum[self.propensity_functions[i][1]] = self.propensity_functions[i][0](species_states)

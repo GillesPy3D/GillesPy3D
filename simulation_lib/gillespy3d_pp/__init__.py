@@ -19,6 +19,7 @@ import sys
 
 #from .core import *
 from gillespy3d_pp.core import *
+from gillespy3d_pp.solvers import *
 
 
 from .__version__ import __version__, __title__, __description__, __url__

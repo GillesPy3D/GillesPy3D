@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import inspect
-from gillespy3d_pp.core.solvers.NumPySSASolver import NumPySSASolver
+from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
 from gillespy3d_pp.core.error import SimulationError
 
 

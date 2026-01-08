@@ -52,7 +52,7 @@ from .reaction import Reaction
 from .result import Result
 from .simulation import Simulation
 # from .error import *
-from .species import Species
+from .species import *
 from .timespan import TimeSpan
 # from .transformation import (
 #     Transformation,
