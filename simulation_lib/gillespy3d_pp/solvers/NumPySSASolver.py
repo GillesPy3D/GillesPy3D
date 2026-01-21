@@ -44,7 +44,7 @@ class NumPySSASolver():
         if model is None:
             raise NumPySSASolverError("A model is required to run the simulation.")
         self.model = copy.deepcopy(model)
-        self.species, self.species_mappings, self.parameter_mappings, self.number_species = nputils.numpy_initialization(self.model)
+        self.species, self.species_mappings, self.number_species = nputils.numpy_initialization(self.model)
         #second line possible dupe?
         #self.species = self.model.listOfSpecies
         self.reactions = list(self.model.listOfReactions.keys())
@@ -55,19 +55,48 @@ class NumPySSASolver():
         self.species_changes = np.zeros((self.number_reactions,self.number_species))
         self.propensity_functions = {}
         self.volume = getattr(self.model, "volume", 1.0)
-        self.parameters = {'V': self.volume}
+        for name, param in self.model.listOfParameters.items():
+            print("PARAM IN SOLVER:", name, repr(param.expression))
+
+        self.parameter_values = {}
+       # self.parameter_values = {
+       #     'rate1': 0.1,
+       #     'rate2': 0.05,
+       #     'rate3': 0.01,
+       #     'vol': 1.0
+       # }
+
+        for name, param in self.model.listOfParameters.items():
+            self.parameter_values[name] = float(param.expression)
+        self.parameter_values['vol'] = float(self.volume)
+        self.propensity_func_name_map = {}
         self.species_mappings  = self.model._sanitized_species_names()#solver utils
-        self.parameter_mappings = self.model._sanitized_parameter_names()
-        for i, (r_name, reaction) in enumerate(self.reactions):
-            for j,(s_name, spec) in enumerate(self.species.items()):
+        for i, r_name  in enumerate(self.reactions):
+            for j,(s_name, _) in enumerate(self.species.items()):
                 self.species_changes[i][j] = self.model.listOfReactions[r_name].products.get(self.model.listOfSpecies[s_name], 0) \
                                         - self.model.listOfReactions[r_name].reactants.get(self.model.listOfSpecies[s_name], 0)
 
-            self.propensity_functions[r_name] = [eval('lambda S:' + self.model.listOfReactions[r_name].
-                                                   sanitized_propensity_function(self.species_mappings, self.parameter_mappings),
-                                                   self.parameters), i]
-        print("everything initalized")
-        print("props is ",self.propensity_functions[0])
+           # self.propensity_functions[r_name] = eval('lambda S:' + self.model.listOfReactions[r_name].
+           #                                      sanitized_propensity_function(self.species_mappings, self.parameter_values),
+           #                                          )
+                sanitized = self.model.listOfReactions[r_name].sanitized_propensity_function(
+                    self.species_mappings, self.parameter_values
+                )
+                print("FINAL LAMBDA:", sanitized)
+                raise
+
+
+           # print(self.species_mappings," specs and params ",self.parameter_mappings)
+           # print('lambda S:' + self.model.listOfReactions[r_name].
+           #                                        sanitized_propensity_function(self.species_mappings, self.parameter_mappings))
+
+           # print("after sant ",self.species_mappings," specs and params ",self.parameter_mappings)
+           # print(self.parameters)
+            #look at original, to find P0, S and V to update them to correct information
+           # raise 
+            self.propensity_func_name_map[r_name] = i
+        #print("everything initalized")
+        #print("props is ",self.propensity_functions)
 
     def get_time(self):
         return self.curr_time
@@ -78,19 +107,12 @@ class NumPySSASolver():
         propensity_values = np.zeros(self.number_reactions)
 
         while self.curr_time < stop_time:
-            #if past stop time, dont update
+            species_states = list(self.curr_state.values())
             print("species state in full: ",list(self.curr_state.values()))
             # line below breaks due to no [0] exisiting, pending removal on curr_state finalization
-            #print("species state in 0: ",list(self.curr_state[0].values()))
-            species_states = list(self.curr_state.values())
-            for i, (r_name, reaction) in enumerate(self.reactions.items()):
-                print("raw propensity:", self.propensity_functions[r_name])
-
-                print("props to ",propensity_values[i])
-                print("species states is ",species_states)
-                print("and now for ", self.propensity_functions[r_name][0](species_states))
-                propensity_values[i] = self.propensity_functions[r_name][0](species_states)
-
+            for i, r_name  in enumerate(self.reactions):
+                propensity_values[i] = self.propensity_functions[r_name](species_states)
+                print("and now for ", propensity_values)
 
             propensity_sum = np.sum(propensity_values)
             if propensity_sum <= 0:
@@ -112,6 +134,9 @@ class NumPySSASolver():
 
                         reacName = self.reactions[potential_reaction]
                         species_states = list(self.curr_state.values())
-                        #what is i, is i r_name
-                        for i in self.dependent_rxns[reacName]['dependencies']:
-                            propensity_sum[self.propensity_functions[i][1]] = self.propensity_functions[i][0](species_states)
+                        # what is i, is i r_name
+                        # make propensity_index, dict, take 'r1' as name and ret 0, change name back to index
+                        # make propensity_func_name_map to use here, 
+                        for dep_rxn_name in self.dependent_rxns[reacName]['dependencies']:
+                            #code is wrong, fix propensity functions[][]
+                            propensity_sum[self.propensity_func_name_map[dep_rxn_name]] = self.propensity_functions[dep_rxn_name](species_states)

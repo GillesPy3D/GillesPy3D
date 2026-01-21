@@ -56,6 +56,7 @@ class Model():
         self.boundary_condition = []
         self.data_functions = []
         self.domain = None
+        self.volume = 1.0
         #self.timespan = timespan
 
 

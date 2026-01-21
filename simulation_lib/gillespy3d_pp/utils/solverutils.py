@@ -26,9 +26,9 @@ NUMPY SOLVER UTILITIES BELOW
 def numpy_initialization(model):
     species_mappings = model._sanitized_species_names()
     species = list(species_mappings.keys())
-    parameter_mappings = model._sanitized_parameter_names()
+    #parameter_mappings = model._sanitized_parameter_names()
     number_species = len(species)
-    return species_mappings, species, parameter_mappings, number_species
+    return species_mappings, species, number_species
 
 
 def species_parse(model, custom_prop_fun):
@@ -99,5 +99,6 @@ def dependency_grapher(model, reactions):
                 if any(elem in cust_spec for elem in list(model.listOfReactions[j].reactants)) or any \
                             (elem in cust_spec for elem in list(model.listOfReactions[j].products)):
                     dependent_rxns[i]['dependencies'].append(j)
+        print("dependent reac ",dependent_rxns)
 
     return dependent_rxns
