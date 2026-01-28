@@ -99,6 +99,5 @@ def dependency_grapher(model, reactions):
                 if any(elem in cust_spec for elem in list(model.listOfReactions[j].reactants)) or any \
                             (elem in cust_spec for elem in list(model.listOfReactions[j].products)):
                     dependent_rxns[i]['dependencies'].append(j)
-        print("dependent reac ",dependent_rxns)
 
     return dependent_rxns

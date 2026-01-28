@@ -395,7 +395,6 @@ class Reaction():
     def sanitized_propensity_function(self, species_mappings, parameter_values, ode=False):
         names = sorted(list(species_mappings.keys()) + list(parameter_values.keys()), key=lambda x: len(x),
                        reverse=True)
-        print("parameter_mappings is ", parameter_values)
         replacements = []
         for name in names:
             if name in parameter_values:
@@ -405,10 +404,8 @@ class Reaction():
                 # replacements = [parameter_mappings[name] if name in parameter_mappings else species_mappings[name]
                 #                 for name in names]
         sanitized_propensity = self.ode_propensity_function if ode else self.propensity_function
-        print("sanitized_propensity before is ",sanitized_propensity)
         for id, name in enumerate(names):
             sanitized_propensity = sanitized_propensity.replace(name, "{" + str(id) + "}")
-        print("sanitized_propensity is ",sanitized_propensity)
         return sanitized_propensity.format(*replacements)
 
     def set_annotation(self, annotation):
