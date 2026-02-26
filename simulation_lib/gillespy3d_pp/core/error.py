@@ -20,32 +20,44 @@ class ModelError(Exception):
     Class for exceptions in the model module.
     """
 
+
 class SimulationError(Exception):
     """
     Class for exceptions in the simulation module.
     """
+
 
 class ParameterError(ModelError):
     """
     Class for exceptions in parameter module.
     """
 
+
 class ReactionError(ModelError):
     """
     Class for exceptions in reaction module.
     """
+
 
 class SpeciesError(ModelError):
     """
     Class for exceptions in the species module.
     """
 
+
 class TimespanError(ModelError):
     """
     Class for exceptions in the timespan module.
     """
-class NumPySSASolverError(ModelError):
+
+
+class NumPySSASolverError(Exception):
     """
     Class for exceptions in the NumPySSASolver module.
     """
 
+
+class ResultError(ModelError):
+    """
+    Class for exception in the results module.
+    """

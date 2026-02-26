@@ -33,14 +33,14 @@ class Simulation():
     """
 
     def __init__(self, model, solver):
-        
+
         self.model = model
         self.solver = solver
         if solver == "SSA":
             self.solver = NumPySSASolver(self.model)
-        #elif inspect.isclass(solver):
+        # elif inspect.isclass(solver):
         #    print("class")
-        #else:
+        # else:
          #   raise TypeError(f"Argument two must be either a valid string or a solver class")
 
     def reset(self):
@@ -52,7 +52,7 @@ class Simulation():
     def run_until(self, end_t):
         self.solver.run_until(end_t)
 
-    def get_species(self,species):
+    def get_species(self, species):
         """
 
         :param name: Name of the species object to be returned.

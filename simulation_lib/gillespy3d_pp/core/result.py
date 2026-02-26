@@ -17,6 +17,7 @@ import os
 import numpy as np
 from datetime import datetime
 from collections import UserDict, UserList
+import matplotlib.pyplot as plt  # pylint: disable=import-outside-toplevel
 
 
 def common_rgb_values():
@@ -34,10 +35,103 @@ def common_rgb_values():
     ]
 
 
-class Result():
-    """
-    Result object for a GillesPy3D simulation.
+def _plot_iterate(self, show_labels=True, included_species_list=[]):
+    for i, species in enumerate(self.data):
+        if species != 'time':
+
+            if species not in included_species_list and included_species_list:
+                continue
+
+            line_color = common_rgb_values()[(
+                i - 1) % len(common_rgb_values())]
+
+            if show_labels:
+                label = species
+            else:
+                label = ""
+
+            plt.plot(self.data['time'], self.data[species],
+                     label=label, color=line_color)
+
+
+class Trajectory(UserDict):
+    """ Trajectory Dict created by a gillespy3 solver containing single trajectory, extends the UserDict object.
+
+    :param data: A dictionary of trajectory values created by a solver
+    :type data: UserDict
+
+    :param model: The name of the model used to create the trajectory
+    :type model: str
+
+    :param solver_name: The name of the solver used to create the trajectory
+    :type solver_name: str
+
+    :param rc: The solvers status return code.
+    :type rc: int
+
+    :param status: The solver status ('Success','Timed out')
     """
 
-    def __init__(self, model=None, result_dir=None):
-        pass
+    def __init__(self, data, model=None, solver_name="Undefined solver name", rc=0):
+
+        self.data = data
+        self.model = model
+        self.solver_name = solver_name
+        self.rc = rc
+
+        status_list = {0: 'Success', 33: 'Timed Out'}
+        self.status = status_list[rc]
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            from gillespy3d_pp.core import log  # pylint: disable=import-outside-toplevel
+            species = list(self.data.keys())[key]
+            msg = "Trajectory is of type dictionary."
+            msg += f"Use trajectory['[{species}]'] instead of trajectory[{
+                key}]['{species}']"
+            msg += f"Retrieving trajectory['[{species}]']"
+            log.warning(msg)
+            return self.data[species]
+        if key in self.data:
+            return self.data[key]
+        if hasattr(self.__class__, "__missing__"):
+            return self.__class__.__missing__(self, key)  # type: ignore
+        raise KeyError(key)
+
+
+class Result(UserList):
+    """
+    List of Trajectory objects created by a gillespy2 solver, extends the UserList object.
+
+    :param data: A list of trajectory objects
+    :type data: UserList
+    """
+
+    def __init__(self, data):
+        self.data = data
+
+    def __getattribute__(self, key):
+        if key in ('model', 'solver_name', 'rc', 'status'):
+            if len(self.data) > 1:
+                from gillespy3d_pp.core import log  # pylint: disable=import-outside-toplevel
+                msg = f"Results is of type list. Use results[i]['{
+                    key}'] instead of results['{key}']"
+                log.warning(msg)
+            return getattr(Result.__getattribute__(self, key='data')[0], key)
+        return UserList.__getattribute__(self, key)
+
+    def __add__(self, other):
+        combined_data = Result(data=(self.data + other.data))
+        consistent_solver = combined_data._validate_solver()
+        consistent_model = combined_data._validate_model()
+
+        if not consistent_solver:
+            from gillespy3d_pp.core import log  # pylint: disable=import-outside-toplevel
+            log.warning(
+                "Results objects contain Trajectory objects from multiple solvers.")
+
+        if not consistent_model:
+            raise ResultError(
+                'Result objects contain Trajectory objects from multiple models.')
+
+        return combined_data
