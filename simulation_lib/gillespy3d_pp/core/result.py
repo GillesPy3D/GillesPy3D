@@ -36,6 +36,9 @@ def common_rgb_values():
 
 
 def _plot_iterate(self, show_labels=True, included_species_list=[]):
+    """
+    Helper class for plot method to make labels on first run
+    """
     for i, species in enumerate(self.data):
         if species != 'time':
 
@@ -77,9 +80,9 @@ class Trajectory(UserDict):
         self.data = data
         self.model = model
         self.solver_name = solver_name
-        self.rc = rc
+        self.rs = rc
 
-        status_list = {0: 'Success', 33: 'Timed Out'}
+        status_list = {0: 'Success', 1: 'Timed Out'}
         self.status = status_list[rc]
 
     def __getitem__(self, key):
@@ -119,6 +122,18 @@ class Result(UserList):
                 log.warning(msg)
             return getattr(Result.__getattribute__(self, key='data')[0], key)
         return UserList.__getattribute__(self, key)
+
+    def __getitem__(self, key):
+        if key == 'data':
+            return UserList.__getitem__(self, key)
+        if isinstance(key, str):
+            if len(self.data) > 1:
+                from gillespy3d_pp.core import log  # pylint: disable=import-outside-toplevel
+                msg = f"Results is of type list. Use results[i]['{
+                    key}'] instead of results['{key}']"
+                log.warning(msg)
+            return self.data[0][key]
+        return UserList.__getitem__(self, key)
 
     def __add__(self, other):
         combined_data = Result(data=(self.data + other.data))

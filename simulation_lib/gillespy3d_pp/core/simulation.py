@@ -49,8 +49,14 @@ class Simulation():
     def get_time(self):
         return self.solver.get_time()
 
-    def run_until(self, end_t):
-        self.solver.run_until(end_t)
+    def run_until(self, end_t, num_traj, dt):
+
+        for traj in range(num_traj):
+            self.reset()
+            while self.get_time() < end_t:
+                print('traj', traj, ' t:', self.get_time(),
+                      ' Substrate:', self.get_species('Substrate'))
+                self.solver.run_until(self.get_time()+dt)
 
     def get_species(self, species):
         """
