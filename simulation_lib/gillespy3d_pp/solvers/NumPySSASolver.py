@@ -20,6 +20,7 @@ import copy
 import random
 import math
 import numpy as np
+from gillespy3d_pp.core.result import Result
 from gillespy3d_pp.core.error import NumPySSASolverError
 from gillespy3d_pp.utils import solverutils as nputils
 
@@ -77,10 +78,10 @@ class NumPySSASolver():
     def get_time(self):
         return self.curr_time
 
-    def run_until(self, stop_time):
+    def run_until(self, stop_time, simulation_data, timeline, tracjectories):
 
         propensity_values = np.zeros(self.number_reactions)
-
+        self.result = Result(self.model)
         while self.curr_time < stop_time:
             species_states = list(self.curr_state.values())
             for i, r_name in enumerate(self.reactions):
@@ -123,9 +124,18 @@ class NumPySSASolver():
                     raise NumPySSASolverError(
                         f"Negative species count for {spec}")
 
-                reacName = self.reactions[potential_reaction]
+                reacName = self.reactions[potential_reaction]  # type: ignore
                 species_states = list(self.curr_state.values())
 
                 for dep_rxn_name in self.dependent_rxns[reacName]['dependencies']:
                     propensity_values[self.propensity_func_name_map[dep_rxn_name]
                                       ] = self.propensity_functions[dep_rxn_name](species_states)
+                data = {
+                    'time': timeline
+                }
+                species2 = list(self.model.listOfSpecies.keys())
+                for i in range(self.number_species):
+                    data[species2[i]] = tracjectories[:, i + 1]
+                simulation_data.append(data)
+            self.result = simulation_data
+            return self.result
