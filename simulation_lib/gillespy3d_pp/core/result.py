@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import os
+from gillespy3d_pp.core.error import ResultError
 import numpy as np
 from datetime import datetime
 from collections import UserDict, UserList
@@ -57,7 +58,7 @@ def _plot_iterate(self, show_labels=True, included_species_list=[]):
                      label=label, color=line_color)
 
 
-class Trajectory(UserDict):
+class Trajectory():
     """ Trajectory Dict created by a gillespy3 solver containing single trajectory, extends the UserDict object.
 
     :param data: A dictionary of trajectory values created by a solver
@@ -75,15 +76,30 @@ class Trajectory(UserDict):
     :param status: The solver status ('Success','Timed out')
     """
 
-    def __init__(self, data, model=None, solver_name="Undefined solver name", rc=0):
+    def __init__(self, numSpecies, numTimepoints):
+        print(numSpecies)
+        self.data = np.zeros((numSpecies, numTimepoints))
+        self.nextRecordedDataIndex = 0
 
-        self.data = data
-        self.model = model
-        self.solver_name = solver_name
-        self.rs = rc
+    def reset(self, numTimepoints, numSpecies):
+        self.data = np.zeros((numSpecies, numTimepoints))
+        self.nextRecordedDataIndex = 0
 
-        status_list = {0: 'Success', 1: 'Timed Out'}
-        self.status = status_list[rc]
+    def record_state(self, curr_state):
+        ind = 0
+        tempData = []
+        for i in curr_state.values():
+            tempData.append(i)
+            ind += 1
+        self.data[self.nextRecordedDataIndex, :] = tempData
+       # print("data is ", self.data)
+
+        self.nextRecordedDataIndex += 1
+
+        # self.data[self.nextRecordedDataIndex,:] = curr_state.values()
+        # self.nextRecordedDataIndex +=1
+
+        # call record state in sim loop, then increment nextRecordedDataIndex
 
     def __getitem__(self, key):
         if isinstance(key, int):
@@ -136,7 +152,7 @@ class Result(UserList):
         return UserList.__getitem__(self, key)
 
     def __add__(self, other):
-        combined_data = Result(data=(self.data + other.data))
+        combined_data = Result(data=(self.data + other.data))  # type:ignore
         consistent_solver = combined_data._validate_solver()
         consistent_model = combined_data._validate_model()
 
@@ -150,3 +166,18 @@ class Result(UserList):
                 'Result objects contain Trajectory objects from multiple models.')
 
         return combined_data
+
+    def _validate_solver(self, reference=None):
+        is_valid = True
+        if reference is None:
+            is_valid = False
+        return is_valid
+
+    def _validate_model(self, reference=None):
+        is_valid = True
+        if reference is None:
+            is_valid = False
+        return is_valid
+
+    def add_trajectory(self, trajectory):
+        self.data.append(trajectory)

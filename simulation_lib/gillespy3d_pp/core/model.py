@@ -375,7 +375,6 @@ class Model():
 
         """
         # incorperate loop into
-        print(f"sim_args received: {sim_args}")
         if solver is None:
             solver = "SSA"
         if end_t is None:

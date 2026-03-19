@@ -32,14 +32,17 @@ class NumPySSASolver():
     def reset(self):
         self.curr_time = 0
         self.curr_state = {}
-        for s, spec in self.model.listOfSpecies.items():
-            self.curr_state[s] = spec.initial_value
+        for species_name, spec in self.model.listOfSpecies.items():
+            self.curr_state[species_name] = spec.initial_value
 
-    def get_species(self, species):
+    def get_species(self, species_name):
         """
          return population
         """
-        return self.curr_state[species]
+        return self.curr_state[species_name]
+
+    def get_curr_state(self):
+        return self.curr_state
 
     def __init__(self, model=None):
         if model is None:
@@ -74,11 +77,12 @@ class NumPySSASolver():
                                                          self.species_mappings, self.parameter_values),
                                                      )
             self.propensity_func_name_map[r_name] = i
+        self.reset()
 
     def get_time(self):
         return self.curr_time
 
-    def run_until(self, stop_time, simulation_data, timeline, tracjectories):
+    def run_until(self, stop_time):
 
         propensity_values = np.zeros(self.number_reactions)
         self.result = Result(self.model)
@@ -130,12 +134,4 @@ class NumPySSASolver():
                 for dep_rxn_name in self.dependent_rxns[reacName]['dependencies']:
                     propensity_values[self.propensity_func_name_map[dep_rxn_name]
                                       ] = self.propensity_functions[dep_rxn_name](species_states)
-                data = {
-                    'time': timeline
-                }
-                species2 = list(self.model.listOfSpecies.keys())
-                for i in range(self.number_species):
-                    data[species2[i]] = tracjectories[:, i + 1]
-                simulation_data.append(data)
-            self.result = simulation_data
             return self.result

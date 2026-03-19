@@ -16,6 +16,7 @@
 
 from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
 from gillespy3d_pp.core.error import SimulationError
+from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
 
 
@@ -54,21 +55,24 @@ class Simulation():
 
     def run(self):
         simulation_data = []
+        # make if to check for timespan or use generator
         timeline = np.linspace(0, self.end_t, int(
             round(self.end_t / self.dt + 1)))
-        trajecties = np.zeros(
-            (timeline.size, len(self.model.listOfSpecies) + 1))
+        result = Result(simulation_data)
         for traj in range(self.num_traj):
             self.reset()  # reset the simulation after each run
+            trajectory = Trajectory(
+                len(timeline), len(self.model.listOfSpecies))
+            print(self.solver.get_curr_state())
+            trajectory.record_state(self.solver.get_curr_state())
             while self.get_time() < self.end_t:
-                # make f string
-               # print('traj', traj, ' t:', self.get_time(),
-               #       ' Substrate:', self.get_species('Substrate'))
-                self.run_until(self.get_time()+self.dt,
-                               simulation_data, timeline, trajecties)
+                self.run_until(self.get_time()+self.dt)
+                trajectory.record_state(self.solver.get_curr_state())
+            result.add_trajectory(trajectory)
+            trajectory.reset(len(timeline), self.model.listOfSpecies)
 
-    def run_until(self, end_t, simulation_data, timeline, trajecties):
-        self.solver.run_until(end_t, simulation_data, timeline, trajecties)
+    def run_until(self, end_t):
+        self.solver.run_until(end_t)
 
     def get_species(self, species):
         """

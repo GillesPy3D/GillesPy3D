@@ -57,7 +57,7 @@ class NumPySSASolverError(Exception):
     """
 
 
-class ResultEsrror(ModelError):
+class ResultError(ModelError):
     """
     Class for exception in the results module.
     """
