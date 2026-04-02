@@ -33,14 +33,13 @@ class Simulation():
     global vars: t : time... sum: sum of current simulation run
     """
 
-    def __init__(self, model, solver, num_traj, dt=.1, end_t=10):
+    def __init__(self,  model, number_of_trajectories, dt, end_t, solver=None):
 
         self.model = model
         self.dt = dt
         self.end_t = end_t
-        self.num_traj = num_traj
-        self.solver = solver
-        if solver == "SSA":
+        self.number_of_trajectories = number_of_trajectories
+        if not solver or solver == "SSA":
             self.solver = NumPySSASolver(self.model)
         # elif inspect.isclass(solver):
         #    print("class")
@@ -55,21 +54,26 @@ class Simulation():
 
     def run(self):
         simulation_data = []
+        # print("dt is ", self.dt)
+        # print("end_t is ", self.end_t)
+
         # make if to check for timespan or use generator
         timeline = np.linspace(0, self.end_t, int(
             round(self.end_t / self.dt + 1)))
+        species_names = list(self.model.listOfSpecies.keys())
         result = Result(simulation_data)
-        for traj in range(self.num_traj):
+        for traj in range(self.number_of_trajectories):
             self.reset()  # reset the simulation after each run
             trajectory = Trajectory(
-                len(timeline), len(self.model.listOfSpecies))
-            print(self.solver.get_curr_state())
+                len(species_names), len(timeline), species_names, timeline)
+            # print(self.solver.get_curr_state())
             trajectory.record_state(self.solver.get_curr_state())
-            while self.get_time() < self.end_t:
-                self.run_until(self.get_time()+self.dt)
+            # print("made it past the inital")
+            for t in timeline[1:]:
+                self.run_until(t)
                 trajectory.record_state(self.solver.get_curr_state())
             result.add_trajectory(trajectory)
-            trajectory.reset(len(timeline), self.model.listOfSpecies)
+        return result
 
     def run_until(self, end_t):
         self.solver.run_until(end_t)

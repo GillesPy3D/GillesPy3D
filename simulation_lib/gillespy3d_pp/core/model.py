@@ -348,7 +348,7 @@ class Model():
                 parameter_name_mapping[name] = f'P{i}'
         return parameter_name_mapping
 
-    def run(self, solver=None, timeout=0, end_t=None, num_traj=10, algorithm=None, **sim_args):
+    def run(self, end_t=None, number_of_trajectories=10, *, dt):
         """
         Function calling simulation of the model. There are a number of
         parameters to be set here.
@@ -375,13 +375,8 @@ class Model():
 
         """
         # incorperate loop into
-        if solver is None:
-            solver = "SSA"
-        if end_t is None:
-            raise ModelError(
-                "Please input an end time for the simulation in format: end_t=?")
         from gillespy3d_pp import Simulation
-        sim = Simulation(self, solver, num_traj=num_traj)
+        sim = Simulation(self, number_of_trajectories, dt, end_t)
         return sim.run()
 
 

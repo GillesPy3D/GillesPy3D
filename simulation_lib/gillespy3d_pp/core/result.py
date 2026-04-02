@@ -76,13 +76,16 @@ class Trajectory():
     :param status: The solver status ('Success','Timed out')
     """
 
-    def __init__(self, numSpecies, numTimepoints):
-        print(numSpecies)
-        self.data = np.zeros((numSpecies, numTimepoints))
+    def __init__(self, num_species, num_timepoints, species_names, timeline):
+        self.num_species = num_species
+        self.num_timepoints = num_timepoints
+        self.species_names = species_names
+        self.timeline = timeline
+        self.data = np.zeros((num_species, num_timepoints))
         self.nextRecordedDataIndex = 0
 
-    def reset(self, numTimepoints, numSpecies):
-        self.data = np.zeros((numSpecies, numTimepoints))
+    def reset(self):
+        self.data = np.zeros((self.num_species, self.num_timepoints))
         self.nextRecordedDataIndex = 0
 
     def record_state(self, curr_state):
@@ -91,8 +94,8 @@ class Trajectory():
         for i in curr_state.values():
             tempData.append(i)
             ind += 1
-        self.data[self.nextRecordedDataIndex, :] = tempData
-       # print("data is ", self.data)
+
+        self.data[:, self.nextRecordedDataIndex] = np.array(tempData)
 
         self.nextRecordedDataIndex += 1
 
@@ -181,3 +184,49 @@ class Result(UserList):
 
     def add_trajectory(self, trajectory):
         self.data.append(trajectory)
+
+    def plot(self, included_species=None, title=None, show_legend=True):
+        """
+        Plot all species populations over time for every trajectory in the result.
+
+        :param included_species: If provided, only plot species whose names are in this list.
+        :type included_species: list[str] | None
+
+        :param title: Optional title for the plot.
+        :type title: str | None
+
+        :param show_legend: Whether to display the legend. Default True.
+        :type show_legend: bool
+        """
+        if not self.data:
+            return
+
+        colors = common_rgb_values()
+        fig, ax = plt.subplots()
+
+        first_traj = self.data[0]
+        species_names = first_traj.species_names
+        timeline = first_traj.timeline
+        multi = len(self.data) > 1
+
+        for i, name in enumerate(species_names):
+            if included_species and name not in included_species:
+                continue
+            color = colors[i % len(colors)]
+            for traj_idx, traj in enumerate(self.data):
+                ax.plot(
+                    timeline,
+                    traj.data[i],
+                    label=name if traj_idx == 0 else None,
+                    color=color,
+                    alpha=0.5 if multi else 1.0,
+                )
+
+        ax.set_xlabel("Time")
+        ax.set_ylabel("Population")
+        if title:
+            ax.set_title(title)
+        if show_legend:
+            ax.legend()
+        plt.tight_layout()
+        plt.show()
