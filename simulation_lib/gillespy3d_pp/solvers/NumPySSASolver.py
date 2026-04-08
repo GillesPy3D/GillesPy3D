@@ -35,6 +35,9 @@ class NumPySSASolver():
         for species_name, spec in self.model.listOfSpecies.items():
             self.curr_state[species_name] = spec.initial_value
 
+    def get_product(self, product):
+        return self.curr_state[product]
+
     def get_species(self, species_name):
         """
          return population
@@ -134,4 +137,3 @@ class NumPySSASolver():
                 for dep_rxn_name in self.dependent_rxns[reacName]['dependencies']:
                     propensity_values[self.propensity_func_name_map[dep_rxn_name]
                                       ] = self.propensity_functions[dep_rxn_name](species_states)
-            return self.result

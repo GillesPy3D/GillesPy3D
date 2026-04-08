@@ -96,6 +96,7 @@ class Trajectory():
             ind += 1
 
         self.data[:, self.nextRecordedDataIndex] = np.array(tempData)
+        # print(tempData)
 
         self.nextRecordedDataIndex += 1
 

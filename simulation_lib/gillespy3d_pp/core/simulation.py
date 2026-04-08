@@ -71,7 +71,9 @@ class Simulation():
             # print("made it past the inital")
             for t in timeline[1:]:
                 self.run_until(t)
+                print("recording ", t)
                 trajectory.record_state(self.solver.get_curr_state())
+                print("state ", self.solver.get_curr_state())
             result.add_trajectory(trajectory)
         return result
 
@@ -88,3 +90,6 @@ class Simulation():
         :rtype: gillespy2.Species
         """
         return self.solver.get_species(species)
+
+    def get_product(self, product):
+        return self.solver.get_product(product)
