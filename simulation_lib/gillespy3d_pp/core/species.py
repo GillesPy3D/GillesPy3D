@@ -30,7 +30,7 @@ class Species():
             This effectively restricts the movement of 'species' to the types specified in 'listOfTypes'.
     :type restrict_to: int, str, list of ints or list of strs
     """
-    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=None):
+    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0):
         if not (restrict_to is None or isinstance(restrict_to, (str, int, list))):
             raise SpeciesError("Restrict_to must be an int, str or list of ints or strs.")
         if restrict_to is not None and isinstance(restrict_to, (int, str)):
@@ -64,6 +64,7 @@ class Species():
 
         self.diffusion_coefficient = diffusion_coefficient
 
+   
     def validate(self, diffusion_coefficient=None, coverage="all"):
         """
         Validate the species.

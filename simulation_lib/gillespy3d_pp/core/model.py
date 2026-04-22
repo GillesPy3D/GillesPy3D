@@ -14,27 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
+# This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
 
 import numpy
 
-#from gillespy3d.core.domain import Domain
+# from gillespy3d.core.domain import Domain
 from gillespy3d_pp.core.species import Species
-#from gillespy3d.core.initialcondition import (
+# from gillespy3d.core.initialcondition import (
 #    InitialCondition,
 #   PlaceInitialCondition,
 #  ScatterInitialCondition,
 #    UniformInitialCondition
-#)
+# )
 from gillespy3d_pp.core.parameter import Parameter
+from gillespy3d_pp.core.simulation import Simulation
 from gillespy3d_pp.core.reaction import Reaction
-#from gillespy3d.core.boundarycondition import BoundaryCondition
-#from gillespy3d.core.datafunction import DataFunction
+# from gillespy3d.core.boundarycondition import BoundaryCondition
+# from gillespy3d.core.datafunction import DataFunction
 from gillespy3d_pp.core.timespan import TimeSpan
-#from gillespy3d.solvers.build_expression import BuildExpression
+# from gillespy3d.solvers.build_expression import BuildExpression
 from gillespy3d_pp.core.error import ModelError, ParameterError
 from gillespy3d_pp.core.result import Result
 from random import randint
+from collections import OrderedDict
 
 
 class Model():
@@ -47,24 +49,23 @@ class Model():
 
     def __init__(self, name="gillespy3d"):
         self.name = name
-        self.species = []
-        self.parameters = []
-        self.reactions = []
+        self.listOfSpecies = OrderedDict()
+        self.listOfParameters = OrderedDict()
+        self.listOfReactions = OrderedDict()
         self.initial_condition = []
         self.boundary_condition = []
         self.data_functions = []
         self.domain = None
-        #self.timespan = timespan
-
+        self.volume = 1.0
 
     def __str__(self):
-        return f"Model(name={self.name}, species={self.species}, parameters={self.parameters}, reactions={self.reactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
+        return f"Model(name={self.name}, species={self.listOfSpecies}, parameters={self.listOfParameters}, reactions={self.listOfReactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        return False; #TODO
+        return False  # TODO
 
     def add(self, components):
         """
@@ -95,10 +96,10 @@ class Model():
             others = []
             for component in components:
                 if isinstance(component, Species) or \
-                    type(component).__name__ in Species.__name__:
+                        type(component).__name__ in Species.__name__:
                     self.add_species(component)
                 elif isinstance(component, Parameter) or \
-                    type(component).__name__ in Parameter.__name__:
+                        type(component).__name__ in Parameter.__name__:
                     params.append(component)
                 else:
                     others.append(component)
@@ -124,9 +125,9 @@ class Model():
         elif isinstance(components, TimeSpan) or type(components).__name__ == TimeSpan.__name__:
             self.add_timespan(components)
         else:
-            raise ModelError(f"Unsupported component: {type(components)} is not a valid component.")
+            raise ModelError(f"Unsupported component: {
+                             type(components)} is not a valid component.")
         return components
-
 
     def add_domain(self, domain, allow_all_types=False):
         """
@@ -138,7 +139,8 @@ class Model():
         :raises ModelError: Invalid Domain object
         """
         if not (isinstance(domain, Domain) or type(domain).__name__ == "Domain"):
-            raise ModelError(Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
+            raise ModelError(
+                Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
 
         self.domain = domain
 
@@ -158,16 +160,12 @@ class Model():
             for s in species:
                 self.add_species(s)
         else:
-            #            if not (isinstance(species, Species)):
-            #                raise ModelError(f"Instance Invalid Species object, invalid input of type: {type(species).__name__}")
-            #            if not type(species).__name__ == "Species":
-            #                raise ModelError(f" Type Invalid Species object, invalid input of type: {type(species).__name__}")
-            #
             if not ((isinstance(species, Species) or type(species).__name__ == "Species")):
-                raise ModelError(f"Invalid Species object, invalid input of type: {type(species).__name__}")
+                raise ModelError(f"Invalid Species object, invalid input of type: {
+                                 type(species).__name__}")
             if Species.validate(species):
                 raise ModelError("Species.validate failed")
-            self.species.append(species)
+            self.listOfSpecies[species.name] = species
         return species
 
     def add_initial_condition(self, init_cond):
@@ -192,12 +190,12 @@ class Model():
             for initial_condition in init_cond:
                 self.add_initial_condition(initial_condition)
         elif isinstance(init_cond, InitialCondition) or type(init_cond).__name__ in names:
-            self.initial_condition.append(init_cond)  
+            self.initial_condition.append(init_cond)
         else:
-            errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {type(init_cond)}"
+            errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {
+                type(init_cond)}"
             raise ModelError(errmsg)
         return init_cond
-
 
     def add_parameter(self, parameters):
         """
@@ -215,11 +213,12 @@ class Model():
             for s in parameters:
                 self.add_parameter(s)
         else:
-            if not ((isinstance(parameters,Parameter)) or type(parameters).__name__ == "Parameter"):
-                raise ModelError(f"Invalid Parameter object, invalid input of type: {type(parameters).__name__}")
+            if not ((isinstance(parameters, Parameter)) or type(parameters).__name__ == "Parameter"):
+                raise ModelError(f"Invalid Parameter object, invalid input of type: {
+                                 type(parameters).__name__}")
             if Parameter.validate(parameters):
                 raise ModelError("Species.validate failed")
-            self.parameters.append(parameters)
+            self.listOfParameters[parameters.name] = parameters
         return parameters
 
     def add_reaction(self, reactions):
@@ -238,12 +237,13 @@ class Model():
             for s in reactions:
                 self.add_reaction(s)
         else:
-            if not ((isinstance(reactions,Reaction)) or type(reactions).__name__ == "Reaction"):
-                raise ModelError(f"Invalid Reaction object, invalid input of type: {type(reactions).__name__}")
+            if not ((isinstance(reactions, Reaction)) or type(reactions).__name__ == "Reaction"):
+                raise ModelError(f"Invalid Reaction object, invalid input of type: {
+                                 type(reactions).__name__}")
             if Reaction.validate(reactions):
                 raise ModelError("Species.validate failed")
-            self.reactions.append(reactions)
-  
+            self.listOfReactions[reactions.name] = reactions
+
         return reactions
 
     def add_boundary_condition(self, bound_cond):
@@ -265,7 +265,8 @@ class Model():
         elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ == "BoundaryCondition":
             self.boundary_condition.append(bound_cond)  # Actually add it
         else:
-            errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {type(bound_cond)}"
+            errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {
+                type(bound_cond)}"
             raise ModelError(errmsg)
         return bound_cond
 
@@ -288,9 +289,10 @@ class Model():
             for data_fn in data_function:
                 self.add_data_function(data_fn)
         elif isinstance(data_function, DataFunction) or type(data_function).__name__ == 'DataFunction':
-            self.data_functions.append(data_function) 
+            self.data_functions.append(data_function)
         else:
-            errmsg = f"data_function must be of type DataFunction or list of DataFunction not {type(data_function)}"
+            errmsg = f"data_function must be of type DataFunction or list of DataFunction not {
+                type(data_function)}"
             raise ModelError(errmsg)
         return data_function
 
@@ -313,28 +315,87 @@ class Model():
         :raises ModelError: Invalid TimeSpan
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            self.timespan = time_span  
-        elif isinstance(time_span, list): 
+            self.timespan = time_span
+        elif isinstance(time_span, list):
             self.timespan = TimeSpan(time_span, timestep_size)
         else:
-            raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {type(time_span)}")
+            raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {
+                             type(time_span)}")
 
-    def run(self, number_of_trajectories=1, seed=None):
+    def _sanitized_species_names(self):
         """
-        Simulate the model. Returns a result object containing simulation results.
+        Generate a dictionary mapping user chosen species names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
 
-        :param number_of_trajectories: How many trajectories should be run.
-        :type number_of_trajectories: int
-
-        :param seed: The random seed given to the solver.
-        :type seed: int
-
-        :returns: A GillesPy3D Result object containing simulation data.
-        :rtype: gillespy3d.core.result.Result
+        :returns: the dictionary mapping user species names to their internal GillesPy notation.
         """
-        if seed is None: 
-            seed = randint(1, 100000000)
+        species_name_mapping = OrderedDict([])
+        for i, name in enumerate(self.listOfSpecies.keys()):
+            species_name_mapping[name] = f'S[{i}]'
+        return species_name_mapping
 
-        # For now, just return a single result
-        return Result(self, seed)
+    def _sanitized_parameter_names(self):
+        """
+        Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
 
+        :returns: the dictionary mapping user parameter names to their internal GillesPy notation.
+        """
+        parameter_name_mapping = OrderedDict()
+        parameter_name_mapping['vol'] = 'V'
+        for i, name in enumerate(self.listOfParameters.keys()):
+            if name not in parameter_name_mapping:
+                parameter_name_mapping[name] = f'P{i}'
+        return parameter_name_mapping
+
+    def run(self, end_t=None, number_of_trajectories=10, *, dt):
+        """
+        Function calling simulation of the model. There are a number of
+        parameters to be set here.
+
+        :param solver: The solver by which to simulate the model. This solver object may
+            be initialized separately to specify an algorithm. Optional, defaults to ssa solver.
+        :type solver: gillespy.GillesPySolver
+
+        :param timeout: Allows a time_out value in seconds to be sent to a signal handler,
+            restricting simulation run-time
+        :type timeout: int
+
+        :param end_t: End time of simulation
+        :type end_t: int
+
+        :param sim_args: Simulation-specific arguments to be passed to sim.run_until()
+
+        :param algorithm: Specify algorithm ('ODE', 'Tau-Leaping', or 'SSA') for GillesPy3D to automatically
+            pick best solver using that algorithm.
+        :type algorithm: str
+
+        :returns:  Returns a Results object that inherits UserList and contains one or more Trajectory objects that
+            inherit UserDict. Results object supports graphing.
+
+        """
+        # incorperate loop into
+        from gillespy3d_pp import Simulation
+        sim = Simulation(self, number_of_trajectories, dt, end_t)
+        return sim.run()
+
+
+#    def run(self, number_of_trajectories=1, seed=None):
+#        """
+#        Simulate the model. Returns a result object containing simulation results.
+#
+#        :param number_of_trajectories: How many trajectories should be run.
+#        :type number_of_trajectories: int
+#
+#        :param seed: The random seed given to the solver.
+#        :type seed: int
+#
+#        :returns: A GillesPy3D Result object containing simulation data.
+#        :rtype: gillespy3d.core.result.Result
+#        """
+#        if seed is None:
+#            seed = randint(1, 100000000)
+#
+#        # For now, just return a single result
+#        return Result(self, seed)
+#
