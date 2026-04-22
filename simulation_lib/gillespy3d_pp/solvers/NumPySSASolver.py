@@ -20,14 +20,11 @@ import copy
 import random
 import math
 import numpy as np
-from gillespy3d_pp.core.result import Result
-from gillespy3d_pp.core.error import NumPySSASolverError
 from gillespy3d_pp.utils import solverutils as nputils
 
 
 class NumPySSASolver():
     name = "NumPySSASolver"
-    result = None
 
     def reset(self):
         self.curr_time = 0
@@ -88,7 +85,6 @@ class NumPySSASolver():
     def run_until(self, stop_time):
 
         propensity_values = np.zeros(self.number_reactions)
-        self.result = Result(self.model)
         while self.curr_time < stop_time:
             species_states = list(self.curr_state.values())
             for i, r_name in enumerate(self.reactions):
