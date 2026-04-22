@@ -41,10 +41,6 @@ class Simulation():
         self.number_of_trajectories = number_of_trajectories
         if not solver or solver == "SSA":
             self.solver = NumPySSASolver(self.model)
-        # elif inspect.isclass(solver):
-        #    print("class")
-        # else:
-         #   raise TypeError(f"Argument two must be either a valid string or a solver class")
 
     def reset(self):
         self.solver.reset()
@@ -54,8 +50,6 @@ class Simulation():
 
     def run(self):
         simulation_data = []
-        # print("dt is ", self.dt)
-        # print("end_t is ", self.end_t)
 
         # make if to check for timespan or use generator
         timeline = np.linspace(0, self.end_t, int(
@@ -66,14 +60,10 @@ class Simulation():
             self.reset()  # reset the simulation after each run
             trajectory = Trajectory(
                 len(species_names), len(timeline), species_names, timeline)
-            # print(self.solver.get_curr_state())
             trajectory.record_state(self.solver.get_curr_state())
-            # print("made it past the inital")
             for t in timeline[1:]:
                 self.run_until(t)
-                print("recording ", t)
                 trajectory.record_state(self.solver.get_curr_state())
-                print("state ", self.solver.get_curr_state())
             result.add_trajectory(trajectory)
         return result
 

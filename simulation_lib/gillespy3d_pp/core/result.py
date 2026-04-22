@@ -220,11 +220,11 @@ class Result(UserList):
                     traj.data[i],
                     label=name if traj_idx == 0 else None,
                     color=color,
-                    alpha=0.5 if multi else 1.0,
+                    alpha=0.9 if traj_idx == 0 else 0.2,
                 )
 
         ax.set_xlabel("Time")
-        ax.set_ylabel("Population")
+        ax.set_ylabel("Molecule Count")
         if title:
             ax.set_title(title)
         if show_legend:
