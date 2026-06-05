@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
+from gillespy3d_pp.solvers.tau_leaping_solver import TauLeapingSolver
 from gillespy3d_pp.core.error import SimulationError
 from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
@@ -39,8 +40,11 @@ class Simulation():
         self.dt = dt
         self.end_t = end_t
         self.number_of_trajectories = number_of_trajectories
-        if not solver or solver == "SSA":
+        if not solver or solver == "TAU":
+            self.solver = TauLeapingSolver(self.model)
+        if solver == "SSA":
             self.solver = NumPySSASolver(self.model)
+        print(self.solver)
 
     def reset(self):
         self.solver.reset()

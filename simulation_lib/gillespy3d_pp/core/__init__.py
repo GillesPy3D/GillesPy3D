@@ -49,7 +49,7 @@ from gillespy3d_pp.__version__ import __version__
 from .model import Model
 from .parameter import Parameter
 from .reaction import Reaction
-from .result import Result
+from .result import Result, Ensemble, build_ensemble
 from .simulation import Simulation
 # from .error import *
 from .species import Species

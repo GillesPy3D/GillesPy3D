@@ -51,9 +51,9 @@ class TimespanError(ModelError):
     """
 
 
-class NumPySSASolverError(Exception):
+class SolverError(Exception):
     """
-    Class for exceptions in the NumPySSASolver module.
+    Class for exceptions raised by solver modules (e.g., NumPySSASolver, TauLeapingSolver).
     """
 
 
