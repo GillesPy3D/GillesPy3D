@@ -376,7 +376,7 @@ class Model():
         """
         # incorperate loop into
         from gillespy3d_pp import Simulation
-        sim = Simulation(self, number_of_trajectories, dt, end_t)
+        sim = Simulation(self, number_of_trajectories, dt, end_t, solver="SSA")
         return sim.run()
 
 

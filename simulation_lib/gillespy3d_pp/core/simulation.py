@@ -16,6 +16,7 @@
 
 from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
 from gillespy3d_pp.solvers.tau_leaping_solver import TauLeapingSolver
+from gillespy3d_pp.solvers.ode_solver import ODESolver
 from gillespy3d_pp.core.error import SimulationError
 from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
@@ -44,6 +45,8 @@ class Simulation():
             self.solver = TauLeapingSolver(self.model)
         if solver == "SSA":
             self.solver = NumPySSASolver(self.model)
+        if solver == "ODE":
+            self.solver = ODESolver(self.model)
         print(self.solver)
 
     def reset(self):
@@ -60,7 +63,10 @@ class Simulation():
             round(self.end_t / self.dt + 1)))
         species_names = list(self.model.listOfSpecies.keys())
         result = Result(simulation_data)
-        for traj in range(self.number_of_trajectories):
+        # ODE is deterministic: one integration is the definitive result, so
+        # additional trajectories would just be identical copies.
+        n_traj = 1 if isinstance(self.solver, ODESolver) else self.number_of_trajectories
+        for traj in range(n_traj):
             self.reset()  # reset the simulation after each run
             trajectory = Trajectory(
                 len(species_names), len(timeline), species_names, timeline)
