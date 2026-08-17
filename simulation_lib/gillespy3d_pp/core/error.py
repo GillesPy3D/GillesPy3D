@@ -61,3 +61,10 @@ class ResultError(ModelError):
     """
     Class for exception in the results module.
     """
+
+
+class FunctionDefinitionError(ModelError):
+    """
+    Class for exception in function definition module
+    """
+    pass
