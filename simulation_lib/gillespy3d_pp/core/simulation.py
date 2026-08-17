@@ -17,6 +17,7 @@
 from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
 from gillespy3d_pp.solvers.tau_leaping_solver import TauLeapingSolver
 from gillespy3d_pp.solvers.ode_solver import ODESolver
+from gillespy3d_pp.solvers.tau_hybrid_solver import TauHybridSolver
 from gillespy3d_pp.core.error import SimulationError
 from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
@@ -41,12 +42,17 @@ class Simulation():
         self.dt = dt
         self.end_t = end_t
         self.number_of_trajectories = number_of_trajectories
-        if not solver or solver == "TAU":
-            self.solver = TauLeapingSolver(self.model)
-        if solver == "SSA":
+        if not solver or solver == "HYBRID":
+            self.solver = TauHybridSolver(self.model)
+        elif solver == "SSA":
             self.solver = NumPySSASolver(self.model)
-        if solver == "ODE":
+        elif solver == "ODE":
             self.solver = ODESolver(self.model)
+        elif solver == "TAU":
+            self.solver = TauLeapingSolver(self.model)
+        else:
+            raise SimulationError(
+                f"Unknown solver '{solver}'. Expected one of: TAU, SSA, ODE, HYBRID")
         print(self.solver)
 
     def reset(self):
