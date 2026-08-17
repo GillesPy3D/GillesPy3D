@@ -186,6 +186,12 @@ class Result(UserList):
     def add_trajectory(self, trajectory):
         self.data.append(trajectory)
 
+    def to_ensemble(self):
+        """
+        Build an :class:`Ensemble` from this Result's trajectories.
+        """
+        return Ensemble(self.data)
+
     def plot(self, included_species=None, title=None, show_legend=True):
         """
         Plot all species populations over time for every trajectory in the result.
@@ -231,3 +237,133 @@ class Result(UserList):
             ax.legend()
         plt.tight_layout()
         plt.show()
+
+
+class Ensemble():
+    """
+    Accumulator for trajectories collected across one or many simulations.
+
+    The Ensemble stores trajectory data in a 3D array of shape
+    ``(num_trajs, num_species, num_timepoints)`` and exposes a :meth:`mean`
+    helper so callers can compute a mean ensemble after running an arbitrary
+    number of simulations.
+
+    :param trajectories: Initial trajectories (a :class:`Result`, a list of
+        :class:`Trajectory`, or empty / ``None``). Subsequent batches can be
+        added via :meth:`add_trajectory` or :meth:`add_trajectories`.
+    :type trajectories: Result | list[Trajectory] | None
+    """
+
+    def __init__(self, trajectories=None):
+        self.num_trajs = 0
+        self.num_species = None
+        self.num_timepoints = None
+        self.species_names = None
+        self.timeline = None
+        self._data = []
+
+        if trajectories:
+            self.add_trajectories(trajectories)
+
+    @property
+    def data(self):
+        """Stacked trajectory data, shape ``(num_trajs, num_species, num_timepoints)``."""
+        if not self._data:
+            return np.empty((0, 0, 0))
+        return np.stack(self._data, axis=0)
+
+    def _adopt_shape_from(self, trajectory):
+        self.num_species = trajectory.num_species
+        self.num_timepoints = trajectory.num_timepoints
+        self.species_names = list(trajectory.species_names)
+        self.timeline = np.asarray(trajectory.timeline)
+
+    def _validate_shape(self, trajectory):
+        if trajectory.num_species != self.num_species:
+            raise ResultError(
+                f"Trajectory has {trajectory.num_species} species, "
+                f"ensemble expects {self.num_species}."
+            )
+        if trajectory.num_timepoints != self.num_timepoints:
+            raise ResultError(
+                f"Trajectory has {trajectory.num_timepoints} timepoints, "
+                f"ensemble expects {self.num_timepoints}."
+            )
+
+    def add_trajectory(self, trajectory):
+        """Append a single :class:`Trajectory` to the ensemble."""
+        if self.num_species is None:
+            self._adopt_shape_from(trajectory)
+        else:
+            self._validate_shape(trajectory)
+        self._data.append(np.asarray(trajectory.data, dtype=float).copy())
+        self.num_trajs += 1
+
+    def add_trajectories(self, trajectories):
+        """Append every trajectory in a :class:`Result` or iterable."""
+        for traj in trajectories:
+            self.add_trajectory(traj)
+
+    def mean(self):
+        """
+        Mean across trajectories at each timepoint.
+
+        :returns: array of shape ``(num_species, num_timepoints)``.
+        """
+        if self.num_trajs == 0:
+            raise ResultError("Ensemble is empty; cannot compute mean.")
+        return self.data.mean(axis=0)
+
+    def std(self):
+        """Standard deviation across trajectories, shape ``(num_species, num_timepoints)``."""
+        if self.num_trajs == 0:
+            raise ResultError("Ensemble is empty; cannot compute std.")
+        return self.data.std(axis=0)
+
+    def plot_mean(self, included_species=None, title=None, show_legend=True, show_band=False):
+        """
+        Plot the mean trajectory per species.
+
+        :param included_species: Optional list of species names to include.
+        :param show_band: If True, shade ±1 std around the mean.
+        """
+        if self.num_trajs == 0:
+            return
+
+        colors = common_rgb_values()
+        fig, ax = plt.subplots()
+        mean = self.mean()
+        sd = self.std() if show_band else None
+
+        for i, name in enumerate(self.species_names):
+            if included_species and name not in included_species:
+                continue
+            color = colors[i % len(colors)]
+            ax.plot(self.timeline, mean[i], label=name, color=color)
+            if show_band:
+                ax.fill_between(
+                    self.timeline,
+                    mean[i] - sd[i],
+                    mean[i] + sd[i],
+                    color=color,
+                    alpha=0.2,
+                )
+
+        ax.set_xlabel("Time")
+        ax.set_ylabel("Mean Molecule Count")
+        if title:
+            ax.set_title(title)
+        if show_legend:
+            ax.legend()
+        plt.tight_layout()
+        plt.show()
+
+
+def build_ensemble(trajectories):
+    """
+    Build an :class:`Ensemble` from a :class:`Result` or list of trajectories.
+
+    Convenience wrapper around ``Ensemble(trajectories)`` for use in scripts
+    and notebooks where the call site reads better as a function.
+    """
+    return Ensemble(trajectories)
