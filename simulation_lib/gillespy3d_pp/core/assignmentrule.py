@@ -14,18 +14,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import uuid
 
 from gillespy3d_pp.core.sortableobject import SortableObject
 
 
-class RateRule(SortableObject):
+class AssignmentRule(SortableObject):
     """
-    A RateRule is used to express equations that determine the rates of change
-    of variables. This would correspond to a function in the form of dx/dt=f(W)
+    An AssignmentRule is used to express equations that set the values of
+    variables.  This would correspond to a function in the form of x = f(V)
 
-    :param name: Name of Rule
+    :param name: Name of the Rule
     :type name: str
 
     :param variable: Target Species/Parameter to be modified by rule
@@ -35,13 +34,13 @@ class RateRule(SortableObject):
     :type formula: str
     """
 
-    def __init__(self, variable=None, formula='', name=None):
+    def __init__(self, variable=None, formula=None, name=None):
         if name in (None, ""):
-            self.name = f'rr{uuid.uuid4()}'.replace('-', '_')
+            self.name = f'ar{uuid.uuid4()}'.replace('-', '_')
         else:
             self.name = name
-        self.formula = formula
         self.variable = variable
+        self.formula = formula
 
     def __str__(self):
         var_name = self.variable if isinstance(
@@ -49,6 +48,18 @@ class RateRule(SortableObject):
         return f"{self.name}: Var: {var_name}: {self.formula}"
 
     def sanitized_formula(self, species_mappings, parameter_mappings):
+        '''
+        Sanitize the assignment rule formula.
+
+        :param species_mappings: Mapping of species names to sanitized species names.
+        :type species_mappings: dict
+
+        :param parameter_mappings: Mapping of parameter names to sanitized parameter names.
+        :type parameter_mappings: dict
+
+        :returns: The sanitized formula.
+        :rtype: str
+        '''
         names = sorted(list(species_mappings.keys()) + list(parameter_mappings.keys()), key=lambda x: len(x),
                        reverse=True)
         replacements = [parameter_mappings[name] if name in parameter_mappings else species_mappings[name]
