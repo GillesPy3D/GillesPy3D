@@ -71,11 +71,14 @@ class Simulation():
         result = Result(simulation_data)
         # ODE is deterministic: one integration is the definitive result, so
         # additional trajectories would just be identical copies.
-        n_traj = 1 if isinstance(self.solver, ODESolver) else self.number_of_trajectories
+        n_traj = 1 if isinstance(
+            self.solver, ODESolver) else self.number_of_trajectories
         for traj in range(n_traj):
             self.reset()  # reset the simulation after each run
             trajectory = Trajectory(
                 len(species_names), len(timeline), species_names, timeline)
+
+            print("Curr state: ", self.solver.get_curr_state())
             trajectory.record_state(self.solver.get_curr_state())
             for t in timeline[1:]:
                 self.run_until(t)
