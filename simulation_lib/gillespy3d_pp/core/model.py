@@ -382,7 +382,8 @@ class Model():
         """
         # incorperate loop into
         from gillespy3d_pp import Simulation
-        sim = Simulation(self, number_of_trajectories, dt, end_t, solver="SSA")
+        sim = Simulation(self, number_of_trajectories,
+                         dt, end_t, solver="HYBRID")
         return sim.run()
 
 
@@ -405,6 +406,7 @@ class Model():
 #        # For now, just return a single result
 #        return Result(self, seed)
 #
+
 
     def add_rate_rule(self, rate_rule):
         """
@@ -622,7 +624,6 @@ class Model():
         """
         return self.listOfFunctionDefinitions
 
-
     def add_assignment_rule(self, assignment_rule):
         """
         Add an assignment rule, or list of assignment rules to the model.
@@ -640,18 +641,23 @@ class Model():
                 self.add_assignment_rule(a_rule)
         elif isinstance(assignment_rule, AssignmentRule) or type(assignment_rule).__name__ == "AssignmentRule":
             self._problem_with_name(assignment_rule.name)
-            ar_vars = [a_rule.variable for a_rule in self.listOfAssignmentRules.values()]
-            rr_vars = [r_rule.variable for r_rule in self.listOfRateRules.values()]
+            ar_vars = [
+                a_rule.variable for a_rule in self.listOfAssignmentRules.values()]
+            rr_vars = [
+                r_rule.variable for r_rule in self.listOfRateRules.values()]
             if assignment_rule.variable in rr_vars:
                 raise ModelError(
-                    f"Duplicate variable in rate_rules AND assignment_rules: {assignment_rule.variable}."
+                    f"Duplicate variable in rate_rules AND assignment_rules: {
+                        assignment_rule.variable}."
                 )
             if assignment_rule.variable in ar_vars:
-                raise ModelError(f"Duplicate variable in assignments_rules: {assignment_rule.variable}.")
+                raise ModelError(f"Duplicate variable in assignments_rules: {
+                                 assignment_rule.variable}.")
             self._resolve_rule(assignment_rule)
             self.listOfAssignmentRules[assignment_rule.name] = assignment_rule
             # Build the sanitized assignment rule
-            sanitized_assignment_rule = AssignmentRule(name=f'AR{len(self._listOfAssignmentRules)}')
+            sanitized_assignment_rule = AssignmentRule(
+                name=f'AR{len(self._listOfAssignmentRules)}')
             sanitized_assignment_rule.formula = assignment_rule.sanitized_formula(
                 self._listOfSpecies, self._listOfParameters
             )
@@ -700,7 +706,8 @@ class Model():
         :raises ModelError: If the assignment rule is not part of the model.
         """
         if name not in self.listOfAssignmentRules:
-            raise ModelError(f"{self.name} does not contain an assignment rule named {name}.")
+            raise ModelError(
+                f"{self.name} does not contain an assignment rule named {name}.")
         return self.listOfAssignmentRules[name]
 
     def get_all_assignment_rules(self):
