@@ -37,9 +37,20 @@ class Species():
     :param restrict_to: Set the diffusion coefficient to zero for 'species' in all types not in 'listOfTypes'. \
             This effectively restricts the movement of 'species' to the types specified in 'listOfTypes'.
     :type restrict_to: int, str, list of ints or list of strs
+
+    :param switch_tol: ***FOR USE WITH TauHybridSolver and mode='dynamic' ONLY***
+        Tolerance level for considering a dynamic species deterministic, based on
+        the coefficient of variation of the estimated population change.
+    :type switch_tol: float
+
+    :param switch_min: ***FOR USE WITH TauHybridSolver and mode='dynamic' ONLY***
+        Minimum population value at which a dynamic species is considered
+        deterministic. If set to a nonzero value, this is used instead of switch_tol.
+    :type switch_min: float
     """
 
-    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0, mode=None):
+    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0, mode=None,
+                 switch_tol=0.03, switch_min=0):
         if not (restrict_to is None or isinstance(restrict_to, (str, int, list))):
             raise SpeciesError(
                 "Restrict_to must be an int, str or list of ints or strs.")
@@ -50,6 +61,8 @@ class Species():
         self.mode = mode
         self.diffusion_coefficient = diffusion_coefficient
         self.initial_value = initial_value
+        self.switch_tol = switch_tol
+        self.switch_min = switch_min
         if restrict_to is None:
             self.restrict_to = restrict_to
         else:
