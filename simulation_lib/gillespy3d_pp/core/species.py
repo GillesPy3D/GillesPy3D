@@ -15,9 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from gillespy3d_pp.core.parameter import Parameter
 from gillespy3d_pp.core.error import SpeciesError
+from gillespy3d_pp.core.sortableobject import SortableObject
 
 
-class Species():
+class Species(SortableObject):
     """
     Model of a biochemical species. Must be assigned a diffusion coefficent.
 
