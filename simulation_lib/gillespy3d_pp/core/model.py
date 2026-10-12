@@ -33,7 +33,7 @@ from gillespy3d_pp.core.reaction import Reaction
 # from gillespy3d.core.datafunction import DataFunction
 from gillespy3d_pp.core.timespan import TimeSpan
 # from gillespy3d.solvers.build_expression import BuildExpression
-from gillespy3d_pp.core.error import ModelError, ParameterError
+from gillespy3d_pp.core.error import ModelError, ParameterError, RateRuleError, AssignmentRuleError
 from gillespy3d_pp.core.result import Result
 from gillespy3d_pp.core.raterule import RateRule
 from gillespy3d_pp.core.assignmentrule import AssignmentRule
@@ -152,31 +152,6 @@ class Model():
                              type(components)} is not a valid component.")
         return components
 
-    def _resolve_rule(self, rule):
-        def validate(rule):
-            from gillespy2.core.gillespyError import RateRuleError, AssignmentRuleError  # pylint: disable=import-outside-toplevel
-            errors = {"RateRule": RateRuleError,
-                "AssignmentRule": AssignmentRuleError}
-            error_class = errors[type(rule).__name__]
-            if rule.variable is None:
-                raise error_class(
-                    'A GillesPy2 Rate/Assignment Rule must be associated with a valid variable')
-            if rule.formula == '':
-                raise error_class(
-                    'Invalid Rate/Assignment Rule. Expression must be a non-empty string value')
-        try:
-            validate(rule)
-
-            # Confirm that the variable is part of the model.
-            name = rule.variable if isinstance(
-                rule.variable, str) else rule.variable.name
-            rule.variable = self.get_element(name)
-        except ModelError as err:
-            raise ModelError(
-                f"Could not add/resolve rate_rule: {
-                    rule.name}, Reason given: {err}"
-            ) from err
-
     def add_domain(self, domain, allow_all_types=False):
         """
         Add a spatial domain to the model
@@ -191,37 +166,6 @@ class Model():
                 Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
 
         self.domain = domain
-
-    def get_element(self, name):
-        """
-        Get a model element specified by name.
-
-        :param name: Name of the element to be returned.
-        :type name: str
-
-        :returns: The specified gillespy2.Model element.
-        :rtype: Species, Parameters, Reactions, Events, RateRules, AssignmentRules, \
-                FunctionDefinitions, or TimeSpan
-
-        :raises ModelError: If the element is not part of the model.
-        """
-        if name in ("tspan", "timespan"):
-            return self.tspan
-        if name in self.listOfSpecies:
-            return self.get_species(name)
-        if name in self.listOfParameters:
-            return self.get_parameter(name)
-        if name in self.listOfReactions:
-            return self.get_reaction(name)
-        if name in self.listOfRateRules:
-            return self.get_rate_rule(name)
-        if name in self.listOfAssignmentRules:
-            return self.get_assignment_rule(name)
-        if name in self.listOfEvents:
-            return self.get_event(name)
-        if name in self.listOfFunctionDefinitions:
-            return self.get_function_definition(name)
-        raise ModelError(f"{self.name} does not contain an element named {name}.")
 
     def add_species(self, species):
         """
@@ -558,6 +502,48 @@ class Model():
         self.listOfRateRules.clear()
         self._listOfRateRules.clear()
 
+
+    def get_species(self, name):
+        """
+        Returns a species object by name.
+
+        :param name: Name of the species object to be returned.
+        :type name: str
+
+        :returns: The specified species object.
+        :rtype: gillespy2.Species
+
+        :raises ModelError: If the species is not part of the model.
+        """
+        if name not in self.listOfSpecies:
+            raise ModelError(f"{self.name} does not contain a species named {name}.")
+        return self.listOfSpecies[name]
+
+
+
+    def sanitized_species_names(self):
+        """
+        Generate a dictionary mapping user chosen species names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
+
+        :returns: the dictionary mapping user species names to their internal GillesPy notation.
+        """
+        species_name_mapping = OrderedDict([])
+        for i, name in enumerate(self.listOfSpecies.keys()):
+            species_name_mapping[name] = f'S[{i}]'
+        return species_name_mapping
+
+
+
+    def get_all_species(self):
+        """
+        Get all of the species in the model object.
+
+        :returns: A dict of all species in the model, in the form: {name : species object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfSpecies
+
     def get_rate_rule(self, name):
         """
         Returns a rate rule object by name.
@@ -622,6 +608,30 @@ class Model():
                     f'Name "{name}" is unavailable. Names must not contain '
                     f'special characters: {chars}.'
                 )
+
+    def _resolve_rule(self, rule):
+        def validate(rule):
+            errors = {"RateRule": RateRuleError,
+                "AssignmentRule": AssignmentRuleError}
+            error_class = errors[type(rule).__name__]
+            if rule.variable is None:
+                raise error_class(
+                    'A GillesPy2 Rate/Assignment Rule must be associated with a valid variable')
+            if rule.formula == '':
+                raise error_class(
+                    'Invalid Rate/Assignment Rule. Expression must be a non-empty string value')
+        try:
+            validate(rule)
+
+            # Confirm that the variable is part of the model.
+            name = rule.variable if isinstance(
+                rule.variable, str) else rule.variable.name
+            rule.variable = self.get_element(name)
+        except ModelError as err:
+            raise ModelError(
+                f"Could not add/resolve rate_rule: {
+                    rule.name}, Reason given: {err}"
+            ) from err
 
     def add_function_definition(self, function_definition):
         """
@@ -789,3 +799,34 @@ class Model():
         :returns: A dict of all assignemt rules in the model, in the form: {name: reaction object}.
         """
         return self.listOfAssignmentRules
+
+    def get_element(self, name):
+        """
+        Get a model element specified by name.
+
+        :param name: Name of the element to be returned.
+        :type name: str
+
+        :returns: The specified gillespy2.Model element.
+        :rtype: Species, Parameters, Reactions, Events, RateRules, AssignmentRules, \
+                FunctionDefinitions, or TimeSpan
+
+        :raises ModelError: If the element is not part of the model.
+        """
+        if name in ("tspan", "timespan"):
+            return self.tspan
+        if name in self.listOfSpecies:
+            return self.get_species(name)
+        if name in self.listOfParameters:
+            return self.get_parameter(name)
+        if name in self.listOfReactions:
+            return self.get_reaction(name)
+        if name in self.listOfRateRules:
+            return self.get_rate_rule(name)
+        if name in self.listOfAssignmentRules:
+            return self.get_assignment_rule(name)
+        if name in self.listOfEvents:
+            return self.get_event(name)
+        if name in self.listOfFunctionDefinitions:
+            return self.get_function_definition(name)
+        raise ModelError(f"{self.name} does not contain an element named {name}.")
