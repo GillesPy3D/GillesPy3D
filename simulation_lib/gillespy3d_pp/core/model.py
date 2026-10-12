@@ -191,6 +191,32 @@ class Model():
             self.listOfSpecies[species.name] = species
         return species
 
+    def get_species(self, name):
+        """
+        Returns a species object by name.
+
+        :param name: Name of the species object to be returned.
+        :type name: str
+
+        :returns: The specified species object.
+        :rtype: gillespy2.Species
+
+        :raises ModelError: If the species is not part of the model.
+        """
+        if name not in self.listOfSpecies:
+            raise ModelError(
+                f"{self.name} does not contain a species named {name}.")
+        return self.listOfSpecies[name]
+
+    def get_all_species(self):
+        """
+        Get all of the species in the model object.
+
+        :returns: A dict of all species in the model, in the form: {name : species object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfSpecies
+
     def add_initial_condition(self, init_cond):
         """
         Add an initial condition object to the initialization of the model.
@@ -244,6 +270,32 @@ class Model():
             self.listOfParameters[parameters.name] = parameters
         return parameters
 
+    def get_parameter(self, name):
+        """
+        Returns a parameter object by name.
+
+        :param name: Name of the parameter object to be returned
+        :type name: str
+
+        :returns: The specified parameter object.
+        :rtype: gillespy2.Parameter
+
+        :raises ModelError: If the parameter is not part of the model.
+        """
+        if name not in self.listOfParameters:
+            raise ModelError(
+                f"{self.name} does not contain a parameter named {name}.")
+        return self.listOfParameters[name]
+
+    def get_all_parameters(self):
+        """
+        Get all of the parameters in the model object.
+
+        :returns: A dict of all parameters in the model, in the form: {name : parameter object}
+        :rtype: OrderedDict
+        """
+        return self.listOfParameters
+
     def add_reaction(self, reactions):
         """
         Adds a reaction, or list of reactions to the model.
@@ -268,6 +320,32 @@ class Model():
             self.listOfReactions[reactions.name] = reactions
 
         return reactions
+
+    def get_reaction(self, name):
+        """
+        Returns a reaction object by name.
+
+        :param name: Name of the reaction object to be returned
+        :type name: str
+
+        :returns: The specified reaction object.
+        :rtype: gillespy2.Reaction
+
+        :raises ModelError: If the reaction is not part of the model.
+        """
+        if name not in self.listOfReactions:
+            raise ModelError(
+                f"{self.name} does not contain a reaction named {name}.")
+        return self.listOfReactions[name]
+
+    def get_all_reactions(self):
+        """
+        Get all of the reactions in the model object.
+
+        :returns: A dict of all reactions in the model, in the form: {name : reaction object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfReactions
 
     def add_boundary_condition(self, bound_cond):
         """
@@ -502,48 +580,6 @@ class Model():
         self.listOfRateRules.clear()
         self._listOfRateRules.clear()
 
-
-    def get_species(self, name):
-        """
-        Returns a species object by name.
-
-        :param name: Name of the species object to be returned.
-        :type name: str
-
-        :returns: The specified species object.
-        :rtype: gillespy2.Species
-
-        :raises ModelError: If the species is not part of the model.
-        """
-        if name not in self.listOfSpecies:
-            raise ModelError(f"{self.name} does not contain a species named {name}.")
-        return self.listOfSpecies[name]
-
-
-
-    def sanitized_species_names(self):
-        """
-        Generate a dictionary mapping user chosen species names to simplified formats which will be used
-        later on by GillesPySolvers evaluating reaction propensity functions.
-
-        :returns: the dictionary mapping user species names to their internal GillesPy notation.
-        """
-        species_name_mapping = OrderedDict([])
-        for i, name in enumerate(self.listOfSpecies.keys()):
-            species_name_mapping[name] = f'S[{i}]'
-        return species_name_mapping
-
-
-
-    def get_all_species(self):
-        """
-        Get all of the species in the model object.
-
-        :returns: A dict of all species in the model, in the form: {name : species object}.
-        :rtype: OrderedDict
-        """
-        return self.listOfSpecies
-
     def get_rate_rule(self, name):
         """
         Returns a rate rule object by name.
@@ -612,7 +648,7 @@ class Model():
     def _resolve_rule(self, rule):
         def validate(rule):
             errors = {"RateRule": RateRuleError,
-                "AssignmentRule": AssignmentRuleError}
+                      "AssignmentRule": AssignmentRuleError}
             error_class = errors[type(rule).__name__]
             if rule.variable is None:
                 raise error_class(
@@ -800,6 +836,31 @@ class Model():
         """
         return self.listOfAssignmentRules
 
+    def get_event(self, name):
+        """
+        Returns an event object by name.
+
+        :param name: Name of the event object to be returned.
+        :type name: str
+
+        :returns: The specified event object.
+        :rtype: gillespy2.Event
+
+        :raises ModelError: If the event is not part of the model.
+        """
+        if name not in self.listOfEvents:
+            raise ModelError(
+                f"{self.name} does not contain an event named {name}.")
+        return self.listOfEvents[name]
+
+    def get_all_events(self):
+        """
+        Get all of the events in the model object.
+
+        :returns: A dict of all evetns in the model, in the form: {name : event object}
+        """
+        return self.listOfEvents
+
     def get_element(self, name):
         """
         Get a model element specified by name.
@@ -814,7 +875,7 @@ class Model():
         :raises ModelError: If the element is not part of the model.
         """
         if name in ("tspan", "timespan"):
-            return self.tspan
+            return self.timespan
         if name in self.listOfSpecies:
             return self.get_species(name)
         if name in self.listOfParameters:
@@ -829,4 +890,5 @@ class Model():
             return self.get_event(name)
         if name in self.listOfFunctionDefinitions:
             return self.get_function_definition(name)
-        raise ModelError(f"{self.name} does not contain an element named {name}.")
+        raise ModelError(
+            f"{self.name} does not contain an element named {name}.")

@@ -78,7 +78,6 @@ class Simulation():
             trajectory = Trajectory(
                 len(species_names), len(timeline), species_names, timeline)
 
-            print("Curr state: ", self.solver.get_curr_state())
             trajectory.record_state(self.solver.get_curr_state())
             for t in timeline[1:]:
                 self.run_until(t)
