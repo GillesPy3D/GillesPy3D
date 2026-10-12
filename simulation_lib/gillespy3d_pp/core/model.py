@@ -171,24 +171,30 @@ class Model():
         """
         Adds a species, or list of species to the model.
 
-        :param species: The species or list of species to be added to the model object.
-        :type species: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
+        :param species: The species or list of species to be added to the model object
+        :type species: gillespy2.Species | list of gillespy2.Species
 
         :returns: The species or list of species that were added to the model.
-        :rtype: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
+        :rtype: gillespy2.Species | list of gillespy2.Species
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
         if isinstance(species, list):
-            for s in species:
-                self.add_species(s)
+            for spec in sorted(species):
+                self.add_species(spec)
+        elif isinstance(species, Species) or type(species).__name__ == "Species":
+            try:
+                species.validate()
+                self._problem_with_name(species.name)
+                self.listOfSpecies[species.name] = species
+                self._listOfSpecies[species.name] = f'S{len(self._listOfSpecies)}'
+            except ModelError as err:
+                errmsg = f"Could not add species: {species.name}, Reason given: {err}"
+                raise ModelError(errmsg) from err
         else:
-            if not ((isinstance(species, Species) or type(species).__name__ == "Species")):
-                raise ModelError(f"Invalid Species object, invalid input of type: {
-                                 type(species).__name__}")
-            if Species.validate(species):
-                raise ModelError("Species.validate failed")
-            self.listOfSpecies[species.name] = species
+            errmsg = f"species must be of type Species or list of Species not {
+                type(species)}."
+            raise ModelError(errmsg)
         return species
 
     def get_species(self, name):
@@ -268,6 +274,8 @@ class Model():
             if Parameter.validate(parameters):
                 raise ModelError("Species.validate failed")
             self.listOfParameters[parameters.name] = parameters
+
+            self._listOfParameters[parameters.name] = f'P{len(self._listOfParameters)}'
         return parameters
 
     def get_parameter(self, name):
@@ -501,6 +509,7 @@ class Model():
 #        # For now, just return a single result
 #        return Result(self, seed)
 #
+
 
     def add_rate_rule(self, rate_rule):
         """
