@@ -16,6 +16,7 @@
 from gillespy3d_pp.core.parameter import Parameter
 from gillespy3d_pp.core.error import SpeciesError
 
+
 class Species():
     """
     Model of a biochemical species. Must be assigned a diffusion coefficent.
@@ -26,19 +27,29 @@ class Species():
     :param diffusion_coefficient: Non-constant coefficient of diffusion for Species.
     :type diffusion_coefficient: float
 
+    :param mode: ***FOR USE WITH TauHybridSolver ONLY***
+        Sets the mode of representation of this species for the TauHybridSolver,
+        can be discrete, continuous, or dynamic.
+        mode='dynamic' - Allows a species to be represented as either discrete or continuous
+        mode='continuous' - Species will only be represented as continuous
+        mode='discrete' - Species will only be represented as discrete
+
     :param restrict_to: Set the diffusion coefficient to zero for 'species' in all types not in 'listOfTypes'. \
             This effectively restricts the movement of 'species' to the types specified in 'listOfTypes'.
     :type restrict_to: int, str, list of ints or list of strs
     """
-    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0):
+
+    def __init__(self, name=None, diffusion_coefficient=0, restrict_to=None, initial_value=0, mode=None):
         if not (restrict_to is None or isinstance(restrict_to, (str, int, list))):
-            raise SpeciesError("Restrict_to must be an int, str or list of ints or strs.")
+            raise SpeciesError(
+                "Restrict_to must be an int, str or list of ints or strs.")
         if restrict_to is not None and isinstance(restrict_to, (int, str)):
             restrict_to = [restrict_to]
 
         self.name = name
+        self.mode = mode
         self.diffusion_coefficient = diffusion_coefficient
-        self.initial_value= initial_value
+        self.initial_value = initial_value
         if restrict_to is None:
             self.restrict_to = restrict_to
         else:
@@ -46,7 +57,10 @@ class Species():
             for type_id in restrict_to:
                 self.restrict_to.append(f"type_{type_id}")
 
-        #self.validate()
+        self.initial_value = float(
+            initial_value) if self.mode == "continuous" else int(initial_value)
+        # self.validate()
+
     def __str__(self):
         print_string = f"{self.name}: {str(self.diffusion_coefficient)}"
         return print_string
@@ -60,11 +74,11 @@ class Species():
 
         :raises SpeciesError: If diffusion_coefficient is negative or not a valid type.
         """
-        self.validate(diffusion_coefficient=diffusion_coefficient, coverage="diffusion_coefficient")
+        self.validate(diffusion_coefficient=diffusion_coefficient,
+                      coverage="diffusion_coefficient")
 
         self.diffusion_coefficient = diffusion_coefficient
 
-   
     def validate(self, diffusion_coefficient=None, coverage="all"):
         """
         Validate the species.
@@ -81,7 +95,8 @@ class Species():
             if self.name is None:
                 raise SpeciesError("name can't be None type.")
             if not isinstance(self.name, str):
-                raise SpeciesError(f"name must be of type str not {type(self.name)}.")
+                raise SpeciesError(f"name must be of type str not {
+                                   type(self.name)}.")
             if self.name == "":
                 raise SpeciesError("name can't be an empty str.")
 
@@ -92,19 +107,19 @@ class Species():
 
             if diffusion_coefficient is None:
                 raise SpeciesError("diffusion_coefficient can't be None type.")
-            if not (isinstance(diffusion_coefficient, (Parameter, str, float, int)) or \
+            if not (isinstance(diffusion_coefficient, (Parameter, str, float, int)) or
                     type(diffusion_coefficient).__name__ == 'Parameter'):
                 errmsg = "diffusion_coefficient must be of type GillesPy3D.Parameter, "
                 errmsg += f"str, int, float not {type(diffusion_coefficient)}"
                 raise SpeciesError(errmsg)
             if isinstance(diffusion_coefficient, (int, float)) and diffusion_coefficient < 0:
-                raise SpeciesError("diffusion_coefficient must be a positive value.")
+                raise SpeciesError(
+                    "diffusion_coefficient must be a positive value.")
 
         # Check restrict_to
         if coverage in ("all", "restrict_to"):
             if not (self.restrict_to is None or isinstance(self.restrict_to, list)):
-                raise SpeciesError("restrict_to must be None or of type int, str, or list")
+                raise SpeciesError(
+                    "restrict_to must be None or of type int, str, or list")
             if self.restrict_to is not None and len(self.restrict_to) == 0:
                 raise SpeciesError("restrict_to can't be an empty list.")
-
-

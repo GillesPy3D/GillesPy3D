@@ -21,6 +21,7 @@ import random
 import math
 import numpy as np
 from gillespy3d_pp.utils import solverutils as nputils
+from gillespy3d_pp.core.error import SolverError
 
 
 class NumPySSASolver():
@@ -46,7 +47,7 @@ class NumPySSASolver():
 
     def __init__(self, model=None):
         if model is None:
-            raise NumPySSASolverError(
+            raise SolverError(
                 "A model is required to run the simulation.")
         self.model = copy.deepcopy(model)
         self.species, self.species_mappings, self.number_species = nputils.numpy_initialization(
@@ -92,7 +93,7 @@ class NumPySSASolver():
                     species_states)
 
             if np.any(propensity_values < 0):
-                raise NumPySSASolverError("Negative propensity detected")
+                raise SolverError("Negative propensity detected")
 
             propensity_sum = np.sum(propensity_values)
             if propensity_sum <= 0:
@@ -103,7 +104,7 @@ class NumPySSASolver():
             tau = -math.log(rand) / propensity_sum
             self._tau_samples.append(tau)
             if tau <= 0:
-                raise NumPySSASolverError("Non-positive tau")
+                raise SolverError("Non-positive tau")
 
             if self.curr_time + tau > stop_time:
                 self.curr_time = stop_time
@@ -114,17 +115,17 @@ class NumPySSASolver():
             for potential_reaction in range(self.number_reactions):
                 cumulative_sum -= propensity_values[potential_reaction]
                 if potential_reaction >= self.number_reactions:
-                    raise NumPySSASolverError("Invalid reaction index")
+                    raise SolverError("Invalid reaction index")
 
                 if cumulative_sum <= 0:
                     found_reaction = True
                     break
             if not found_reaction:
-                raise NumPySSASolverError("Reaction not found")
+                raise SolverError("Reaction not found")
             for i, spec in enumerate(self.species):
                 self.curr_state[spec] += self.species_changes[potential_reaction][i]
                 if self.curr_state[spec] < 0:
-                    raise NumPySSASolverError(
+                    raise SolverError(
                         f"Negative species count for {spec}")
 
                 reacName = self.reactions[potential_reaction]  # type: ignore
