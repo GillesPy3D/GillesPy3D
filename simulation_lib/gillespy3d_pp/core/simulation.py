@@ -21,6 +21,10 @@ from gillespy3d_pp.solvers.tau_hybrid_solver import TauHybridSolver
 from gillespy3d_pp.core.error import SimulationError
 from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
+import logging
+
+# same logger as gillespy3d_pp.core.log; fetched by name to avoid a circular import
+log = logging.getLogger("gillespy3d")
 
 
 class Simulation():
@@ -36,14 +40,17 @@ class Simulation():
     global vars: t : time... sum: sum of current simulation run
     """
 
-    def __init__(self,  model, number_of_trajectories, dt, end_t, solver=None):
+    def __init__(self,  model, number_of_trajectories, dt, end_t, solver=None, tau_tol=None):
 
         self.model = model
         self.dt = dt
         self.end_t = end_t
         self.number_of_trajectories = number_of_trajectories
-        if not solver or solver == "HYBRID":
-            self.solver = TauHybridSolver(self.model)
+        is_hybrid = not solver or solver == "HYBRID"
+        if tau_tol is not None and not is_hybrid:
+            log.warning(f"tau_tol is only used by the HYBRID solver; ignoring it for '{solver}'.")
+        if is_hybrid:
+            self.solver = TauHybridSolver(self.model, tau_tol=tau_tol)
         elif solver == "SSA":
             self.solver = NumPySSASolver(self.model)
         elif solver == "ODE":

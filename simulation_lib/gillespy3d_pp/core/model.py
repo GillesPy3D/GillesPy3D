@@ -457,7 +457,7 @@ class Model():
                 parameter_name_mapping[name] = f'P{i}'
         return parameter_name_mapping
 
-    def run(self, end_t=None, number_of_trajectories=10, *, dt):
+    def run(self, end_t=None, number_of_trajectories=10, *, dt, tau_tol=None):
         """
         Function calling simulation of the model. There are a number of
         parameters to be set here.
@@ -475,6 +475,9 @@ class Model():
 
         :param sim_args: Simulation-specific arguments to be passed to sim.run_until()
 
+        :param tau_tol: Tau selection error tolerance for the Tau-Hybrid solver. Optional, defaults to 0.03.
+        :type tau_tol: float
+
         :param algorithm: Specify algorithm ('ODE', 'Tau-Leaping', or 'SSA') for GillesPy3D to automatically
             pick best solver using that algorithm.
         :type algorithm: str
@@ -486,7 +489,7 @@ class Model():
         # incorperate loop into
         from gillespy3d_pp import Simulation
         sim = Simulation(self, number_of_trajectories,
-                         dt, end_t, solver="HYBRID")
+                         dt, end_t, solver="HYBRID", tau_tol=tau_tol)
         return sim.run()
 
 

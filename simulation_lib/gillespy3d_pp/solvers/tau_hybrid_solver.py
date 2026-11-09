@@ -73,13 +73,19 @@ class TauHybridSolver():
     """
     name = "TauHybridSolver"
 
-    def __init__(self, model=None, profile_reactions=False, constant_tau_stepsize=None):
+    def __init__(self, model=None, profile_reactions=False, constant_tau_stepsize=None, tau_tol=None):
         if model is None:
             raise SimulationError("A model is required to run the simulation.")
 
         name = 'TauHybridSolver'
         self.model = copy.deepcopy(model)
         self.is_instantiated = True
+
+        # mode=None means the default, 'dynamic' (allows hybrid switching).
+        # Set on the solver's copy only, so the user's Species objects are untouched.
+        for species in self.model.listOfSpecies.values():
+            if species.mode is None:
+                species.mode = 'dynamic'
 
         self.profile_reactions = profile_reactions
         self.profile_data = {}
@@ -94,6 +100,8 @@ class TauHybridSolver():
             for key, value in model.listOfReactions[reaction].products.items():
                 self.non_negative_species.add(key)
         self.constant_tau_stepsize = constant_tau_stepsize
+        # tau selection error tolerance (epsilon in Tau.initialize / Tau.select)
+        self.tau_tol = 0.03 if tau_tol is None else tau_tol
         # check if model should skip ODE integration step
         self.pure_discrete = False
         if len(self.model.listOfRateRules) == 0:
@@ -1067,7 +1075,7 @@ class TauHybridSolver():
             FunctionDefinition,
         }
 
-    def run_until(self, stop_time, debug=False, tau_tol=0.03,
+    def run_until(self, stop_time, debug=False,
                   event_sensitivity=100, integrator_options={}):
 
         stop_time = min(stop_time, self.model.timespan[-1])
@@ -1097,7 +1105,7 @@ class TauHybridSolver():
 
         # Record Highest Order reactant for each reaction and set error tolerance
         HOR, reactants, mu_i, sigma_i, g_i, epsilon_i, critical_threshold = Tau.initialize(
-            self.model, tau_tol)
+            self.model, self.tau_tol)
 
         # One-time compilations to reduce time spent with eval
         compiled_reactions, compiled_rate_rules, compiled_inactive_reactions, compiled_propensities = \
@@ -1139,7 +1147,7 @@ class TauHybridSolver():
 
             # Calculate Tau statistics and select a good tau step
             if self.constant_tau_stepsize is None:
-                tau_step = Tau.select(HOR, reactants, mu_i, sigma_i, g_i, epsilon_i, tau_tol,
+                tau_step = Tau.select(HOR, reactants, mu_i, sigma_i, g_i, epsilon_i, self.tau_tol,
                                       critical_threshold, self.model, propensities, self.curr_state, self.curr_time, stop_time)
             else:
                 tau_step = self.constant_tau_stepsize
