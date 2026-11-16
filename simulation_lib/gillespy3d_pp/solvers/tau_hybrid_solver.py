@@ -72,6 +72,9 @@ class TauHybridSolver():
     :type model: gillespy2.Model
     """
     name = "TauHybridSolver"
+    # When True, print each species' mode at t=0 and every time it switches.
+    # Class-level so a notebook can toggle it around model.run().
+    print_switches = False
 
     def __init__(self, model=None, profile_reactions=False, constant_tau_stepsize=None, tau_tol=None):
         if model is None:
@@ -135,6 +138,7 @@ class TauHybridSolver():
         self.det_spec = {s: v.mode != 'discrete' for s,
                          v in self.model.listOfSpecies.items()}
         self.det_rxn = {r: False for r in self.model.listOfReactions}
+        self.last_printed_mode = {}  # for print_switches
 
     def __toggle_reactions(self, all_compiled, deterministic_reactions, dependencies,
                            curr_state, det_spec, rr_sets):
@@ -320,6 +324,13 @@ class TauHybridSolver():
                 det_spec[species] = CV_a[species] < sref.switch_tol
             else:
                 det_spec[species] = mn[species] > sref.switch_min
+
+            if self.print_switches:
+                mode = 'continuous' if det_spec[species] else 'discrete'
+                if self.last_printed_mode.get(species) != mode:
+                    print(f"t={curr_time:7.2f}  {species}: {mode:<10}  "
+                          f"(CV={CV_a[species]:.4f}, switch_tol={sref.switch_tol})")
+                    self.last_printed_mode[species] = mode
 
         return mn, sd, CV
 
