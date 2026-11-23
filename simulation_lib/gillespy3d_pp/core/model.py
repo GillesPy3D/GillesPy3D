@@ -14,26 +14,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
+# This module defines a model that simulates a discrete, stoachastic, mixed biochemical reaction network in python.
 
+import numpy
 
 # from gillespy3d.core.domain import Domain
-# from gillespy3d.core.species import Species
+from gillespy3d_pp.core.species import Species
 # from gillespy3d.core.initialcondition import (
-#     InitialCondition,
-#     PlaceInitialCondition,
-#     ScatterInitialCondition,
-#     UniformInitialCondition
+#    InitialCondition,
+#   PlaceInitialCondition,
+#  ScatterInitialCondition,
+#    UniformInitialCondition
 # )
-# from gillespy3d.core.parameter import Parameter
-# from gillespy3d.core.reaction import Reaction
+from gillespy3d_pp.core.parameter import Parameter
+from gillespy3d_pp.core.simulation import Simulation
+from gillespy3d_pp.core.reaction import Reaction
 # from gillespy3d.core.boundarycondition import BoundaryCondition
 # from gillespy3d.core.datafunction import DataFunction
-# from gillespy3d.core.timespan import TimeSpan
+from gillespy3d_pp.core.timespan import TimeSpan
 # from gillespy3d.solvers.build_expression import BuildExpression
-# from gillespy3d.core.error import ModelError
-
-# from libcgillespy3d import libcgillespy3d
+from gillespy3d_pp.core.error import ModelError, ParameterError, RateRuleError, AssignmentRuleError
+from gillespy3d_pp.core.result import Result
+from gillespy3d_pp.core.raterule import RateRule
+from gillespy3d_pp.core.assignmentrule import AssignmentRule
+from gillespy3d_pp.core.functiondefinition import FunctionDefinition
+from random import randint
+from collections import OrderedDict
 
 
 class Model():
@@ -44,17 +50,45 @@ class Model():
     :type name: str
     """
 
+    reserved_names = ['vol']
+    special_characters = ['[', ']', '+', '-', '*', '/', '.', '^']
+
     def __init__(self, name="gillespy3d"):
-        super().__init__(name)
+        self.name = name
+        # Dictionaries with model element objects.
+        # Model element names are used as keys.
+        self.listOfSpecies = OrderedDict()
+        self.listOfParameters = OrderedDict()
+        self.listOfReactions = OrderedDict()
+        self.listOfRateRules = OrderedDict()
+        self.listOfFunctionDefinitions = OrderedDict()
+        self.listOfAssignmentRules = OrderedDict()
+        self.listOfEvents = OrderedDict()
+        # Dictionaries with model element objects.
+        # Model element names are used as keys, and values are
+        # sanitized versions of the names/formulas.
+        # These dictionaries contain sanitized values and are for
+        # Internal use only
+        self._listOfParameters = OrderedDict()
+        self._listOfSpecies = OrderedDict()
+        self._listOfAssignmentRules = OrderedDict()
+        self._listOfRateRules = OrderedDict()
+        self._listOfFunctionDefinitions = OrderedDict()
+
+        self.initial_condition = []
+        self.boundary_condition = []
+        self.data_functions = []
+        self.domain = None
+        self.volume = 1.0
 
     def __str__(self):
-        return ""
+        return f"Model(name={self.name}, species={self.listOfSpecies}, parameters={self.listOfParameters}, reactions={self.listOfReactions}, initial_condition={self.initial_condition}, boundary_condition={self.boundary_condition}, data_functions={self.data_functions}, domain={self.domain}, timespan={self.timespan})"
 
     def __ne__(self, other):
         return not self.__eq__(other)
 
     def __eq__(self, other):
-        return False; #TODO
+        return False  # TODO
 
     def add(self, components):
         """
@@ -85,10 +119,10 @@ class Model():
             others = []
             for component in components:
                 if isinstance(component, Species) or \
-                   type(component).__name__ in Species.__name__:
+                        type(component).__name__ in Species.__name__:
                     self.add_species(component)
                 elif isinstance(component, Parameter) or \
-                     type(component).__name__ in Parameter.__name__:
+                        type(component).__name__ in Parameter.__name__:
                     params.append(component)
                 else:
                     others.append(component)
@@ -112,11 +146,11 @@ class Model():
         elif isinstance(components, Species) or type(components).__name__ == Species.__name__:
             self.add_species(components)
         elif isinstance(components, TimeSpan) or type(components).__name__ == TimeSpan.__name__:
-            self.timespan(components)
+            self.add_timespan(components)
         else:
-            raise ModelError(f"Unsupported component: {type(components)} is not a valid component.")
+            raise ModelError(f"Unsupported component: {
+                             type(components)} is not a valid component.")
         return components
-
 
     def add_domain(self, domain, allow_all_types=False):
         """
@@ -127,23 +161,67 @@ class Model():
 
         :raises ModelError: Invalid Domain object
         """
-        raise Exception('TODO')
+        if not (isinstance(domain, Domain) or type(domain).__name__ == "Domain"):
+            raise ModelError(
+                Exception(f"Invalid Domain object, invalid input of type: {type(domain)}"))
+
+        self.domain = domain
 
     def add_species(self, species):
         """
         Adds a species, or list of species to the model.
 
-        :param species: The species or list of species to be added to the model object.
-        :type species: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species
+        :param species: The species or list of species to be added to the model object
+        :type species: gillespy2.Species | list of gillespy2.Species
 
         :returns: The species or list of species that were added to the model.
-        :rtype: gillespy3d.core.species.Species | list(gillespy3d.core.species.Species)
+        :rtype: gillespy2.Species | list of gillespy2.Species
 
         :raises ModelError: If an invalid species is provided or if Species.validate fails.
         """
+        if isinstance(species, list):
+            for spec in sorted(species):
+                self.add_species(spec)
+        elif isinstance(species, Species) or type(species).__name__ == "Species":
+            try:
+                species.validate()
+                self._problem_with_name(species.name)
+                self.listOfSpecies[species.name] = species
+                self._listOfSpecies[species.name] = f'S{len(self._listOfSpecies)}'
+            except ModelError as err:
+                errmsg = f"Could not add species: {species.name}, Reason given: {err}"
+                raise ModelError(errmsg) from err
+        else:
+            errmsg = f"species must be of type Species or list of Species not {
+                type(species)}."
+            raise ModelError(errmsg)
+        return species
 
-        raise Exception('TODO')
+    def get_species(self, name):
+        """
+        Returns a species object by name.
 
+        :param name: Name of the species object to be returned.
+        :type name: str
+
+        :returns: The specified species object.
+        :rtype: gillespy2.Species
+
+        :raises ModelError: If the species is not part of the model.
+        """
+        if name not in self.listOfSpecies:
+            raise ModelError(
+                f"{self.name} does not contain a species named {name}.")
+        return self.listOfSpecies[name]
+
+    def get_all_species(self):
+        """
+        Get all of the species in the model object.
+
+        :returns: A dict of all species in the model, in the form: {name : species object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfSpecies
 
     def add_initial_condition(self, init_cond):
         """
@@ -167,12 +245,12 @@ class Model():
             for initial_condition in init_cond:
                 self.add_initial_condition(initial_condition)
         elif isinstance(init_cond, InitialCondition) or type(init_cond).__name__ in names:
-            raise Exception('TODO')
+            self.initial_condition.append(init_cond)
         else:
-            errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {type(init_cond)}"
+            errmsg = f"init_cond must be of type InitialCondition or list of InitialCondition not {
+                type(init_cond)}"
             raise ModelError(errmsg)
         return init_cond
-
 
     def add_parameter(self, parameters):
         """
@@ -186,8 +264,45 @@ class Model():
 
         :raises ModelError: If an invalid parameter is provided or if Parameter.validate fails.
         """
-        raise Exception('TODO')
+        if isinstance(parameters, list):
+            for s in parameters:
+                self.add_parameter(s)
+        else:
+            if not ((isinstance(parameters, Parameter)) or type(parameters).__name__ == "Parameter"):
+                raise ModelError(f"Invalid Parameter object, invalid input of type: {
+                                 type(parameters).__name__}")
+            if Parameter.validate(parameters):
+                raise ModelError("Species.validate failed")
+            self.listOfParameters[parameters.name] = parameters
 
+            self._listOfParameters[parameters.name] = f'P{len(self._listOfParameters)}'
+        return parameters
+
+    def get_parameter(self, name):
+        """
+        Returns a parameter object by name.
+
+        :param name: Name of the parameter object to be returned
+        :type name: str
+
+        :returns: The specified parameter object.
+        :rtype: gillespy2.Parameter
+
+        :raises ModelError: If the parameter is not part of the model.
+        """
+        if name not in self.listOfParameters:
+            raise ModelError(
+                f"{self.name} does not contain a parameter named {name}.")
+        return self.listOfParameters[name]
+
+    def get_all_parameters(self):
+        """
+        Get all of the parameters in the model object.
+
+        :returns: A dict of all parameters in the model, in the form: {name : parameter object}
+        :rtype: OrderedDict
+        """
+        return self.listOfParameters
 
     def add_reaction(self, reactions):
         """
@@ -201,7 +316,44 @@ class Model():
 
         :raises ModelError: If an invalid reaction is provided or if Reaction.validate fails.
         """
-        raise Exception('TODO')
+        if isinstance(reactions, list):
+            for s in reactions:
+                self.add_reaction(s)
+        else:
+            if not ((isinstance(reactions, Reaction)) or type(reactions).__name__ == "Reaction"):
+                raise ModelError(f"Invalid Reaction object, invalid input of type: {
+                                 type(reactions).__name__}")
+            if Reaction.validate(reactions):
+                raise ModelError("Species.validate failed")
+            self.listOfReactions[reactions.name] = reactions
+
+        return reactions
+
+    def get_reaction(self, name):
+        """
+        Returns a reaction object by name.
+
+        :param name: Name of the reaction object to be returned
+        :type name: str
+
+        :returns: The specified reaction object.
+        :rtype: gillespy2.Reaction
+
+        :raises ModelError: If the reaction is not part of the model.
+        """
+        if name not in self.listOfReactions:
+            raise ModelError(
+                f"{self.name} does not contain a reaction named {name}.")
+        return self.listOfReactions[name]
+
+    def get_all_reactions(self):
+        """
+        Get all of the reactions in the model object.
+
+        :returns: A dict of all reactions in the model, in the form: {name : reaction object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfReactions
 
     def add_boundary_condition(self, bound_cond):
         """
@@ -219,10 +371,11 @@ class Model():
         if isinstance(bound_cond, list):
             for boundary_condition in bound_cond:
                 self.add_boundary_condition(boundary_condition)
-        elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ in "BoundaryCondition":
-            raise Exception('TODO')
+        elif isinstance(bound_cond, BoundaryCondition) or type(bound_cond).__name__ == "BoundaryCondition":
+            self.boundary_condition.append(bound_cond)  # Actually add it
         else:
-            errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {type(bound_cond)}"
+            errmsg = f"bound_cond must be of type BoundaryCondition or list of BoundaryCondition not {
+                type(bound_cond)}"
             raise ModelError(errmsg)
         return bound_cond
 
@@ -245,9 +398,10 @@ class Model():
             for data_fn in data_function:
                 self.add_data_function(data_fn)
         elif isinstance(data_function, DataFunction) or type(data_function).__name__ == 'DataFunction':
-            raise Exception('TODO')
+            self.data_functions.append(data_function)
         else:
-            errmsg = f"data_function must be of type DataFunction or list of DataFunction not {type(data_function)}"
+            errmsg = f"data_function must be of type DataFunction or list of DataFunction not {
+                type(data_function)}"
             raise ModelError(errmsg)
         return data_function
 
@@ -259,36 +413,494 @@ class Model():
 
     def add_timespan(self, time_span, timestep_size=None):
         """
-        Set the time span of simulation. 
+        Set the time span of simulation.
 
-        :param tspan: Evenly-spaced list of times at which to sample the species populations during the simulation.
-        :type tspan: numpy.ndarray
+        :param time_span: Evenly-spaced list of times at which to sample the species populations during the simulation.
+        :type time_span: numpy.ndarray
 
         :param timestep_size: Size of each timestep in seconds
         :type timestep_size: float
+
+        :raises ModelError: Invalid TimeSpan
         """
         if isinstance(time_span, TimeSpan) or type(time_span).__name__ == "TimeSpan":
-            #super().add_timespan(time_span.num_timesteps,time_span.timestep_size,time_span.output_freq)
-            raise Exception('TODO')
+            self.timespan = time_span
+        elif isinstance(time_span, list):
+            self.timespan = TimeSpan(time_span, timestep_size)
         else:
-            tspan = TimeSpan(time_span, timestep_size)
-            #super().add_timespan(tspan.num_timesteps,tspan.timestep_size,tspan.output_freq)
-            raise Exception('TODO')
+            raise ModelError(f"time_span must be of type TimeSpan or evenly space list of times not {
+                             type(time_span)}")
 
-    def run(self, number_of_trajectories=1, seed=None):
+    def _sanitized_species_names(self):
         """
-        Simulate the model. Returns a result object containing simulation results.
+        Generate a dictionary mapping user chosen species names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
 
-        :param number_of_trajectories: How many trajectories should be run.
-        :type number_of_trajectories: int
-
-        :param seed: The random seed given to the solver.
-        :type seed: int
-
-        :returns: A GillesPy3D Result object containing simulation data.
-        :rtype: gillespy3d.core.result.Result
+        :returns: the dictionary mapping user species names to their internal GillesPy notation.
         """
+        species_name_mapping = OrderedDict([])
+        for i, name in enumerate(self.listOfSpecies.keys()):
+            species_name_mapping[name] = f'S[{i}]'
+        return species_name_mapping
+
+    def _sanitized_parameter_names(self):
+        """
+        Generate a dictionary mapping user chosen parameter names to simplified formats which will be used
+        later on by GillesPySolvers evaluating reaction propensity functions.
+
+        :returns: the dictionary mapping user parameter names to their internal GillesPy notation.
+        """
+        parameter_name_mapping = OrderedDict()
+        parameter_name_mapping['vol'] = 'V'
+        for i, name in enumerate(self.listOfParameters.keys()):
+            if name not in parameter_name_mapping:
+                parameter_name_mapping[name] = f'P{i}'
+        return parameter_name_mapping
+
+    def run(self, end_t=None, number_of_trajectories=10, *, dt, tau_tol=None):
+        """
+        Function calling simulation of the model. There are a number of
+        parameters to be set here.
+
+        :param solver: The solver by which to simulate the model. This solver object may
+            be initialized separately to specify an algorithm. Optional, defaults to ssa solver.
+        :type solver: gillespy.GillesPySolver
+
+        :param timeout: Allows a time_out value in seconds to be sent to a signal handler,
+            restricting simulation run-time
+        :type timeout: int
+
+        :param end_t: End time of simulation
+        :type end_t: int
+
+        :param sim_args: Simulation-specific arguments to be passed to sim.run_until()
+
+        :param tau_tol: Tau selection error tolerance for the Tau-Hybrid solver. Optional, defaults to 0.03.
+        :type tau_tol: float
+
+        :param algorithm: Specify algorithm ('ODE', 'Tau-Leaping', or 'SSA') for GillesPy3D to automatically
+            pick best solver using that algorithm.
+        :type algorithm: str
+
+        :returns:  Returns a Results object that inherits UserList and contains one or more Trajectory objects that
+            inherit UserDict. Results object supports graphing.
+
+        """
+        # incorperate loop into
+        from gillespy3d_pp import Simulation
+        sim = Simulation(self, number_of_trajectories,
+                         dt, end_t, solver="HYBRID", tau_tol=tau_tol)
+        return sim.run()
 
 
-        #return Result(super().run(number_of_trajectories,seed))
-        raise Exception('TODO')      
+#    def run(self, number_of_trajectories=1, seed=None):
+#        """
+#        Simulate the model. Returns a result object containing simulation results.
+#
+#        :param number_of_trajectories: How many trajectories should be run.
+#        :type number_of_trajectories: int
+#
+#        :param seed: The random seed given to the solver.
+#        :type seed: int
+#
+#        :returns: A GillesPy3D Result object containing simulation data.
+#        :rtype: gillespy3d.core.result.Result
+#        """
+#        if seed is None:
+#            seed = randint(1, 100000000)
+#
+#        # For now, just return a single result
+#        return Result(self, seed)
+#
+
+
+    def add_rate_rule(self, rate_rule):
+        """
+        Adds a rate rule, or list of rate rules to the model.
+
+        :param rate_rule: The rate rule or list of rate rules to be added to the model object.
+        :type rate_rule: gillespy2.RateRule | list of gillespy2.RateRules
+
+        :returns: The rate rule or list of rate rules that were added to the model.
+        :rtype: gillespy2.RateRule | list of gillespy2.RateRule
+
+        :raises ModelError: If an invalid rate rule is provided or if rate rule validation fails.
+        """
+        if isinstance(rate_rule, list):
+            for r_rule in sorted(rate_rule):
+                self.add_rate_rule(r_rule)
+        elif isinstance(rate_rule, RateRule) or type(rate_rule).__name__ == "RateRule":
+            self._problem_with_name(rate_rule.name)
+            ar_vars = [
+                a_rule.variable for a_rule in self.listOfAssignmentRules.values()]
+            rr_vars = [
+                r_rule.variable for r_rule in self.listOfRateRules.values()]
+            if rate_rule.variable in ar_vars:
+                raise ModelError(
+                    f"Duplicate variable in rate_rules AND assignment_rules: {
+                        rate_rule.variable}."
+                )
+            if rate_rule.variable in rr_vars:
+                raise ModelError(
+                    f"Duplicate variable in rate_rules: {rate_rule.variable}.")
+            self._resolve_rule(rate_rule)
+            if rate_rule.variable.name in self.listOfSpecies:
+                # check if the rate_rule's target's mode is continious
+                if rate_rule.variable.mode == 'discrete':
+                    raise ModelError(
+                        "RateRules can not target discrete species")
+                if rate_rule.variable.mode is None or rate_rule.variable.mode == 'dynamic':
+                    # RateRules require a continuous target, so coerce the mode.
+                    rate_rule.variable.mode = 'continuous'
+
+            self.listOfRateRules[rate_rule.name] = rate_rule
+            # Build the sanitized rate rule
+            sanitized_rate_rule = RateRule(
+                name=f'RR{len(self._listOfRateRules)}')
+            sanitized_rate_rule.formula = rate_rule.sanitized_formula(
+                self._listOfSpecies, self._listOfParameters
+            )
+            self._listOfRateRules[rate_rule.name] = sanitized_rate_rule
+        else:
+            errmsg = f"rate_rule must be of type RateRule or list of RateRules not {
+                type(rate_rule)}."
+            raise ModelError(errmsg)
+        return rate_rule
+
+    def delete_rate_rule(self, name):
+        """
+        Removes rate rule object by name.
+
+        :param name: Name of the rate rule to be removed.
+        :type name: str
+
+        :raises ModelError: If the rate rule is not part of the model.
+        """
+        try:
+            self.listOfRateRules.pop(name)
+            if name in self._listOfRateRules:
+                self._listOfRateRules.pop(name)
+        except KeyError as err:
+            raise ModelError(
+                f"{self.name} does not contain a rate rule named {name}."
+            ) from err
+
+    def delete_all_rate_rules(self):
+        """
+        Removes all rate rules from the model object.
+        """
+        self.listOfRateRules.clear()
+        self._listOfRateRules.clear()
+
+    def get_rate_rule(self, name):
+        """
+        Returns a rate rule object by name.
+
+        :param name: Name of the rate rule object to be returned.
+        :type name: str
+
+        :returns: The specified rate rule object.
+        :rtype: gillespy2.RateRule
+
+        :raises ModelError: If the rate rule is not part of the model.
+        """
+        if name not in self.listOfRateRules:
+            raise ModelError(
+                f"{self.name} does not contain a rate rule named {name}.")
+        return self.listOfRateRules[name]
+
+    def get_all_rate_rules(self):
+        """
+        Get all of the rate rules in the model object.
+
+        :returns: A dict of all rate rules in the model, in the form: {name : rate rule object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfRateRules
+
+    def _problem_with_name(self, name):
+        if name in Model.reserved_names:
+            names = Model.reserved_names
+            raise ModelError(
+                f'Name "{name}" is unavailable. It is reserved for internal '
+                f'GillesPy use. Reserved Names: ({names}).'
+            )
+        if name in self.listOfSpecies:
+            raise ModelError(
+                f'Name "{name}" is unavailable. A species with that name exists.')
+        if name in self.listOfParameters:
+            raise ModelError(
+                f'Name "{name}" is unavailable. A parameter with that name exists.')
+        if name in self.listOfReactions:
+            raise ModelError(
+                f'Name "{name}" is unavailable. A reaction with that name exists.')
+        if name in self.listOfEvents:
+            raise ModelError(
+                f'Name "{name}" is unavailable. An event with that name exists.')
+        if name in self.listOfRateRules:
+            raise ModelError(
+                f'Name "{name}" is unavailable. A rate rule with that name exists.')
+        if name in self.listOfAssignmentRules:
+            raise ModelError(
+                f'Name "{name}" is unavailable. An assignment rule with that name exists.')
+        if name in self.listOfFunctionDefinitions:
+            raise ModelError(
+                f'Name "{name}" is unavailable. A function definition with that name exists.')
+        if name.isdigit():
+            raise ModelError(
+                f'Name "{name}" is unavailable. Names must not be numeric strings.')
+        for special_character in Model.special_characters:
+            if special_character in name:
+                chars = Model.special_characters
+                raise ModelError(
+                    f'Name "{name}" is unavailable. Names must not contain '
+                    f'special characters: {chars}.'
+                )
+
+    def _resolve_rule(self, rule):
+        def validate(rule):
+            errors = {"RateRule": RateRuleError,
+                      "AssignmentRule": AssignmentRuleError}
+            error_class = errors[type(rule).__name__]
+            if rule.variable is None:
+                raise error_class(
+                    'A GillesPy2 Rate/Assignment Rule must be associated with a valid variable')
+            if rule.formula == '':
+                raise error_class(
+                    'Invalid Rate/Assignment Rule. Expression must be a non-empty string value')
+        try:
+            validate(rule)
+
+            # Confirm that the variable is part of the model.
+            name = rule.variable if isinstance(
+                rule.variable, str) else rule.variable.name
+            rule.variable = self.get_element(name)
+        except ModelError as err:
+            raise ModelError(
+                f"Could not add/resolve rate_rule: {
+                    rule.name}, Reason given: {err}"
+            ) from err
+
+    def add_function_definition(self, function_definition):
+        """
+        Add function definition, or list of function definitions to the model
+
+        :param function_definition: The function definition, or list of function definitions \
+                to be added to the model object.
+        :type function_definition: gillespy2.FunctionDefinition | list of gillespy2.FunctionDefinitions.
+
+        :returns: The function defintion or list of function definitions that were added to the model.
+        :rtype: gillespy2.FunctionDefinitions | list of gillespy2.FunctionDefinitions
+
+        :raises ModelError: If an invalid function definition is provided.
+        """
+        if isinstance(function_definition, list):
+            for func_def in function_definition:
+                self.add_function_definition(func_def)
+        elif isinstance(function_definition, FunctionDefinition) or \
+                type(function_definition).__name__ == "FunctionDefinition":
+            self._problem_with_name(function_definition.name)
+            self.listOfFunctionDefinitions[function_definition.name] = function_definition
+        else:
+            errmsg = "function_definition must be of type FunctionDefinition or "
+            errmsg += f"list of FunctionDefinitions not {
+                type(function_definition)}."
+            raise ModelError(errmsg)
+
+    def delete_function_definition(self, name):
+        """
+        Removes a function definition object by name.
+
+        :param name: Name of the function definition object to be removed.
+        :type name: str
+        """
+        try:
+            self.listOfFunctionDefinitions.pop(name)
+            if name in self._listOfFunctionDefinitions:
+                self._listOfFunctionDefinitions.pop(name)
+        except KeyError as err:
+            raise ModelError(
+                f"{self.name} does not contain a function definition named {name}."
+            ) from err
+
+    def delete_all_function_definitions(self):
+        """
+        Removes all function definitions from the model object.
+        """
+        self.listOfFunctionDefinitions.clear()
+        self._listOfFunctionDefinitions.clear()
+
+    def get_function_definition(self, name):
+        """
+        Returns a function definition object by name.
+
+        :param name: Name of the function definition object to be returned.
+        :type name: str
+
+        :returns: The specified function definition object.
+        :rtype: gillespy2.FunctionDefinition
+        """
+        if name not in self.listOfFunctionDefinitions:
+            raise ModelError(
+                f"{self.name} does not contain a function definition named {name}.")
+        return self.listOfFunctionDefinitions[name]
+
+    def get_all_function_definitions(self):
+        """
+        Get all of the function definitions in the model object.
+
+        :returns: A dict of all function definitions in the model, in the form {name : function definition object}.
+        :rtype: OrderedDict
+        """
+        return self.listOfFunctionDefinitions
+
+    def add_assignment_rule(self, assignment_rule):
+        """
+        Add an assignment rule, or list of assignment rules to the model.
+
+        :param assignment_rules: The assignment rule or list of assignment rules to be added to the model object.
+        :type assignment_rules: gillespy2.AssignmentRule or list of gillespy2.AssignmentRules
+
+        :returns: The assignment rule or list of assignment rules that were added to the model.
+        :rtype: gillespy2.AssignmentRule | list of gillespy2.AssignmentRule
+
+        :raises ModelError: If an invalid assignment rule is provided or if assignment rule validation fails.
+        """
+        if isinstance(assignment_rule, list):
+            for a_rule in assignment_rule:
+                self.add_assignment_rule(a_rule)
+        elif isinstance(assignment_rule, AssignmentRule) or type(assignment_rule).__name__ == "AssignmentRule":
+            self._problem_with_name(assignment_rule.name)
+            ar_vars = [
+                a_rule.variable for a_rule in self.listOfAssignmentRules.values()]
+            rr_vars = [
+                r_rule.variable for r_rule in self.listOfRateRules.values()]
+            if assignment_rule.variable in rr_vars:
+                raise ModelError(
+                    f"Duplicate variable in rate_rules AND assignment_rules: {
+                        assignment_rule.variable}."
+                )
+            if assignment_rule.variable in ar_vars:
+                raise ModelError(f"Duplicate variable in assignments_rules: {
+                                 assignment_rule.variable}.")
+            self._resolve_rule(assignment_rule)
+            self.listOfAssignmentRules[assignment_rule.name] = assignment_rule
+            # Build the sanitized assignment rule
+            sanitized_assignment_rule = AssignmentRule(
+                name=f'AR{len(self._listOfAssignmentRules)}')
+            sanitized_assignment_rule.formula = assignment_rule.sanitized_formula(
+                self._listOfSpecies, self._listOfParameters
+            )
+            self._listOfAssignmentRules[assignment_rule.name] = sanitized_assignment_rule
+        else:
+            errmsg = "assignment_rule must be of type AssignmentRule or "
+            errmsg += f"list of AssignmentRules not {type(assignment_rule)}."
+            raise ModelError(errmsg)
+        return assignment_rule
+
+    def delete_assignment_rule(self, name):
+        """
+        Removes an assignment rule object by model.
+
+        :param name: Name of the assignment rule object to be removed.
+        :type name: str
+
+        :raises ModelError: If the assignment rule is not part of the model.
+        """
+        try:
+            self.listOfAssignmentRules.pop(name)
+            if name in self._listOfAssignmentRules:
+                self._listOfAssignmentRules.pop(name)
+        except KeyError as err:
+            raise ModelError(
+                f"{self.name} does not contain an assignment rule named {name}."
+            ) from err
+
+    def delete_all_assignment_rules(self):
+        """
+        Removes all assignment rules from the model object.
+        """
+        self.listOfAssignmentRules.clear()
+        self._listOfAssignmentRules.clear()
+
+    def get_assignment_rule(self, name):
+        """
+        Returns an assignment rule object by name.
+
+        :param name: Name of the assignment rule object to be returned.
+        :type name: str
+
+        :returns: The specified assignment rule object.
+        :rtype: gillespy2.AssignmentRule
+
+        :raises ModelError: If the assignment rule is not part of the model.
+        """
+        if name not in self.listOfAssignmentRules:
+            raise ModelError(
+                f"{self.name} does not contain an assignment rule named {name}.")
+        return self.listOfAssignmentRules[name]
+
+    def get_all_assignment_rules(self):
+        """
+        Get all of the assignment rules in the model object.
+
+        :returns: A dict of all assignemt rules in the model, in the form: {name: reaction object}.
+        """
+        return self.listOfAssignmentRules
+
+    def get_event(self, name):
+        """
+        Returns an event object by name.
+
+        :param name: Name of the event object to be returned.
+        :type name: str
+
+        :returns: The specified event object.
+        :rtype: gillespy2.Event
+
+        :raises ModelError: If the event is not part of the model.
+        """
+        if name not in self.listOfEvents:
+            raise ModelError(
+                f"{self.name} does not contain an event named {name}.")
+        return self.listOfEvents[name]
+
+    def get_all_events(self):
+        """
+        Get all of the events in the model object.
+
+        :returns: A dict of all evetns in the model, in the form: {name : event object}
+        """
+        return self.listOfEvents
+
+    def get_element(self, name):
+        """
+        Get a model element specified by name.
+
+        :param name: Name of the element to be returned.
+        :type name: str
+
+        :returns: The specified gillespy2.Model element.
+        :rtype: Species, Parameters, Reactions, Events, RateRules, AssignmentRules, \
+                FunctionDefinitions, or TimeSpan
+
+        :raises ModelError: If the element is not part of the model.
+        """
+        if name in ("tspan", "timespan"):
+            return self.timespan
+        if name in self.listOfSpecies:
+            return self.get_species(name)
+        if name in self.listOfParameters:
+            return self.get_parameter(name)
+        if name in self.listOfReactions:
+            return self.get_reaction(name)
+        if name in self.listOfRateRules:
+            return self.get_rate_rule(name)
+        if name in self.listOfAssignmentRules:
+            return self.get_assignment_rule(name)
+        if name in self.listOfEvents:
+            return self.get_event(name)
+        if name in self.listOfFunctionDefinitions:
+            return self.get_function_definition(name)
+        raise ModelError(
+            f"{self.name} does not contain an element named {name}.")
