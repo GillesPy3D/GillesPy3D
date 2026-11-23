@@ -13,6 +13,7 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import collections
 from gillespy3d_pp.core.error import ParameterError
 
 
@@ -34,8 +35,8 @@ class Parameter():
     def __init__(self, name=None, expression=None):
 
         self.name = name
-        self.expression = "0"
-        super().__init__()
+        self.expression = expression
+        #super().__init__()
         #self.validate()
 
     def __str__(self):
@@ -66,6 +67,9 @@ class Parameter():
             raise ParameterError(
                 f"Could not evaluate expression: '{self.expression}'. Reason given: {err}."
             ) from err
+
+
+
 
     def validate(self, expression=None, coverage="all"):
         """
@@ -98,7 +102,7 @@ class Parameter():
 
             if expression is None:
                 raise ParameterError("initial_value can't be None type.")
-            if not isinstance(expression, str):
+            if not isinstance(expression, str) and not isinstance(expression, float) and not isinstance(expression, int):
                 raise ParameterError("expression must be of type str, float, or int.")
             if expression == "":
                 raise ParameterError("expression can't be an empty string.")

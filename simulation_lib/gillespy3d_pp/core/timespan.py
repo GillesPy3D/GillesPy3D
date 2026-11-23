@@ -19,6 +19,7 @@ from collections.abc import Iterator
 
 from .error import TimespanError
 
+
 class TimeSpan(Iterator):
     """
     Model timespan that describes the duration to run the simulation and at which timepoint to sample
@@ -27,12 +28,13 @@ class TimeSpan(Iterator):
     :param items: Evenly-spaced list of times at which to sample the species populations during the simulation. 
             Best to use the form np.linspace(<start time>, <end time>, <number of time-points, inclusive>)
     :type items: list, tuple, range, or numpy.ndarray
-    
+
     :param timestep_size: Size of each timestep in seconds
     :type timestep_size: int | float
 
     :raises TimespanError: items is an invalid type.
     """
+
     def __init__(self, items, timestep_size=None):
         if isinstance(items, (list, tuple, range)):
             items = np.array(items)
@@ -85,12 +87,12 @@ class TimeSpan(Iterator):
             self.items[i] = step * self.timestep_size
 
     @classmethod
-    def linspace(cls, t=20, num_points=None, timestep_size=None):
+    def linspace(cls, end_t=20, num_points=None, timestep_size=None):
         """
-        Creates a timespan using the form np.linspace(0, <t>, <num_points, inclusive>).
+        Creates a timespan using the form np.linspace(0, <end_t>, <num_points, inclusive>).
 
-        :param t: End time for the simulation.
-        :type t: float | int
+        :param end_t: End time for the simulation.
+        :type end_t: float | int
 
         :param num_points: Number of sample points for the species populations during the simulation.
         :type num_points: int
@@ -101,28 +103,28 @@ class TimeSpan(Iterator):
         :returns: Timespan for the model.
         :rtype: gillespy3d.TimeSpan
 
-        :raises TimespanError: t or num_points are None, <= 0, or invalid type.
+        :raises TimespanError: end_t or num_points are None, <= 0, or invalid type.
         """
-        if t is None or not isinstance(t, (int, float)) or t <= 0:
-            raise TimespanError("t must be a positive float or int.")
+        if end_t is None or not isinstance(end_t, (int, float)) or end_t <= 0:
+            raise TimespanError("end_t must be a positive float or int.")
         if num_points is not None and (not isinstance(num_points, int) or num_points <= 0):
             raise TimespanError("num_points must be a positive int.")
 
         if num_points is None:
-            num_points = int(t / 0.05) + 1
-        items = np.linspace(0, t, num_points)
+            num_points = int(end_t / 0.05) + 1
+        items = np.linspace(0, end_t, num_points)
         return cls(items, timestep_size=timestep_size)
 
     @classmethod
-    def arange(cls, increment, t=20, timestep_size=None):
+    def arange(cls, increment, end_t=20, timestep_size=None):
         """
-        Creates a timespan using the form np.arange(0, <t, inclusive>, <increment>).
+        Creates a timespan using the form np.arange(0, <end_t, inclusive>, <increment>).
 
         :param increment: Distance between sample points for the species populations during the simulation.
         :type increment: float | int
 
-        :param t: End time for the simulation.
-        :type t: float | int
+        :param end_t: End time for the simulation.
+        :type end_t: float | int
 
         :param timestep_size: Size of each timestep in seconds
         :type timestep_size: int | float
@@ -130,14 +132,14 @@ class TimeSpan(Iterator):
         :returns: Timespan for the model.
         :rtype: gillespy3d.TimeSpan
 
-        :raises TimespanError: t or increment are None, <= 0, or invalid type.
+        :raises TimespanError: end_t or increment are None, <= 0, or invalid type.
         """
-        if t is None or not isinstance(t, (int, float)) or t <= 0:
-            raise TimespanError("t must be a positive floar or int.")
+        if end_t is None or not isinstance(end_t, (int, float)) or end_t <= 0:
+            raise TimespanError("end_t must be a positive floar or int.")
         if not isinstance(increment, (float, int)) or increment <= 0:
             raise TimespanError("increment must be a positive float or int.")
 
-        items = np.arange(0, t + increment, increment)
+        items = np.arange(0, end_t + increment, increment)
         return cls(items, timestep_size=timestep_size)
 
     def validate(self, items=None, timestep_size=None, coverage="build"):
@@ -160,7 +162,8 @@ class TimeSpan(Iterator):
 
             if not isinstance(items, np.ndarray):
                 if not isinstance(items, (list, tuple, range)):
-                    raise TimespanError("Timespan must be of type: list, tuple, range, or numpy.ndarray.")
+                    raise TimespanError(
+                        "Timespan must be of type: list, tuple, range, or numpy.ndarray.")
                 items = np.array(items)
                 if items is not None:
                     self.items = items
@@ -168,16 +171,19 @@ class TimeSpan(Iterator):
             if len(items) == 0:
                 raise TimespanError("Timespans must contain values.")
             if items[0] < 0:
-                raise TimespanError("Simulation must run from t=0 to end time (t must always be positive).")
-            
+                raise TimespanError(
+                    "Simulation must run from t=0 to end time (t must always be positive).")
+
             first_diff = items[1] - items[0]
             other_diff = items[2:] - items[1:-1]
             isuniform = np.isclose(other_diff, first_diff).all()
 
             if coverage == "build" and not isuniform:
-                raise TimespanError("GillesPy3D only supports uniform timespans.")
+                raise TimespanError(
+                    "GillesPy3D only supports uniform timespans.")
             if first_diff == 0 or np.count_nonzero(other_diff) != len(other_diff):
-                raise TimespanError("Timespan can't contain a single repeating value.")
+                raise TimespanError(
+                    "Timespan can't contain a single repeating value.")
 
         if coverage in ("all", "build", "timestep_size"):
             if hasattr(self, "timestep_size") and timestep_size is None:
@@ -185,9 +191,11 @@ class TimeSpan(Iterator):
 
             if timestep_size is not None:
                 if not isinstance(timestep_size, (int, float)):
-                    raise TimespanError("timestep_size must be of type int or float.")
+                    raise TimespanError(
+                        "timestep_size must be of type int or float.")
                 if timestep_size <= 0:
-                    raise TimespanError("timestep_size must be a positive value.")
+                    raise TimespanError(
+                        "timestep_size must be a positive value.")
 
         if coverage in ("all", "initialized"):
             if self.timestep_size is None:
@@ -195,7 +203,8 @@ class TimeSpan(Iterator):
             if self.output_freq is None:
                 raise TimespanError("output_freq can't be None type.")
             if not isinstance(self.output_freq, (int, float)):
-                raise TimespanError("output_freq must be of type int or float.")
+                raise TimespanError(
+                    "output_freq must be of type int or float.")
             if self.output_freq < self.timestep_size:
                 raise TimespanError("timestep_size exceeds output_frequency.")
             if self.num_timesteps is None:
@@ -207,6 +216,8 @@ class TimeSpan(Iterator):
             if self.output_steps is None:
                 raise TimespanError("output_steps can't be None type.")
             if not isinstance(self.output_steps, (np.ndarray)):
-                raise TimespanError("output_steps must be of type numpy.ndarray.")
+                raise TimespanError(
+                    "output_steps must be of type numpy.ndarray.")
             if self.items.size != self.output_steps.size:
-                raise TimespanError("output_steps must be the same size as items.")
+                raise TimespanError(
+                    "output_steps must be the same size as items.")
