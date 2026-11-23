@@ -1,1 +1,19 @@
 .DS_Store
+node_modules/
+
+# Python virtual environments
+venv/
+.venv/
+# leftovers from a venv created in the repo root
+/bin/
+/include/
+/lib/
+/pyvenv.cfg
+
+# Python build / cache files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/

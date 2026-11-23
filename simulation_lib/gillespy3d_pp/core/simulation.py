@@ -15,9 +15,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from gillespy3d_pp.solvers.NumPySSASolver import NumPySSASolver
+from gillespy3d_pp.solvers.tau_leaping_solver import TauLeapingSolver
+from gillespy3d_pp.solvers.ode_solver import ODESolver
+from gillespy3d_pp.solvers.tau_hybrid_solver import TauHybridSolver
 from gillespy3d_pp.core.error import SimulationError
 from gillespy3d_pp.core.result import Result, Trajectory
 import numpy as np
+import logging
+
+# same logger as gillespy3d_pp.core.log; fetched by name to avoid a circular import
+log = logging.getLogger("gillespy3d")
 
 
 class Simulation():
@@ -33,14 +40,27 @@ class Simulation():
     global vars: t : time... sum: sum of current simulation run
     """
 
-    def __init__(self,  model, number_of_trajectories, dt, end_t, solver=None):
+    def __init__(self,  model, number_of_trajectories, dt, end_t, solver=None, tau_tol=None):
 
         self.model = model
         self.dt = dt
         self.end_t = end_t
         self.number_of_trajectories = number_of_trajectories
-        if not solver or solver == "SSA":
+        is_hybrid = not solver or solver == "HYBRID"
+        if tau_tol is not None and not is_hybrid:
+            log.warning(f"tau_tol is only used by the HYBRID solver; ignoring it for '{solver}'.")
+        if is_hybrid:
+            self.solver = TauHybridSolver(self.model, tau_tol=tau_tol)
+        elif solver == "SSA":
             self.solver = NumPySSASolver(self.model)
+        elif solver == "ODE":
+            self.solver = ODESolver(self.model)
+        elif solver == "TAU":
+            self.solver = TauLeapingSolver(self.model)
+        else:
+            raise SimulationError(
+                f"Unknown solver '{solver}'. Expected one of: TAU, SSA, ODE, HYBRID")
+        print(self.solver)
 
     def reset(self):
         self.solver.reset()
@@ -56,10 +76,15 @@ class Simulation():
             round(self.end_t / self.dt + 1)))
         species_names = list(self.model.listOfSpecies.keys())
         result = Result(simulation_data)
-        for traj in range(self.number_of_trajectories):
+        # ODE is deterministic: one integration is the definitive result, so
+        # additional trajectories would just be identical copies.
+        n_traj = 1 if isinstance(
+            self.solver, ODESolver) else self.number_of_trajectories
+        for traj in range(n_traj):
             self.reset()  # reset the simulation after each run
             trajectory = Trajectory(
                 len(species_names), len(timeline), species_names, timeline)
+
             trajectory.record_state(self.solver.get_curr_state())
             for t in timeline[1:]:
                 self.run_until(t)

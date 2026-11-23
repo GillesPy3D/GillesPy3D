@@ -51,13 +51,32 @@ class TimespanError(ModelError):
     """
 
 
-class NumPySSASolverError(Exception):
+class SolverError(Exception):
     """
-    Class for exceptions in the NumPySSASolver module.
+    Class for exceptions raised by solver modules (e.g., NumPySSASolver, TauLeapingSolver).
     """
 
 
 class ResultError(ModelError):
     """
     Class for exception in the results module.
+    """
+
+
+class FunctionDefinitionError(ModelError):
+    """
+    Class for exception in function definition module
+    """
+    pass
+
+
+class RateRuleError(ModelError):
+    """
+    Class for exceptions raised in the raterule module
+    """
+
+
+class AssignmentRuleError(ModelError):
+    """
+    Class for exceptions raised in the assignment rule modeule.
     """
